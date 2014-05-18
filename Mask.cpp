@@ -10,7 +10,7 @@
 using namespace cv;
 using namespace std; 
 
-IplImage* xxhh(const IplImage *img1,const IplImage *img2);
+IplImage* xxhh(const IplImage *img1,const IplImage *img2,IplImage *imgout);
 IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo);  //canny(輸入圖片,緩衝圖層)
 IplImage* drawline(IplImage *pImgC,int centerX,int centerY);
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgC);
@@ -29,6 +29,8 @@ _CrtSetDbgFlag(_CrtSetDbgFlag(_CRTDBG_REPORT_FLAG) | _CRTDBG_LEAK_CHECK_DF);
  IplImage *pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
  IplImage *pImgBlack = cvCreateImage( cvSize(1280,720), 8,1); //全黑圖層
  IplImage *pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1); //緩衝圖層初始化
+
+
  for(int h=0;h<pImgBlack->height;h++) 
 		for(int w = 0;w< pImgBlack->widthStep ;w++){
 			pImgBlack->imageData[h*pImgBlack->widthStep+w]=0;
@@ -52,10 +54,10 @@ for(int i =FristPic;i<250;i+=1){
 	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
 	//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i);
 	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i+1);
-	//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);
-	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1);
-	sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-    sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
+	sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);
+	sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1);
+	//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
+    //sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 	////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 	//=======================
@@ -87,8 +89,8 @@ for(int i =FristPic;i<250;i+=1){
  IplImage *pImgFilter = cvCreateImage(cvSize(pImgA->width,pImgA->height),IPL_DEPTH_8U,1); //對比範圍圖層 初始化
 
  
-   
-pImgC= xxhh(pImgA,pImgB);  //俺們的副程式(input1,input2, *output)
+ 
+pImgC= xxhh(pImgA,pImgB,pImgC);  //俺們的副程式(input1,input2, *output)
  //xxhh(pImgC,pImgD,*pImgC);
 
 
@@ -363,10 +365,10 @@ IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgC)
 }
 
 //=========圖形合併(網狀)===============
-IplImage* xxhh(const IplImage *img1,const IplImage *img2)
+IplImage* xxhh(const IplImage *img1,const IplImage *img2,IplImage *imgout)
 {
-	 IplImage *imgout =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //初始化
-	 cvCopy(img1 ,imgout); //img1 copy to imgout
+	 //IplImage *imgout =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //初始化
+	 //cvCopy(img1 ,imgout); //img1 copy to imgout
 
 
 	 int startX = 1;int startY = 1; //start index
