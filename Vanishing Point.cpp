@@ -1,17 +1,18 @@
-#include "stdafx.h"
+#include "StdAfx.h"
 #include <cv.h>
 #include <highgui.h>
 #include <vector>
 #include "Vanishing Point.h"
+#include<fstream>
 using namespace std;
 
 //class of line_property 
 line_property::line_property(CvPoint& point_1, CvPoint& point_2) :line_point_1(&point_1), line_point_2(&point_2)
 {
-	//±×²v
+	//Â±?Šâ‰¤v
 	line_slope = (double)(point_1.y - point_2.y) / (point_1.x - point_2.x);
 
-	//ºI¶Z
+	//?«I?‚Z
 	line_intercept = (double)(point_1.y - line_slope * point_1.x);
 
 }
@@ -19,7 +20,7 @@ line_property::line_property(CvPoint& point_1, CvPoint& point_2) :line_point_1(&
 //class of line_crosspoint
 line_crosspoint::line_crosspoint(double slope1, double intercept1, double slope2, double intercept2)
 {
-	//¨â±ø½u¸ÑÁp¥ß¤èµ{¦¡¡A§ä¥X¥æÂIP(ptX,ptY)¡G
+	//Â®?šÂ±Â¯Î©u?â€”Â¡p?¢ï?Â§?Âµ{Â¶Â°Â°A??°â€¢X?¢ÃŠÂ¬IP(ptX,ptY)Â°G
 	LC_point.x = -(intercept1 - intercept2) / (slope1 - slope2);
 	LC_point.y = intercept1 + (slope1 * LC_point.x);
 	LC_score = 0;
@@ -29,14 +30,11 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 {
 	vector<line_property> all_Slope;
 	vector<line_crosspoint> all_point;
-	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// ÀN¤Ò½uÂà´«
+	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// Â¿NÂ§?œÎ©uÂ¬?¡Â¥Â?
 	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 59, 10);
-	//¿é¤J,Àx¦s,ÅÜ´«¤èªk,¶ZÂ÷ºë«×,¨¤«×ºë«×,Á{¬É­È,³Ì¤pªø«×,³Ì¤j¶¡¹j
+	//Ã¸?Â§J,Â¿xÂ¶s,?ˆâ€¹Â¥Â´Â§Ã‹â„¢k,?‚ZÂ¬??«ÃÂ´â?,Â®Â§Â´?Šâˆ«?Â´??Â¡{Â¨?¦â?Â»,?¥ÃƒÂ§p?¢Â¯Â´â?,?¥ÃƒÂ§j?‚Â°Ï€j
 
-	int allline = 10;
-	allline = lines_DThrSmo->total;
-
-	for (int i = 0; i < MIN(lines_DThrSmo->total, allline); i++)
+	for (int i = 0; i < lines_DThrSmo->total; i++)
 	{
 		CvPoint* ptThis = (CvPoint*)cvGetSeqElem(lines_DThrSmo, i);
 		if (ptThis[0].x - ptThis[1].x == 0)
@@ -45,8 +43,8 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		line_property line_info_temp(ptThis[0], ptThis[1]);
 		bool ok = true;
 
-		//¹LÂo¤ô¥­½u
-		if (!(abs(line_info_temp.line_slope) < 0.18))
+		//?LÂ¬oÂ§??¢â?Î©u
+		if (!(abs(line_info_temp.line_slope) < 0.18)) //0.18~= tan 15Â´??
 		{
 			if (i != 0)
 			{
@@ -65,7 +63,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 			ok = false;
 		}
 
-		//¥ş³¡Àx¦s
+		//?¢Ë›â‰¥Â°Â¿xÂ¶s
 		if (ok == true)
 		{
 			all_Slope.push_back(line_info_temp);
@@ -80,7 +78,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 	{
 		for (int s = f + 1; s < all_Slope.size(); s++)
 		{
-			//°²¦p¨â½u±×²v®t²§¤£¤j¡A´N¤£ºâ¥æÂI¤F
+			//?â‰¤Â¶pÂ®?šÎ©uÂ±?Šâ‰¤v?t?¤ÃŸÂ§Â?§jÂ°AÂ¥NÂ§Â£?«â€šâ€¢ÃŠÂ¬IÂ§F
 			if (abs(all_Slope[f].line_slope - all_Slope[s].line_slope)<0.01)
 				continue;
 			//line_crosspoint(double slope1, double intercept1, double slope2, double intercept2)
@@ -88,8 +86,8 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 			if (LC_Temp.LC_point.x > Canny->width || LC_Temp.LC_point.y > Canny->height || LC_Temp.LC_point.x < 0 || LC_Temp.LC_point.y < 0)
 				continue;
 			all_point.push_back(LC_Temp);
-			cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y - 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y + 10), CV_RGB(255, 255, 255), 1, 8);
-			cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y + 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y - 10), CV_RGB(255, 255, 255), 1, 8);
+			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y - 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y + 10), CV_RGB(255, 255,255), 1, 8);
+			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y + 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y - 10), CV_RGB(255, 255, 255), 1, 8);
 			count++;
 		}
 	}
@@ -105,22 +103,39 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		return no_p;
 	}
 	
-	//±N¥æÂIªº¸ê°T¼g¤J¹Ï¹³¤¤
+	//Â±N?¢ÃŠÂ¬I?¢âˆ«?Ãâ?TÂºgÂ§J????¥Â§Â?
 	IplImage* IntegralImg = cvCreateImage(cvSize(Canny->width, Canny->height), 8, 1);
 	unsigned char* IntegralImgdata = (unsigned char*)IntegralImg->imageData;
+    
 	for (int i = 0; i < all_point.size(); i++)
 	{
 		int temp = all_point[i].LC_point.y * Canny->width + all_point[i].LC_point.x;
 		IntegralImgdata[temp]++;
 	}
 	
-	CvMat *sumMat;
-	//«Ø¥ßÀx¦s¼v¹³¿n¤Àªº°}¦C¡A®æ¦¡¥i¬°32-bit¾ã¼Æ©Î64F¯BÂI¼Æ
-	sumMat = cvCreateMat(Canny->height + 1, Canny->width + 1, CV_64FC1);
-	
-	//­pºâ¿n¤À¼v¹³
-	cvIntegral(IntegralImg, sumMat);
-	//¿n¤À¼v¹³¸ê°TÃş§O
+    
+	IplImage* sumImg = cvCreateImage(cvSize(Canny->width+1, Canny->height+1), IPL_DEPTH_32S, 1);
+	cvIntegral(IntegralImg, sumImg);
+    cv::Mat ipmat(sumImg,0);
+    /*
+    fstream integeraTXT;
+    integeraTXT.open("/Users/chienfu/Desktop/inte2.txt",ios::out);
+    if (!integeraTXT)
+    {
+        cout << "file error"<<endl;
+    }
+    for (int i = 0; i < Canny->height+1;i++)
+    {
+        for(int j = 0; j < Canny->width; j++)
+        {
+            integeraTXT << (int)sumImgData[(i * Canny->width)+ j];
+        }
+        integeraTXT << "\n";
+    }
+    integeraTXT.close();
+    */
+    
+    
 	class max_info {
 	public:
 		float max;
@@ -149,9 +164,9 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 
 	for (int y = 0; y < Canny->height - 40; y++)
 	{
-		for (int x = 0; x < Canny->width-40; x++)
+		for (int x = 0; x < Canny->width - 40; x++)
 		{
-			Integral_info.score = cvmGet(sumMat, y + 40, x + 40) + cvmGet(sumMat, y, x) - cvmGet(sumMat, y, x + 40) - cvmGet(sumMat, y + 40, x);
+			Integral_info.score = ipmat.at<int>(y+40,x+40)+ ipmat.at<int>(y,x)- ipmat.at<int>(y,x+40) - ipmat.at<int>(y+40,x);
 			if (Integral_info.score > Integral_info.max)
 			{
 				Integral_info.max = Integral_info.score;
@@ -167,7 +182,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 	{
 		for (int j = Integral_info.first_x; j < Integral_info.first_x + 40 - 2; j++)
 		{
-			Integral_info.score = cvmGet(sumMat, i + 2, j + 2) + cvmGet(sumMat, i, j) - cvmGet(sumMat, i, j + 2) - cvmGet(sumMat, i + 2, j);
+            Integral_info.score = ipmat.at<int>(i+2,j+2)+ ipmat.at<int>(i,j)- ipmat.at<int>(i,j+2) - ipmat.at<int>(i+2,j);
 			if (Integral_info.score > Integral_info.max)
 			{
 				Integral_info.max = Integral_info.score;
@@ -177,10 +192,10 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		}
 	}
 	cout << Integral_info.max << "\t" << Integral_info.sec_x << "," << Integral_info.sec_y << endl;
-	cvLine(Ori_pic, cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvScalar(0, 0, 255), 8, 10);
+	//cvLine(Ori_pic, cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvScalar(0, 0, 255), 8, 10);
 	
-
-	//ÄÀ©ñIntegralImg
+	//?‹æ”¾ç©å?å½±å?
+    cvReleaseImage(&sumImg);
 	cvReleaseImage(&IntegralImg);
 	
 	return cvPoint(Integral_info.sec_x, Integral_info.sec_y);
