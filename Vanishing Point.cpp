@@ -31,7 +31,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 	vector<line_property> all_Slope;
 	vector<line_crosspoint> all_point;
 	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// ¿N§?�Ωu¬?�¥�?
-	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 50, 10);
+	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 20, 10);
 	//ø?§J,¿x¶s,?�‹¥´§Ë™k,?�Z¬??�Î´�?,®§´?�∫?´??¡{¨?��?»,?�Ã§p?�¯´�?,?�Ã§j?�°πj
 
 	for (int i = 0; i < lines_DThrSmo->total; i++)
