@@ -131,7 +131,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\opencv\build\x64\vc10\lib\opencv_core249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_highgui249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_video249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_ml249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_legacy249d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_imgproc247d.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\opencv\build\x64\vc10\lib\opencv_core249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_highgui249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_video249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_ml249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_legacy249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_imgproc249d.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">
@@ -199,11 +199,13 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Canny Line.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Vanishing Point.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Canny Line.cpp" />
     <ClCompile Include="Mask.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\opencv\build\include;C:\opencv\build\include\opencv;C:\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">C:\OpenCV-2.4.7\opencv\build\include;C:\OpenCV-2.4.7\opencv\build\include\opencv;C:\OpenCV-2.4.7\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
