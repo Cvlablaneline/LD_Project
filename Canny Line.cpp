@@ -1,4 +1,4 @@
-#include "StdAfx.h" //"C:\\Users\\User\\Desktop\\LLSample\\output\\Video-TEST.jpg"
+#include "StdAfx.h" //"By xxhh"
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
