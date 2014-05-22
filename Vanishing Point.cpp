@@ -3,48 +3,47 @@
 #include <highgui.h>
 #include <vector>
 #include "Vanishing Point.h"
-#include<fstream>
 using namespace std;
 
-//class of line_property 
+//class of line_property
 line_property::line_property(CvPoint& point_1, CvPoint& point_2) :line_point_1(&point_1), line_point_2(&point_2)
 {
-	//Â±?Šâ‰¤v
+	//?œç?
 	line_slope = (double)(point_1.y - point_2.y) / (point_1.x - point_2.x);
-
-	//?«I?‚Z
+    
+	//?ªè?
 	line_intercept = (double)(point_1.y - line_slope * point_1.x);
-
+    
 }
 
 //class of line_crosspoint
 line_crosspoint::line_crosspoint(double slope1, double intercept1, double slope2, double intercept2)
 {
-	//Â®?šÂ±Â¯Î©u?â€”Â¡p?¢ï?Â§?Âµ{Â¶Â°Â°A??°â€¢X?¢ÃŠÂ¬IP(ptX,ptY)Â°G
+	//?©æ?ç·šè§£?¯ç??¹ç?å¼ï??¾å‡ºäº¤é?P(ptX,ptY)ï¼?
 	LC_point.x = -(intercept1 - intercept2) / (slope1 - slope2);
 	LC_point.y = intercept1 + (slope1 * LC_point.x);
 	LC_score = 0;
 }
 
-CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
+CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint> *pointSave)
 {
 	vector<line_property> all_Slope;
 	vector<line_crosspoint> all_point;
-	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// Â¿NÂ§?œÎ©uÂ¬?¡Â¥Â?
-	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 20, 10);
-	//Ã¸?Â§J,Â¿xÂ¶s,?ˆâ€¹Â¥Â´Â§Ã‹â„¢k,?‚ZÂ¬??«ÃÂ´â?,Â®Â§Â´?Šâˆ«?Â´??Â¡{Â¨?¦â?Â»,?¥ÃƒÂ§p?¢Â¯Â´â?,?¥ÃƒÂ§j?‚Â°Ï€j
-
+	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// ?å¤«ç·šè???
+	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 30, 10);
+	//è¼¸å…¥,?²å?,è®Šæ??¹æ?,è·é›¢ç²¾åº¦,è§’åº¦ç²¾åº¦,?¨ç????€å°é•·åº??€å¤§é???
+    
 	for (int i = 0; i < lines_DThrSmo->total; i++)
 	{
 		CvPoint* ptThis = (CvPoint*)cvGetSeqElem(lines_DThrSmo, i);
 		if (ptThis[0].x - ptThis[1].x == 0)
 			continue;
-
+        
 		line_property line_info_temp(ptThis[0], ptThis[1]);
 		bool ok = true;
-
-		//?LÂ¬oÂ§??¢â?Î©u
-		if (!(abs(line_info_temp.line_slope) < 0.18)) //0.18~= tan 15Â´??
+        
+		//?æ¿¾æ°´å¹³ç·?
+		if (!(abs(line_info_temp.line_slope) < 0.18)) //0.18 ~= tan 10åº?
 		{
 			if (i != 0)
 			{
@@ -62,8 +61,8 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		{
 			ok = false;
 		}
-
-		//?¢Ë›â‰¥Â°Â¿xÂ¶s
+        
+		//?¨éƒ¨?²å?
 		if (ok == true)
 		{
 			all_Slope.push_back(line_info_temp);
@@ -72,13 +71,13 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		else
 			continue;
 	}
-
+    
 	int count = 0;
 	for (int f = 0; f < all_Slope.size(); f++)
 	{
 		for (int s = f + 1; s < all_Slope.size(); s++)
 		{
-			//?â‰¤Â¶pÂ®?šÎ©uÂ±?Šâ‰¤v?t?¤ÃŸÂ§Â?§jÂ°AÂ¥NÂ§Â£?«â€šâ€¢ÃŠÂ¬IÂ§F
+			//?‡å??©ç??œç?å·®ç•°ä¸å¤§ï¼Œå°±ä¸ç?äº¤é?äº?
 			if (abs(all_Slope[f].line_slope - all_Slope[s].line_slope)<0.01)
 				continue;
 			//line_crosspoint(double slope1, double intercept1, double slope2, double intercept2)
@@ -86,15 +85,15 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 			if (LC_Temp.LC_point.x > Canny->width || LC_Temp.LC_point.y > Canny->height || LC_Temp.LC_point.x < 0 || LC_Temp.LC_point.y < 0)
 				continue;
 			all_point.push_back(LC_Temp);
-			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y - 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y + 10), CV_RGB(255, 255,255), 1, 8);
-			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y + 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y - 10), CV_RGB(255, 255, 255), 1, 8);
+			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y - 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y + 10), CV_RGB(0, 255, 0), 1, 8);
+			//cvLine(Ori_pic, cvPoint(all_point[count].LC_point.x - 10, all_point[count].LC_point.y + 10), cvPoint(all_point[count].LC_point.x + 10, all_point[count].LC_point.y - 10), CV_RGB(0, 255, 0), 1, 8);
 			count++;
 		}
 	}
-
-
+    
+    
 	cout << count << endl;
-
+    
 	if (all_point.size() < 1)
 	{
 		CvPoint no_p;
@@ -102,40 +101,27 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		no_p.y = NULL;
 		return no_p;
 	}
-	
-	//Â±N?¢ÃŠÂ¬I?¢âˆ«?Ãâ?TÂºgÂ§J????¥Â§Â?
-	IplImage* IntegralImg = cvCreateImage(cvSize(Canny->width, Canny->height), 8, 1);
+    
+	//å°‡äº¤é»ç?è³‡è?å¯«å…¥?–å?ä¸?
+	IplImage* IntegralImg = cvCreateImage(cvSize(Canny->width, Canny->height), IPL_DEPTH_8U, 1);
 	unsigned char* IntegralImgdata = (unsigned char*)IntegralImg->imageData;
     
 	for (int i = 0; i < all_point.size(); i++)
 	{
 		int temp = all_point[i].LC_point.y * Canny->width + all_point[i].LC_point.x;
-		IntegralImgdata[temp]++;
+		IntegralImgdata[temp] += 20;
 	}
-	
-    
-	IplImage* sumImg = cvCreateImage(cvSize(Canny->width+1, Canny->height+1), IPL_DEPTH_32S, 1);
-	cvIntegral(IntegralImg, sumImg);
-    cv::Mat ipmat(sumImg,0);
-    /*
-    fstream integeraTXT;
-    integeraTXT.open("/Users/chienfu/Desktop/inte2.txt",ios::out);
-    if (!integeraTXT)
-    {
-        cout << "file error"<<endl;
-    }
-    for (int i = 0; i < Canny->height+1;i++)
-    {
-        for(int j = 0; j < Canny->width; j++)
-        {
-            integeraTXT << (int)sumImgData[(i * Canny->width)+ j];
-        }
-        integeraTXT << "\n";
-    }
-    integeraTXT.close();
-    */
     
     
+    
+    
+	CvMat *sumMat;
+	//å»ºç??²å?å½±å?ç©å??„é™£?—ï??¼å??¯ç‚º32-bit?´æ•¸??4Fæµ®é???
+	sumMat = cvCreateMat(Canny->height + 1, Canny->width + 1, CV_64FC1);
+    
+	//è¨ˆç?ç©å?å½±å?
+	cvIntegral(IntegralImg, sumMat);
+	//ç©å?å½±å?è³‡è?é¡åˆ¥
 	class max_info {
 	public:
 		float max;
@@ -144,7 +130,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		float sec_x;
 		float sec_y;
 		float score;
-
+        
 		max_info() {
 			max = 0.0;
 			first_x = 0.0;
@@ -159,14 +145,14 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 			score = 0.0;
 		}
 	};
-
+    
 	max_info Integral_info;
-
+    
 	for (int y = 0; y < Canny->height - 40; y++)
 	{
 		for (int x = 0; x < Canny->width - 40; x++)
 		{
-			Integral_info.score = ipmat.at<int>(y+40,x+40)+ ipmat.at<int>(y,x)- ipmat.at<int>(y,x+40) - ipmat.at<int>(y+40,x);
+			Integral_info.score = cvmGet(sumMat, y + 40, x + 40) + cvmGet(sumMat, y, x) - cvmGet(sumMat, y, x + 40) - cvmGet(sumMat, y + 40, x);
 			if (Integral_info.score > Integral_info.max)
 			{
 				Integral_info.max = Integral_info.score;
@@ -176,13 +162,13 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 		}
 	}
 	cout << "\n first x: " << Integral_info.first_x << "\n first y:" << Integral_info.first_y << endl;
-
+    
 	Integral_info.clear_score();
 	for (int i = Integral_info.first_y; i < Integral_info.first_y + 40 - 2; i++)
 	{
 		for (int j = Integral_info.first_x; j < Integral_info.first_x + 40 - 2; j++)
 		{
-            Integral_info.score = ipmat.at<int>(i+2,j+2)+ ipmat.at<int>(i,j)- ipmat.at<int>(i,j+2) - ipmat.at<int>(i+2,j);
+			Integral_info.score = cvmGet(sumMat, i + 2, j + 2) + cvmGet(sumMat, i, j) - cvmGet(sumMat, i, j + 2) - cvmGet(sumMat, i + 2, j);
 			if (Integral_info.score > Integral_info.max)
 			{
 				Integral_info.max = Integral_info.score;
@@ -193,10 +179,123 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic)
 	}
 	cout << Integral_info.max << "\t" << Integral_info.sec_x << "," << Integral_info.sec_y << endl;
 	//cvLine(Ori_pic, cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvPoint(Integral_info.sec_x, Integral_info.sec_y), cvScalar(0, 0, 255), 8, 10);
-	
-	//?‹æ”¾ç©å?å½±å?
-    cvReleaseImage(&sumImg);
+    
+    
+	//?‹æ”¾IntegralImg
 	cvReleaseImage(&IntegralImg);
+	//CvMat?ªé™¤?é???
+	//if (sumMat != NULL)
+	//cvDecRefData(sumMat);
+	cvReleaseMat(&sumMat);
+    
+    return cvPoint(Integral_info.sec_x, Integral_info.sec_y);
+	//CvPoint foundPoint = check_point(cvPoint(Integral_info.sec_x, Integral_info.sec_y), pointSave);
+	//cout << "?²å??„æ?å¤±é??¸é?:" << (*pointSave).size() << endl;
 	
-	return cvPoint(Integral_info.sec_x, Integral_info.sec_y);
+	//return foundPoint;
 }
+
+//check point
+CvPoint check_point(CvPoint newPoint, vector<CvPoint> *pointSave)
+{
+	static int error_count = 0;
+	cout << "error_count: " << error_count << endl;
+    
+	class count_check_point
+	{
+	public:
+		CvPoint save_point;
+		int score;
+		count_check_point(CvPoint Point)
+		{
+            score = 1;
+			save_point = Point;
+		}
+        void hit_it (CvPoint hit_point)
+        {
+            save_point.x = (save_point.x + hit_point.x) / 2;
+            save_point.y = (save_point.y + hit_point.y) / 2;
+            score++;
+        }
+	};
+	//è¨˜é?10å¼µå??‡ç?æ¶ˆå¤±é»å?æ¨?
+	if ((*pointSave).size() < 10)
+	{
+		(*pointSave).push_back(newPoint);
+		return newPoint;
+	}
+	else
+	{
+		vector<count_check_point> ckpoint;
+		bool isPass = false;
+		for (int i = 0; i < (*pointSave).size(); i++)
+		{
+			isPass = false;
+			if (ckpoint.size() < 1)
+			{
+				count_check_point tmp((*pointSave)[i]);
+				ckpoint.push_back(tmp);
+				continue;
+			}
+			for (int j = 0;j < ckpoint.size(); j++)
+			{
+				if (abs(ckpoint[j].save_point.x - (*pointSave)[i].x) > 40 || abs(ckpoint[j].save_point.y - (*pointSave)[i].y) > 40)
+				{
+					continue;
+				}
+				else
+				{
+					ckpoint[j].score++;
+                    ckpoint[j].hit_it((*pointSave)[i]);
+					isPass = true;
+					break;
+				}
+			}
+			if (isPass == false)
+			{
+				count_check_point tmp((*pointSave)[i]);
+				ckpoint.push_back(tmp);
+			}
+		}
+		cout << "çµ„åˆ¥?? " << ckpoint.size() << "çµ?" << endl;
+        
+		cvWaitKey();
+        
+		CvPoint MaxPoint;
+		int Max = 0;
+		for (int i = 0; i < ckpoint.size(); i++)
+		{
+			if (ckpoint[i].score > Max)
+			{
+				MaxPoint = ckpoint[i].save_point;
+			}
+		}
+		vector<CvPoint>::iterator psfirst = (*pointSave).begin();
+		(*pointSave).erase(psfirst);
+		(*pointSave).push_back(newPoint);
+		cout << "å·®è?:" << abs(newPoint.x - MaxPoint.x) << "," << abs(newPoint.y - MaxPoint.y) << endl;
+		if (abs(newPoint.x - MaxPoint.x) > 40 || abs(newPoint.y - MaxPoint.y) > 40)
+		{
+			error_count++;
+            if (error_count+2 >= (*pointSave).size())
+            {
+                error_count = 0;
+                (*pointSave).clear();
+                return newPoint;
+            }
+			cout << "old:" << (*pointSave).size() - 2 - (error_count-1) << endl;
+			return (*pointSave)[(*pointSave).size() - 2 - (error_count-1)];
+		}
+		else
+		{
+			error_count = 0;
+			cout << "new" << endl;
+			return newPoint;
+		}
+	}
+	
+}
+
+
+
+

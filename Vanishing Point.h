@@ -1,8 +1,10 @@
 #ifndef VANISHING_POINT
 #define VANISHING_POINT
+#include <vector>
+using namespace std;
 class line_property {
 public:
-	CvPoint *line_point_1,*line_point_2;
+	CvPoint *line_point_1, *line_point_2;
 	double line_slope;
 	double line_intercept;
 public:
@@ -21,6 +23,8 @@ public:
 	line_crosspoint(double slope1, double intercept1, double slope2, double intercept2);
 	~line_crosspoint(){};
 };
-CvPoint find_Vanishing_Point(IplImage* Canny,IplImage* Ori_pic);
+CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint> *pointSave);
+
+CvPoint check_point(CvPoint newPoint, vector<CvPoint> *pointSave);
 
 #endif

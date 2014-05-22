@@ -13,7 +13,7 @@ using namespace std;
 
 
 char FileName[200],FileName2[200],FileName3[200],maskout[200];
-int  FristPic  = 120;  //第一張出現的圖片編號
+int  FristPic  = 1;  //第一張出現的圖片編號
 
 
 int main( int argc, char** argv ){
@@ -28,12 +28,12 @@ for(int i =FristPic;i<600;i+=1){
 	//===========圖片brbrbr
 	//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
 	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
-	//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i);
-	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i+1);
+	sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i);
+	sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i+1);
 	//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);
 	//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1);
-	sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-    sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
+	//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
+    //sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 	////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 	//===================讀進圖片(重設大小)==================
@@ -74,7 +74,9 @@ if (i==FristPic){  //第一張的canny(沒有過濾)
 	pImgCanny=canny(pImgC,pImgBuffer);}
 
 //============消失點function===========
-CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny,pImgC); //canny進去找消失點
+static vector<CvPoint> savePoint;
+
+CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny,pImgC,& savePoint); //canny進去找消失點
 cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl<<endl;// 產生消失點(debug)
 RLpoint[0][0]=VanishingPoint.x;RLpoint[0][1]=VanishingPoint.y; //把第一個消失點放進 對比點陣列(100是上限)
 
@@ -82,7 +84,6 @@ RLpoint[0][0]=VanishingPoint.x;RLpoint[0][1]=VanishingPoint.y; //把第一個消
 //============後圖的canny==============
 
 if(i!=FristPic) pImgCanny=canny(pImgC,pImgBuffer); //之後再做的canny
-
 cout<< "Video-"<<i-1<<"and Video-"<< i << "print out C" << endl; //debug
 
 
@@ -90,7 +91,7 @@ cout<< "Video-"<<i-1<<"and Video-"<< i << "print out C" << endl; //debug
  pImgC=drawline(pImgC,VanishingPoint.x,VanishingPoint.y); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
 
  
-//============遮罩canny圖=======================
+//============遮罩canny圖 (如果是夜間模式請取消)=======================
   Filter_Init(VanishingPoint.x);
 
 
