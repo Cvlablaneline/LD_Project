@@ -36,14 +36,14 @@ int main(int argc, char *argv[])
 
 
 		//===========圖片brbrbr
-		sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
 		//sprintf(FileName, "D:\\車道線photo\\demo\\Video- (%d).jpg",i);
 		//sprintf(FileName2, "D:\\車道線photo\\demo\\Video- (%d).jpg",i+1);
-		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
+		sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
+		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//===================讀進圖片(重設大小)==================
@@ -103,8 +103,11 @@ int main(int argc, char *argv[])
 		static vector<CvPoint> savePoint;
 		//call vanishing point function and get the vanishing point to vpfnpoint
 		CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &savePoint);
-		// 產生消失點(debug)
-		cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;
+		//檢查消失點正確性
+		Check_VPoint(VanishingPoint.x,VanishingPoint.y); 
+		cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //劃出消失點
+
+		cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// 產生消失點(debug)
 		//把第一個消失點放進 對比點陣列(100是上限)
 		RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y; 
 
@@ -129,7 +132,7 @@ int main(int argc, char *argv[])
 
 		// Create Windows
 		cvShowImage("pImgColor", pImgColor);
-		cvShowImage("pImgCanny", pImgFilter);
+		//cvShowImage("pImgCanny", pImgCanny);
 
 		cvReleaseImage(&pImgA); cvReleaseImage(&pImgB); cvReleaseImage(&pImgC);//cvReleaseImage(&pImgD); //釋放記憶體
 		cvReleaseImage(&pImgColor);

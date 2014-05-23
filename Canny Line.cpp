@@ -6,12 +6,16 @@
 #include <vector>
 #include "Vanishing Point.h"
 
+#define CPIndex 5
 
 using namespace cv;
 using namespace std; 
 
 
 int RLpoint[100][2]={0};
+int CheckParr[CPIndex][2]={0};
+int CheckPindex,Caa;
+int OldX=0,OldY=0;
 
 IplImage *pImgFilter =NULL;
 IplImage *pImgCanny = NULL; //產生canny圖
@@ -25,6 +29,48 @@ void Mask_Init()
 	pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
 	pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1);
 
+	CheckPindex=0; //消失點初始引索 0
+	Caa=0 ; // 前五張略
+}
+
+//====================================
+//==============檢查消失點正確性======
+void Check_VPoint(int &VPx,int &VPy)
+{
+
+	if (CheckPindex<CPIndex)
+	{
+		
+		CheckParr[CheckPindex][0]=VPx; //消失點X
+		CheckParr[CheckPindex][1]=VPy; //消失點Y
+		CheckPindex++;
+
+		if(CheckPindex==CPIndex){ //到最後一張 排序
+		for(int j=0;j<CPIndex-1;j++){
+			for(int i=0;i<CPIndex-1;i++){
+				if(CheckParr[i][0]>CheckParr[i+1][0]) //X比較
+				{int res=CheckParr[i][0];CheckParr[i][0]=CheckParr[i+1][0];CheckParr[i+1][0]=res;}//排序(由小到大)
+				if(CheckParr[i][1]>CheckParr[i+1][1]) //Y比較
+				{int res=CheckParr[i][1];CheckParr[i][1]=CheckParr[i+1][1];CheckParr[i+1][1]=res;}//排序(由大到小)
+			}}
+		 OldX=CheckParr[2][0]; //紀錄中間的X
+		 OldY=CheckParr[2][1]; //紀錄中間的Y
+		 //====重置=====
+		 CheckParr[0][0]=OldX;
+		 CheckParr[0][1]=OldY;
+		 for(int i=1;i<CPIndex;i++){CheckParr[i][0]=0;CheckParr[i][1]=0;} //歸0
+		 CheckPindex=1;
+		 //=============
+		}
+		
+	}
+
+	cout << endl << CheckParr[0][0] << "  "<< CheckParr[1][0] << "  "<< CheckParr[2][0] << "  "<< CheckParr[3][0] << "  "<< CheckParr[4][0] << endl;
+	Caa++;
+	if (Caa>CPIndex){
+	if(abs(VPx-OldX)>20) VPx=OldX; //修正X
+	if(abs(VPy-OldY)>20) VPy=OldY; //修正Y
+	}
 	
 }
 //=====================================

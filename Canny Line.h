@@ -8,10 +8,10 @@ IplImage* drawline(IplImage *pImgC,int centerX,int centerY);
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgC);
 void Mask_Init();
 void Filter_Init(int VPx);
-
+void Check_VPoint(int &VPx,int &VPy);
 
  extern int RLpoint[][2];
-
+ extern int CheckParr[][2];
  extern IplImage *pImgCanny ; //產生canny圖
  extern IplImage *pImgBuffer; //緩衝圖層初始化
  extern IplImage *pImgFilter ; //對比遮罩圖層 初始化
