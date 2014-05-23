@@ -12,45 +12,48 @@ using namespace std;
 
 
 int RLpoint[100][2]={0};
-IplImage *pImgBlack = cvCreateImage( cvSize(1280,720), 8,1);
-IplImage *pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
-IplImage *pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
+
+IplImage *pImgFilter =NULL;
+IplImage *pImgCanny = NULL; //產生canny圖
+IplImage *pImgBuffer = NULL;
 
 //====================================
 //===============初始化===============
 void Mask_Init()
 {
-	for(int h=0;h<pImgBlack->height;h++) //全黑圖層初始化
-		for(int w = 0;w< pImgBlack->widthStep ;w++){
-			pImgBlack->imageData[h*pImgBlack->widthStep+w]=0;
-			pImgBlack->imageData[h*pImgBlack->widthStep+w+1]=0;
-			pImgBlack->imageData[h*pImgBlack->widthStep+w+2]=0;}
+	pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
+	pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
+	pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1);
 
-
-
-
+	
 }
 //=====================================
 //==============ImgFilter 創造=========
 void Filter_Init(int VPx){  // (傳入消失點X)
 	 
 	//====青黑
- 
-	cvCopy(pImgBlack ,pImgFilter); //img1 copy to imgout
-
+	pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
+	cvSet(pImgFilter,cvScalar(0,0,0));
+	//cvCopy(pImgBlack ,pImgFilter); //img1 copy to imgout
+	
  //======產生遮罩圖 Filter================
  for(int fs=0;fs<100;fs++)
  {
+	 //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
 	 if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
 		 if(RLpoint[fs][0]>=VPx){ //在右邊的點
 			 for(int i=RLpoint[fs][0]-20;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--)
-			pImgFilter->imageData[j*pImgFilter->width+i]=255;}
+		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+			if(j<0)continue;
+			pImgFilter->imageData[j*pImgFilter->width+i]=255;
+		}}
 
 		  if(RLpoint[fs][0]<=VPx){ //在左邊的點
 	 for(int i=0;i<RLpoint[fs][0]+20;i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--)
+		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+			//if(j>pImgFilter->height)continue;
 			pImgFilter->imageData[j*pImgFilter->width+i]=255;}
+		  }
 		 }
  }
  
@@ -78,9 +81,9 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout)
 		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
 		if((sB+sR+sG)/3>80)
 		{
-	  imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
-      imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
-      imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
+			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
+			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
+			imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
 		}
 	  
      }
@@ -109,7 +112,7 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 		////輸入,儲存,變換方法,距離精度,角度精度,臨界值,最小長度,
 		 
     cout << "test canny" << endl;
-    img1= dst_DThrSmo;
+	img1 = dst_DThrSmo;
     //cvReleaseImage(&dst_DThrSmo);
 	cvReleaseImage(&Smo_pic);
 	

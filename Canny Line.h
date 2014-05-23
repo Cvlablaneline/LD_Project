@@ -13,8 +13,7 @@ void Filter_Init(int VPx);
  extern int RLpoint[][2];
 
  extern IplImage *pImgCanny ; //產生canny圖
- extern IplImage *pImgBlack; //全黑圖層
- extern IplImage *pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1); //緩衝圖層初始化
+ extern IplImage *pImgBuffer; //緩衝圖層初始化
  extern IplImage *pImgFilter ; //對比遮罩圖層 初始化
 
  

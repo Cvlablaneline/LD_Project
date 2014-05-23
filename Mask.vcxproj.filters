@@ -30,18 +30,24 @@
     <ClInclude Include="Canny Line.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="Find the best lines.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
-      <Filter>原始程式檔</Filter>
-    </ClCompile>
-    <ClCompile Include="Mask.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="Vanishing Point.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="Canny Line.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="Find the best lines.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

@@ -204,16 +204,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Canny Line.h" />
+    <ClInclude Include="Find the best lines.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Vanishing Point.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Canny Line.cpp" />
-    <ClCompile Include="Mask.cpp">
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\opencv\build\include;C:\opencv\build\include\opencv;C:\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">C:\OpenCV-2.4.7\opencv\build\include;C:\OpenCV-2.4.7\opencv\build\include\opencv;C:\OpenCV-2.4.7\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-    </ClCompile>
+    <ClCompile Include="Find the best lines.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
