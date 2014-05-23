@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	
 	//第一張出現的圖片編號
-	int  FristPic = 163;  
+	int  FristPic = 1;  
 	//Mask 初始化
 	Mask_Init(); 
 	for (int i = FristPic; i < 600; i += 1){
