@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 		CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &savePoint);
 		//檢查消失點正確性
 		Check_VPoint(VanishingPoint.x,VanishingPoint.y); 
-		cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //劃出消失點
+		//cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //劃出消失點
 
 		cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// 產生消失點(debug)
 		//把第一個消失點放進 對比點陣列(100是上限)

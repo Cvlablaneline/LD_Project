@@ -68,8 +68,8 @@ void Check_VPoint(int &VPx,int &VPy)
 	cout << endl << CheckParr[0][0] << "  "<< CheckParr[1][0] << "  "<< CheckParr[2][0] << "  "<< CheckParr[3][0] << "  "<< CheckParr[4][0] << endl;
 	Caa++;
 	if (Caa>CPIndex){
-	if(abs(VPx-OldX)>20) VPx=OldX; //修正X
-	if(abs(VPy-OldY)>20) VPy=OldY; //修正Y
+		if(abs(VPx-OldX)>20) {VPx=OldX; cout << "★★★★★★"<< endl; } //修正X
+		if(abs(VPy-OldY)>20) {VPy=OldY; cout << "☆☆☆☆☆☆"<< endl; } //修正Y
 	}
 	
 }
