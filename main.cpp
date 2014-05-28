@@ -29,21 +29,25 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	
 	//第一張出現的圖片編號
-	int  FristPic = 1;  
+	int  FristPic = 600;  
 	//Mask 初始化
 	Mask_Init(); 
-	for (int i = FristPic; i < 600; i += 1){
+	for (int i = FristPic; i < 3000; i += 9){
 
 
 		//===========圖片brbrbr
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i); //★夜間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
+		sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i);  //★日間街道
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i+9);//★日間街道
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
-		//sprintf(FileName, "D:\\車道線photo\\demo\\Video- (%d).jpg",i);
-		//sprintf(FileName2, "D:\\車道線photo\\demo\\Video- (%d).jpg",i+1);
-		sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
+		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//===================讀進圖片(重設大小)==================
@@ -117,6 +121,7 @@ int main(int argc, char *argv[])
 
 		//===========對比線(點)===================
 		pImgC = drawline(pImgC, VanishingPoint.x, VanishingPoint.y); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
+
 		//========================================
 		//draw the vanishing point range
 		if (VanishingPoint.x != NULL || VanishingPoint.y != NULL)

@@ -149,8 +149,9 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 	//cvCopy(img1 ,Smo_pic); //img1 copy to imgout
 	//cvCopy(img1 ,dst_DThrSmo); //img1 copy to imgout
 
-	cvSmooth(img1, Smo_pic, CV_BLUR);               //濾波
-	cvCanny(Smo_pic, dst_DThrSmo, 30, 200, 3);				// 邊緣檢測30, 200, 3
+	//cvSmooth(img1, Smo_pic, CV_BLUR);               //濾波
+	//cvCanny(Smo_pic, dst_DThrSmo, 30, 200, 3);				// 邊緣檢測30, 200, 3
+	cvCanny(img1, dst_DThrSmo, 30, 200, 3);				// 邊緣檢測30, 200, 3
 
 	 ////霍夫線轉換
 		//CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
