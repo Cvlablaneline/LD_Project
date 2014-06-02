@@ -13,9 +13,10 @@ using namespace std;
 
 
 int RLpoint[100][2]={0};
-int CheckParr[CPIndex][2]={0};
-int CheckPindex,Caa;
-int OldX=0,OldY=0;
+int CPround;
+int CheckXY[5][2]={0};   //排序XY
+int AddressXY[5][2]={0}; //基礎XY
+
 
 IplImage *pImgFilter =NULL;
 IplImage *pImgCanny = NULL; //產生canny圖
@@ -29,49 +30,77 @@ void Mask_Init()
 	pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
 	pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1);
 
-	CheckPindex=0; //消失點初始引索 0
-	Caa=0 ; // 前五張略
+	 CPround=0; //最剛開始初始化消失點紀錄
 }
 
+//====================================
+//===========車道線偏移檢測===========
+
+int Lane_Offset(CvPoint VPoint,int lx,int rx) //傳入 (消失點,左X,右X)
+{
+	float sumLong=abs(rx-lx); //左右車道總長
+
+	if(abs(VPoint.x-lx)/sumLong<=0.33)
+	{
+		return -1; //左線偏移
+	}
+	else if(abs(rx-VPoint.x)/sumLong<=0.33)
+	{
+		return 1; //左線偏移
+	}
+
+	return 0;
+
+}
 //====================================
 //==============檢查消失點正確性======
 void Check_VPoint(int &VPx,int &VPy)
 {
-
-	if (CheckPindex<CPIndex)
+	int oldx=VPx;int oldy=VPy;
+	if (CPround<CPIndex) //前五張丟陣列
 	{
-		
-		CheckParr[CheckPindex][0]=VPx; //消失點X
-		CheckParr[CheckPindex][1]=VPy; //消失點Y
-		CheckPindex++;
+		AddressXY[CPround][0] = CheckXY[CPround][0]= VPx; //save X
+		AddressXY[CPround][1] = CheckXY[CPround][1]= VPy; //save Y
+	}
+	else
+	{
+		for(int i=0;i<CPIndex;i++) //CheckXY排序
+			for(int j=0;j<CPIndex-1;j++)
+			{
+				if(CheckXY[j][0]>CheckXY[j+1][0]){ //X 排序
+				int resx=CheckXY[j][0];
+				CheckXY[j][0]=CheckXY[j+1][0];
+				CheckXY[j+1][0]=resx;
+				}
+				if(CheckXY[j][1]>CheckXY[j+1][1]){ //Y 排序
+				int resy=CheckXY[j][1];
+				CheckXY[j][1]=CheckXY[j+1][1];
+				CheckXY[j+1][1]=resy;
+				}
+			}
+			//===================
+			cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
+			int midx= (CheckXY[1][0]+ CheckXY[2][0]+ CheckXY[3][0])/3;  //CheckXY[(CPIndex-1)/2][0]; //中間的X
+			int midy=(CheckXY[1][1]+ CheckXY[2][1]+ CheckXY[3][1])/3;  //CheckXY[(CPIndex-1)/2][1]; //中間的Y
 
-		if(CheckPindex==CPIndex){ //到最後一張 排序
-		for(int j=0;j<CPIndex-1;j++){
-			for(int i=0;i<CPIndex-1;i++){
-				if(CheckParr[i][0]>CheckParr[i+1][0]) //X比較
-				{int res=CheckParr[i][0];CheckParr[i][0]=CheckParr[i+1][0];CheckParr[i+1][0]=res;}//排序(由小到大)
-				if(CheckParr[i][1]>CheckParr[i+1][1]) //Y比較
-				{int res=CheckParr[i][1];CheckParr[i][1]=CheckParr[i+1][1];CheckParr[i+1][1]=res;}//排序(由大到小)
-			}}
-		 OldX=CheckParr[2][0]; //紀錄中間的X
-		 OldY=CheckParr[2][1]; //紀錄中間的Y
-		 //====重置=====
-		 CheckParr[0][0]=OldX;
-		 CheckParr[0][1]=OldY;
-		 for(int i=1;i<CPIndex;i++){CheckParr[i][0]=0;CheckParr[i][1]=0;} //歸0
-		 CheckPindex=1;
-		 //=============
-		}
-		
+			if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "修正X ★★★★★★ "<< midx <<endl; }//誤差太大(20) 修正
+			if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "修正Y ☆☆☆☆☆☆ "<<  midy <<endl; }//誤差太大(20) 修正
+
+			for(int i=1;i<CPIndex;i++) {
+				AddressXY[i-1][0]=AddressXY[i][0]; //基礎搬移X
+				AddressXY[i-1][1]=AddressXY[i][1]; //基礎搬移Y
+				CheckXY[i-1][0]=AddressXY[i-1][0];
+				CheckXY[i-1][1]=AddressXY[i-1][1];
+			}
+			AddressXY[CPIndex-1][0] = CheckXY[CPIndex-1][0]= VPx; //save X
+			AddressXY[CPIndex-1][1] = CheckXY[CPIndex-1][1]= VPy; //save Y
+
 	}
 
-	cout << endl << CheckParr[0][0] << "  "<< CheckParr[1][0] << "  "<< CheckParr[2][0] << "  "<< CheckParr[3][0] << "  "<< CheckParr[4][0] << endl;
-	Caa++;
-	if (Caa>CPIndex){
-		if(abs(VPx-OldX)>20) {VPx=OldX; cout << "★★★★★★"<< endl; } //修正X
-		if(abs(VPy-OldY)>20) {VPy=OldY; cout << "☆☆☆☆☆☆"<< endl; } //修正Y
-	}
-	
+	//if(CPround <= CPIndex) 
+		CPround++;
+	if(CPround ==15) CPround=0;
+	cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
 }
 //=====================================
 //==============ImgFilter 創造=========

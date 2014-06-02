@@ -22,30 +22,30 @@ using namespace cv;
 
 //畫出消失點位置與周圍感應區
 //設定偵測消失點的上下左右多少範圍
-#define vp_range 35
+#define vp_range 50
 
 int main(int argc, char *argv[])
 {
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	
 	//第一張出現的圖片編號
-	int  FristPic = 600;  
+	int  FristPic = 1;  
 	//Mask 初始化
 	Mask_Init(); 
-	for (int i = FristPic; i < 3000; i += 9){
+	for (int i = FristPic; i < 3000; i += 1){
 
 
 		//===========圖片brbrbr
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i); //★夜間高速
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
-		sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i);  //★日間街道
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i+9);//★日間街道
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i);  //★日間街道
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i+9);//★日間街道
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
+		sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 		pImgA_size.height = src1->height* (720.0 / src1->height);
 		pImgB_size.width = src2->width* (1280.0 / src2->width); //重設pImgB大小
 		pImgB_size.height = src2->height* (720.0 / src2->height);
-		cout << pImgA_size.width << "   " << pImgA_size.height << "         ";  //DBG用
+		cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG用
 
 		IplImage *pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //創立目標影像A
 		IplImage *pImgB = cvCreateImage(pImgB_size, src2->depth, src2->nChannels); //創立目標影像B
@@ -107,6 +107,8 @@ int main(int argc, char *argv[])
 		static vector<CvPoint> savePoint;
 		//call vanishing point function and get the vanishing point to vpfnpoint
 		CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &savePoint);
+		cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
+
 		//檢查消失點正確性
 		Check_VPoint(VanishingPoint.x,VanishingPoint.y); 
 		//cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //劃出消失點
