@@ -130,6 +130,18 @@ int main(int argc, char *argv[])
 			draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
 		//Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)）
 		FindTheBestLines(pImgColor, pImgCanny, VanishingPoint, vp_range);
+
+		//車道偏移
+		if( Lane_Offset(VanishingPoint,100,500)==-1){
+		cvLine( pImgColor, cvPoint(0,0), cvPoint(1270,0), CV_RGB(255,0,0), 15);
+		cvLine( pImgColor, cvPoint(0,0), cvPoint(0,715), CV_RGB(255,0,0), 15);
+		}
+		else if( Lane_Offset(VanishingPoint,100,500)==1){
+		cvLine( pImgColor, cvPoint(0,0), cvPoint(1270,0), CV_RGB(255,0,0), 15);
+		cvLine( pImgColor, cvPoint(0,0), cvPoint(0,715), CV_RGB(255,0,0),15);
+		}
+		
+
 		//============遮罩canny圖 (如果是夜間模式請取消)=======================
 		cvSet(pImgFilter,cvScalar(0,0,0));
 		Filter_Init(VanishingPoint.x);
