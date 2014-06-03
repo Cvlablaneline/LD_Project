@@ -17,6 +17,7 @@ int CPround;
 int CheckXY[5][2]={0};   //排序XY
 int AddressXY[5][2]={0}; //基礎XY
 
+bool flag = false; //偏移是否成立
 
 IplImage *pImgFilter =NULL;
 IplImage *pImgCanny = NULL; //產生canny圖
@@ -57,13 +58,16 @@ int Lane_Offset(CvPoint VPoint,int lx,int rx) //傳入 (消失點,左X,右X)
 
 	if(abs(VPoint.x-lx)/sumLong<=0.33)
 	{
+		flag=true;
 		return -1; //左線偏移
 	}
 	else if(abs(rx-VPoint.x)/sumLong<=0.33)
 	{
+		flag = true;
 		return 1; //左線偏移
 	}
-
+	
+	flag = false;
 	return 0;
 
 }
