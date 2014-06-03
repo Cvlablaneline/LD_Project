@@ -52,24 +52,21 @@ int main(int argc, char *argv[])
 
 		//===================讀進圖片(重設大小)==================
 		//=======================================================
-		//IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
+		
 		IplImage *src2 = cvLoadImage(FileName2, 0);//讀進原圖
 		IplImage *src3 = cvLoadImage(FileName2, 1);//讀取彩圖
-		//if(src1==NULL||src2==NULL||src3==NULL) break;
+		
 		if(src2==NULL||src3==NULL) break;
 
-		//CvSize pImgA_size; 
+		
 		CvSize pImgB_size;  
 		CvSize pImgColor_size; //新的pic大小
 
 
-		//pImgA_size.width = src1->width* (1280.0 / src1->width); //重設pImgA大小
-		//pImgA_size.height = src1->height* (720.0 / src1->height);
+		
 		pImgB_size.width = src2->width* (1280.0 / src2->width); //重設pImgB大小
 		pImgB_size.height = src2->height* (720.0 / src2->height);
 		//cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG用
-
-		//IplImage *pImgA ; //創立目標影像A
 		
 		
 		IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (1280.0 / src2->width), src2->height* (720.0 / src2->height)), src3->depth, src3->nChannels);
@@ -77,7 +74,6 @@ int main(int argc, char *argv[])
 		
 		cvCopy(pImgB, pImgA); //img1 copy to imgout
 		//改變大小
-		//cvResize(src1, pImgA, CV_INTER_LINEAR); 
 		cvResize(src2, pImgB, CV_INTER_LINEAR);
 		cvResize(src3, pImgColor, CV_INTER_LINEAR);
 
@@ -136,13 +132,12 @@ int main(int argc, char *argv[])
 		FindTheBestLines(pImgColor, pImgCanny, VanishingPoint, vp_range);
 
 		//車道偏移
-		if( Lane_Offset(VanishingPoint,100,500)==-1){
-		cvLine( pImgColor, cvPoint(0,0), cvPoint(1270,0), CV_RGB(255,0,0), 15);
-		cvLine( pImgColor, cvPoint(0,0), cvPoint(0,715), CV_RGB(255,0,0), 15);
+		if( Lane_Offset(VanishingPoint,100,500)==true){
+			CvFont font;
+			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,8.0f,1.0f,0,5,CV_AA);
+			cvPutText(pImgColor,"Warning!" , Point(1280/4,720/2),& font ,CV_RGB(255,0,0));
 		}
-		else if( Lane_Offset(VanishingPoint,100,500)==1){
-		cvLine( pImgColor, cvPoint(0,0), cvPoint(1270,0), CV_RGB(255,0,0), 15);
-		cvLine( pImgColor, cvPoint(0,0), cvPoint(0,715), CV_RGB(255,0,0),15);
+		else if( Lane_Offset(VanishingPoint,100,500)==false){
 		}
 		
 
@@ -154,8 +149,8 @@ int main(int argc, char *argv[])
 		//cvSaveImage(maskout,pImgCanny);
 
 		// Create Windows
-		//cvShowImage("pImgColor", pImgColor);
-		cvShowImage("pImgCanny", pImgCanny);
+		cvShowImage("pImgColor", pImgColor);
+		//cvShowImage("pImgCanny", pImgCanny);
 
 		 cvReleaseImage(&pImgC); //釋放記憶體
 		cvReleaseImage(&pImgColor);

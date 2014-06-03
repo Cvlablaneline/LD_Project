@@ -52,24 +52,26 @@ void Mask_Init()
 //====================================
 //===========車道線偏移檢測===========
 
-int Lane_Offset(CvPoint VPoint,int lx,int rx) //傳入 (消失點,左X,右X)
+bool Lane_Offset(CvPoint VPoint,int lx,int rx) //傳入 (消失點,左X,右X)
 {
-	float sumLong=abs(rx-lx); //左右車道總長
+	if(lx!=0 || rx!=0){
 
-	if(abs(VPoint.x-lx)/sumLong<=0.33)
-	{
-		flag=true;
-		return -1; //左線偏移
-	}
-	else if(abs(rx-VPoint.x)/sumLong<=0.33)
-	{
-		flag = true;
-		return 1; //左線偏移
-	}
-	
-	flag = false;
-	return 0;
+		float sumLong=abs(rx-lx); //左右車道總長
 
+		if(abs(VPoint.x-lx)/sumLong<=0.33){
+			flag=true;
+			return flag; //左線偏移
+		}
+		else if(abs(rx-VPoint.x)/sumLong<=0.33){
+			flag = true;
+			return flag; //左線偏移
+		}
+		else{
+			flag = false;
+			return flag;
+		}
+	}
+	return flag;
 }
 //====================================
 //==============檢查消失點正確性======
@@ -100,8 +102,8 @@ void Check_VPoint(int &VPx,int &VPy)
 			//===================
 			cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
 			cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
-			int midx=CheckXY[2][0]; //(CheckXY[1][0]+ CheckXY[2][0]+ CheckXY[3][0])/3;  //CheckXY[(CPIndex-1)/2][0]; //中間的X
-			int midy=CheckXY[2][1];//(CheckXY[1][1]+ CheckXY[2][1]+ CheckXY[3][1])/3;  //CheckXY[(CPIndex-1)/2][1]; //中間的Y
+			int midx=CheckXY[2][0]; //中間的X
+			int midy=CheckXY[2][1];//中間的Y
 
 			VPx=midx;
 			VPy=midy;
