@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	
 	//第一張出現的圖片編號
 	int  FristPic = 1;  
-	//Mask 初始化
+	//Mask 初始化 (在第一張 只做一次)
 	Mask_Init(); 
 	for (int i = FristPic; i < 3000; i += 1){
 
@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i+1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
-		sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
 		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
@@ -52,32 +52,36 @@ int main(int argc, char *argv[])
 
 		//===================讀進圖片(重設大小)==================
 		//=======================================================
-		IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
+		//IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
 		IplImage *src2 = cvLoadImage(FileName2, 0);//讀進原圖
 		IplImage *src3 = cvLoadImage(FileName2, 1);//讀取彩圖
-		if(src1==NULL||src2==NULL||src3==NULL) break;
+		//if(src1==NULL||src2==NULL||src3==NULL) break;
+		if(src2==NULL||src3==NULL) break;
 
-		CvSize pImgA_size; 
+		//CvSize pImgA_size; 
 		CvSize pImgB_size;  
 		CvSize pImgColor_size; //新的pic大小
 
 
-		pImgA_size.width = src1->width* (1280.0 / src1->width); //重設pImgA大小
-		pImgA_size.height = src1->height* (720.0 / src1->height);
+		//pImgA_size.width = src1->width* (1280.0 / src1->width); //重設pImgA大小
+		//pImgA_size.height = src1->height* (720.0 / src1->height);
 		pImgB_size.width = src2->width* (1280.0 / src2->width); //重設pImgB大小
 		pImgB_size.height = src2->height* (720.0 / src2->height);
-		cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG用
+		//cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG用
 
-		IplImage *pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //創立目標影像A
-		IplImage *pImgB = cvCreateImage(pImgB_size, src2->depth, src2->nChannels); //創立目標影像B
+		//IplImage *pImgA ; //創立目標影像A
+		
+		
 		IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (1280.0 / src2->width), src2->height* (720.0 / src2->height)), src3->depth, src3->nChannels);
 		
+		
+		cvCopy(pImgB, pImgA); //img1 copy to imgout
 		//改變大小
-		cvResize(src1, pImgA, CV_INTER_LINEAR); 
+		//cvResize(src1, pImgA, CV_INTER_LINEAR); 
 		cvResize(src2, pImgB, CV_INTER_LINEAR);
 		cvResize(src3, pImgColor, CV_INTER_LINEAR);
 
-		cvReleaseImage(&src1);
+		//cvReleaseImage(&src1);
 		cvReleaseImage(&src2);
 		cvReleaseImage(&src3);
 
@@ -86,7 +90,7 @@ int main(int argc, char *argv[])
 
 		IplImage *pImgC = cvCreateImage(cvSize(pImgA->width, pImgA->height), pImgA->depth, pImgA->nChannels); //空圖層 初始化
 		cvCopy(pImgA, pImgC); //img1 copy to imgout
-
+		
 		//===========================================================
 
 
@@ -150,16 +154,16 @@ int main(int argc, char *argv[])
 		//cvSaveImage(maskout,pImgCanny);
 
 		// Create Windows
-		cvShowImage("pImgColor", pImgColor);
-		//cvShowImage("pImgCanny", pImgCanny);
+		//cvShowImage("pImgColor", pImgColor);
+		cvShowImage("pImgCanny", pImgCanny);
 
-		cvReleaseImage(&pImgA); cvReleaseImage(&pImgB); cvReleaseImage(&pImgC);//cvReleaseImage(&pImgD); //釋放記憶體
+		 cvReleaseImage(&pImgC); //釋放記憶體
 		cvReleaseImage(&pImgColor);
 		//if(i==400) waitKey(0);
 		waitKey(1);
 	}
-
-	
+	cvReleaseImage(&pImgA);
+	cvReleaseImage(&pImgB);
 	//cvReleaseImage(&pImgBlack); 
 	cvReleaseImage(&pImgCanny);  
 	cvReleaseImage(&pImgFilter);

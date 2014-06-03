@@ -16,7 +16,7 @@ int Lane_Offset(CvPoint VPoint,int lx,int rx); //傳入 (消失點,左X,右X)
  extern IplImage *pImgBuffer; //緩衝圖層初始化
  extern IplImage *pImgFilter ; //對比遮罩圖層 初始化
 
- 
-
+ extern IplImage *pImgA; //第一章通用圖
+ extern IplImage *pImgB; //第二章通用圖
 
 #endif

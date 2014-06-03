@@ -21,11 +21,26 @@ int AddressXY[5][2]={0}; //基礎XY
 IplImage *pImgFilter =NULL;
 IplImage *pImgCanny = NULL; //產生canny圖
 IplImage *pImgBuffer = NULL;
+IplImage *pImgA=NULL;
+IplImage *pImgB=NULL;
 
 //====================================
 //===============初始化===============
 void Mask_Init()
 {
+	char FileName[200];
+	sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",1);    //★日間高速
+	IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
+	CvSize pImgA_size; //新的pic大小
+
+	pImgA_size.width = src1->width* (1280.0 / src1->width); //重設pImgA大小
+	pImgA_size.height = src1->height* (720.0 / src1->height);
+	pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels);
+	pImgB = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //創立目標影像B
+
+	cvResize(src1, pImgA, CV_INTER_LINEAR);  //改變大小
+
+
 	pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
 	pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
 	pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1);
@@ -80,11 +95,14 @@ void Check_VPoint(int &VPx,int &VPy)
 			}
 			//===================
 			cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
-			int midx= (CheckXY[1][0]+ CheckXY[2][0]+ CheckXY[3][0])/3;  //CheckXY[(CPIndex-1)/2][0]; //中間的X
-			int midy=(CheckXY[1][1]+ CheckXY[2][1]+ CheckXY[3][1])/3;  //CheckXY[(CPIndex-1)/2][1]; //中間的Y
+			cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+			int midx=CheckXY[2][0]; //(CheckXY[1][0]+ CheckXY[2][0]+ CheckXY[3][0])/3;  //CheckXY[(CPIndex-1)/2][0]; //中間的X
+			int midy=CheckXY[2][1];//(CheckXY[1][1]+ CheckXY[2][1]+ CheckXY[3][1])/3;  //CheckXY[(CPIndex-1)/2][1]; //中間的Y
 
-			if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "修正X ★★★★★★ "<< midx <<endl; }//誤差太大(20) 修正
-			if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "修正Y ☆☆☆☆☆☆ "<<  midy <<endl; }//誤差太大(20) 修正
+			VPx=midx;
+			VPy=midy;
+			//if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "修正X ★★★★★★ "<< midx <<endl; }//誤差太大(20) 修正
+			//if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "修正Y ☆☆☆☆☆☆ "<<  midy <<endl; }//誤差太大(20) 修正
 
 			for(int i=1;i<CPIndex;i++) {
 				AddressXY[i-1][0]=AddressXY[i][0]; //基礎搬移X
@@ -92,14 +110,14 @@ void Check_VPoint(int &VPx,int &VPy)
 				CheckXY[i-1][0]=AddressXY[i-1][0];
 				CheckXY[i-1][1]=AddressXY[i-1][1];
 			}
-			AddressXY[CPIndex-1][0] = CheckXY[CPIndex-1][0]= VPx; //save X
-			AddressXY[CPIndex-1][1] = CheckXY[CPIndex-1][1]= VPy; //save Y
+			AddressXY[CPIndex-1][0] = CheckXY[CPIndex-1][0]= oldx; //save X
+			AddressXY[CPIndex-1][1] = CheckXY[CPIndex-1][1]= oldy; //save Y
 
 	}
 
-	//if(CPround <= CPIndex) 
+	if(CPround <= CPIndex) 
 		CPround++;
-	if(CPround ==15) CPround=0;
+	//if(CPround ==15) CPround=0;
 	cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
 }
 //=====================================
