@@ -29,15 +29,15 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	
 	//第一張出現的圖片編號
-	int  FristPic = 1;  
+	int  FristPic = 200;  
 	//Mask 初始化 (在第一張 只做一次)
 	Mask_Init(); 
-	for (int i = FristPic; i < 3000; i += 1){
+	for (int i = FristPic; i < 3000; i += 9){
 
 
 		//===========圖片brbrbr
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i); //★夜間高速
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i);  //★日間街道
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i+9);//★日間街道
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
@@ -129,15 +129,15 @@ int main(int argc, char *argv[])
 		if (VanishingPoint.x != NULL || VanishingPoint.y != NULL)
 			draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
 		//Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)）
-		FindTheBestLines(pImgColor, pImgCanny, VanishingPoint, vp_range);
+		FTBL ftblData = FindTheBestLines(pImgColor, pImgCanny, VanishingPoint, vp_range);
 
 		//車道偏移
-		if( Lane_Offset(VanishingPoint,100,500)==true){
+		if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
 			CvFont font;
 			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,8.0f,1.0f,0,5,CV_AA);
 			cvPutText(pImgColor,"Warning!" , Point(1280/4,720/2),& font ,CV_RGB(255,0,0));
 		}
-		else if( Lane_Offset(VanishingPoint,100,500)==false){
+		else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
 		}
 		
 

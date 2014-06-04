@@ -30,7 +30,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint>
 	vector<line_property> all_Slope;
 	vector<line_crosspoint> all_point;
 	CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);		// 霍夫線轉換
-	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 30, 10);
+	CvSeq* lines_DThrSmo = cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 50, 10);
 	//輸入,儲存,變換方法,距離精度,角度精度,臨界值,最小長度,最大間隔
 
 	for (int i = 0; i < lines_DThrSmo->total; i++)
@@ -91,8 +91,8 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint>
 	if (all_point.size() < 1)
 	{
 		CvPoint no_p;
-		no_p.x = NULL;
-		no_p.y = NULL;
+		no_p.x = 0;
+		no_p.y = 0;
 		return no_p;
 	}
 
@@ -103,12 +103,6 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint>
 	for (int i = 0; i < all_point.size(); i++)
 	{
 		int temp = all_point[i].LC_point.y * Canny->width + all_point[i].LC_point.x;
-		if ( all_point[i].LC_point.x < 0 || all_point[i].LC_point.y < 0 ||
-			 all_point[i].LC_point.x >= Canny->width ||
-			 all_point[i].LC_point.y >= Canny->height ) {
-			int a=0;
-			a++;
-		}
 		IntegralImgdata[temp] += 20;
 	}
 
@@ -191,6 +185,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint>
 	//return foundPoint;
 }
 
+/*
 //check point
 CvPoint check_point(CvPoint newPoint, vector<CvPoint> *pointSave)
 {
@@ -291,7 +286,7 @@ CvPoint check_point(CvPoint newPoint, vector<CvPoint> *pointSave)
 	}
 
 }
-
+*/
 
 
 
