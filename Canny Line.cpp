@@ -27,10 +27,10 @@ IplImage *pImgB=NULL;
 
 //====================================
 //===============初始化===============
-void Mask_Init()
+void Mask_Init(char FileName[200])
 {
-	char FileName[200];
-	sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",1);    //★日間高速
+	//char FileName[200];
+	//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",1);    //★日間高速
 	IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
 	CvSize pImgA_size; //新的pic大小
 

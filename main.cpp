@@ -7,6 +7,12 @@
 #include "Vanishing Point.h"
 #include "Canny Line.h"
 #include "Find the best lines.h"
+//#include <windows.h>
+//#pragma comment(lib, "Winmm.lib")
+
+/********************
+*****Commit7/7*******
+********************/
 
 using namespace std;
 using namespace cv;
@@ -29,15 +35,14 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	
 	//第一張出現的圖片編號
-	int  FristPic = 200;  
-	//Mask 初始化 (在第一張 只做一次)
-	Mask_Init(); 
-	for (int i = FristPic; i < 3000; i += 9){
+	int  FristPic = 4;  
+	
+	for (int i = FristPic; i < 3000; i += 1){
 
 
 		//===========圖片brbrbr
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i); //★夜間高速
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //★夜間高速
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i);  //★日間街道
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\日間車道線\\\good0002\\PICTURE\\video-%d.jpg",i+9);//★日間街道
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\日間車道線\\VIDEO0003 (2014-4-20 下午 10-10-12)\\Video-%d.jpg",i);
@@ -45,10 +50,18 @@ int main(int argc, char *argv[])
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg", i + 1);
 		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //★日間高速
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
+
+		//Mask 初始化 (在第一張 只做一次)
+		if(i==FristPic)
+		{
+		Mask_Init(FileName2); 
+		}
+		else
+		{
 
 		//===================讀進圖片(重設大小)==================
 		//=======================================================
@@ -134,6 +147,7 @@ int main(int argc, char *argv[])
 		//車道偏移
 		if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
 			CvFont font;
+			// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
 			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,8.0f,1.0f,0,5,CV_AA);
 			cvPutText(pImgColor,"Warning!" , Point(1280/4,720/2),& font ,CV_RGB(255,0,0));
 		}
@@ -156,6 +170,7 @@ int main(int argc, char *argv[])
 		cvReleaseImage(&pImgColor);
 		//if(i==400) waitKey(0);
 		waitKey(1);
+	}
 	}
 	cvReleaseImage(&pImgA);
 	cvReleaseImage(&pImgB);

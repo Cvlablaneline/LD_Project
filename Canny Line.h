@@ -6,7 +6,8 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout);
 IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo);  //canny(輸入圖片,緩衝圖層)
 IplImage* drawline(IplImage *pImgC,int centerX,int centerY);
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgC);
-void Mask_Init();
+//void Mask_Init();
+void Mask_Init(char FileName[200]);
 void Filter_Init(int VPx);
 void Check_VPoint(int &VPx,int &VPy);
 bool Lane_Offset(CvPoint VPoint,int lx,int rx); //傳入 (消失點,左X,右X)
