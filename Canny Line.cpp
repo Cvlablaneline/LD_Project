@@ -34,17 +34,17 @@ void Mask_Init(char FileName[200])
 	IplImage *src1 = cvLoadImage(FileName, 0); //讀進原圖
 	CvSize pImgA_size; //新的pic大小
 
-	pImgA_size.width = src1->width* (1280.0 / src1->width); //重設pImgA大小
-	pImgA_size.height = src1->height* (720.0 / src1->height);
+	pImgA_size.width = src1->width* (640.0 / src1->width); //重設pImgA大小
+	pImgA_size.height = src1->height* (480.0 / src1->height);
 	pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels);
 	pImgB = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //創立目標影像B
 
 	cvResize(src1, pImgA, CV_INTER_LINEAR);  //改變大小
 
 
-	pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
-	pImgCanny = cvCreateImage(cvSize(1280,720),8,1); //產生canny圖
-	pImgBuffer =cvCreateImage(cvSize(1280,720), 8,1);
+	pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
+	pImgCanny = cvCreateImage(cvSize(640,480),8,1); //產生canny圖
+	pImgBuffer =cvCreateImage(cvSize(640,480), 8,1);
 
 	 CPround=0; //最剛開始初始化消失點紀錄
 }
@@ -100,8 +100,8 @@ void Check_VPoint(int &VPx,int &VPy)
 				}
 			}
 			//===================
-			cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
-			cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+			//cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
+			//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
 			int midx=CheckXY[2][0]; //中間的X
 			int midy=CheckXY[2][1];//中間的Y
 
@@ -124,14 +124,14 @@ void Check_VPoint(int &VPx,int &VPy)
 	if(CPround <= CPIndex) 
 		CPround++;
 	//if(CPround ==15) CPround=0;
-	cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+	//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
 }
 //=====================================
 //==============ImgFilter 創造=========
 void Filter_Init(int VPx){  // (傳入消失點X)
 	 
 	//====青黑
-	pImgFilter = cvCreateImage(cvSize(1280,720), 8,1);
+	pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
 	cvSet(pImgFilter,cvScalar(0,0,0));
 	//cvCopy(pImgBlack ,pImgFilter); //img1 copy to imgout
 	
@@ -212,7 +212,7 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 		////輸入,儲存,變換方法,距離精度,角度精度,臨界值,最小長度,
 		 
     cout << "test canny" << endl;
-	img1 = dst_DThrSmo;
+	img1 = dst_DThrSmo; 
     //cvReleaseImage(&dst_DThrSmo);
 	cvReleaseImage(&Smo_pic);
 	

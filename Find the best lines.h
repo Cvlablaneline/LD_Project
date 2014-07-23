@@ -15,7 +15,7 @@
 #define __MacOpenCV__Find_the_best_lines__
 
 //find_the_best_line回傳資料結構
-class FTBL 
+class FTBL
 {
 public:
 	CvPoint FTBL_Point_L;
@@ -25,7 +25,7 @@ public:
 };
 
 //線段分群類別
-class line_group 
+class line_group
 {
 public:
 	CvPoint GroupPoint;
@@ -47,7 +47,7 @@ void draw_VPoint(IplImage* img, int x, int y, int vp_range);
 void find_best_line_Hough(IplImage* mainCanny, vector<line_property> *leftSlope, vector<line_property> *rightSlope);
 
 //找出最佳車道線 (原始彩圖,完整Canny,消失點位置,消失點周圍範圍）
-FTBL FindTheBestLines(IplImage* Ori_pic, IplImage* FullCanny, CvPoint vpfnpoint, int vp_range);
+FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *newleftSlope,vector <line_property> *newrightSlope, CvPoint vpfnpoint, int vp_range);
 
 //計算延伸線段座標
 CvPoint Calculation_extension(CvPoint Vanishing_Point, double slope, int y);
