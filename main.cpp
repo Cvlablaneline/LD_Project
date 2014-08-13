@@ -114,20 +114,20 @@ int main(int argc, char *argv[])
 			
 		//===========對比線(點)===================
 			pImgC = drawline(pImgC, oldXX, oldYY); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
-            cvShowImage("canny",pImgCanny);
+            
             cout << "======END DRAWLINE========="<<endl;
 		 
 		//============遮罩canny圖 (如果是夜間模式請取消)=======================
 			cvSet(pImgFilter,cvScalar(0,0,0));
 			Filter_Init(oldXX);//VanishingPoint.x
-			
+			cvShowImage("canny",pImgCanny);
 
 			//============消失點function===========
             //Find the vanishing point
             //Create savePoint of Vector<CvPoint>
             static vector<line_property> LSPointSave,RSPointSave;
             //call vanishing point function and get the vanishing point to vpfnpoint
-           CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &LSPointSave, &RSPointSave);
+            CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &LSPointSave, &RSPointSave);
             cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
             
 			//檢查消失點正確性
@@ -146,10 +146,16 @@ int main(int argc, char *argv[])
             if (VanishingPoint.x != NULL || VanishingPoint.y != NULL)
                 draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
             //Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)）
-        /***    FTBL ftblData = FindTheBestLines(pImgColor, &LSPointSave, &RSPointSave, VanishingPoint, vp_range);  ***/
+            FTBL ftblData = FindTheBestLines(pImgColor, &LSPointSave, &RSPointSave, VanishingPoint, vp_range);
+            //清除車道線斜率記錄vector
+            vector <line_property> Nls, Nrs;
+            LSPointSave.clear();
+            RSPointSave.clear();
+            LSPointSave.swap(Nls);
+            RSPointSave.swap(Nrs); 
 		
 
-		/*//車道偏移
+		//車道偏移
 		if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
 			CvFont font;
 			// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
@@ -157,7 +163,7 @@ int main(int argc, char *argv[])
 			cvPutText(pImgColor,"Warning!" , Point(640/4,480/2),& font ,CV_RGB(255,0,0));
 		}
 		else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
-		}*/
+		}
 		
 			
 		
