@@ -1,4 +1,4 @@
-ï»¿#include "stdafx.h"
+#include "stdafx.h"
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
@@ -17,47 +17,45 @@
 using namespace std;
 using namespace cv;
 
-//åœ–åƒæª”æ¡ˆä½ç½®
-//#define	SEQ_NAME	"/Users/chienfu/Desktop/è»Šé“ç·šåµæ¸¬/demo/Video- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\demo\\Video- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\Maskout\\Video-%d.jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\downtown\\Video-%d.jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\night\\Vidio- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\freeway2\\Vidoi- (%d).jpg"
+//¹Ï¹³ÀÉ®×¦ì¸m
+//#define	SEQ_NAME	"/Users/chienfu/Desktop/¨®¹D½u°»´ú/demo/Video- (%d).jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\demo\\Video- (%d).jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\Maskout\\Video-%d.jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\downtown\\Video-%d.jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\night\\Vidio- (%d).jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\freeway2\\Vidoi- (%d).jpg"
 
 
-//ç•«å‡ºæ¶ˆå¤±é»ä½ç½®èˆ‡å‘¨åœæ„Ÿæ‡‰å€
-//è¨­å®šåµæ¸¬æ¶ˆå¤±é»çš„ä¸Šä¸‹å·¦å³å¤šå°‘ç¯„åœ
+//µe¥X®ø¥¢ÂI¦ì¸m»P©P³ò·PÀ³°Ï
+//³]©w°»´ú®ø¥¢ÂIªº¤W¤U¥ª¥k¦h¤Ö½d³ò
 #define vp_range 50
-
-
 
 int main(int argc, char *argv[])
 {
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
-	int oldXX=0,oldYY=0;
-	//ç¬¬ä¸€å¼µå‡ºç¾çš„åœ–ç‰‡ç·¨è™Ÿ
+	
+	//²Ä¤@±i¥X²{ªº¹Ï¤ù½s¸¹
 	int  FristPic = 4;  
 	
 	for (int i = FristPic; i < 3000; i += 1){
 
 
-		//===========åœ–ç‰‡brbrbr
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\å¤œé–“è»Šé“ç·š\\goodmothing\\PICTURE\\Video-%d.jpg", i); //â˜…å¤œé–“é«˜é€Ÿ
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\å¤œé–“è»Šé“ç·š\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //â˜…å¤œé–“é«˜é€Ÿ
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\æ—¥é–“è»Šé“ç·š\\\good0002\\PICTURE\\video-%d.jpg",i);  //â˜…æ—¥é–“è¡—é“
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\æ—¥é–“è»Šé“ç·š\\\good0002\\PICTURE\\video-%d.jpg",i+9);//â˜…æ—¥é–“è¡—é“
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\æ—¥é–“è»Šé“ç·š\\VIDEO0003 (2014-4-20 ä¸‹åˆ 10-10-12)\\Video-%d.jpg",i);
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\æ—¥é–“è»Šé“ç·š\\VIDEO0003 (2014-4-20 ä¸‹åˆ 10-10-12)\\Video-%d.jpg",i+1);
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\å¤œé–“è»Šé“ç·š\\CIMG3461 (2014-4-20 ä¸‹åˆ 10-15-45)\\Video-%d.jpg", i);
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\å¤œé–“è»Šé“ç·š\\CIMG3461 (2014-4-20 ä¸‹åˆ 10-15-45)\\Video-%d.jpg", i + 1);
-		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //â˜…æ—¥é–“é«˜é€Ÿ
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //â˜…æ—¥é–“é«˜é€Ÿ
+		//===========¹Ï¤ùbrbrbr
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\©]¶¡¨®¹D½u\\goodmothing\\PICTURE\\Video-%d.jpg", i); //¡¹©]¶¡°ª³t
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\©]¶¡¨®¹D½u\\goodmothing\\PICTURE\\Video-%d.jpg", i + 9); //¡¹©]¶¡°ª³t
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\¤é¶¡¨®¹D½u\\\good0002\\PICTURE\\video-%d.jpg",i);  //¡¹¤é¶¡µó¹D
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\¤é¶¡¨®¹D½u\\\good0002\\PICTURE\\video-%d.jpg",i+9);//¡¹¤é¶¡µó¹D
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\¤é¶¡¨®¹D½u\\VIDEO0003 (2014-4-20 ¤U¤È 10-10-12)\\Video-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\¤é¶¡¨®¹D½u\\VIDEO0003 (2014-4-20 ¤U¤È 10-10-12)\\Video-%d.jpg",i+1);
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\©]¶¡¨®¹D½u\\CIMG3461 (2014-4-20 ¤U¤È 10-15-45)\\Video-%d.jpg", i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\©]¶¡¨®¹D½u\\CIMG3461 (2014-4-20 ¤U¤È 10-15-45)\\Video-%d.jpg", i + 1);
+		//sprintf(FileName, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i);    //¡¹¤é¶¡°ª³t
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //¡¹¤é¶¡°ª³t
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
-		//Mask åˆå§‹åŒ– (åœ¨ç¬¬ä¸€å¼µ åªåšä¸€æ¬¡)
+		//Mask ªì©l¤Æ (¦b²Ä¤@±i ¥u°µ¤@¦¸)
 		if(i==FristPic)
 		{
 		Mask_Init(FileName2); 
@@ -65,30 +63,30 @@ int main(int argc, char *argv[])
 		else
 		{
 
-		//===================è®€é€²åœ–ç‰‡(é‡è¨­å¤§å°)==================
+		//===================Åª¶i¹Ï¤ù(­«³]¤j¤p)==================
 		//=======================================================
 		
-		IplImage *src2 = cvLoadImage(FileName2, 0);//è®€é€²åŸåœ–
-		IplImage *src3 = cvLoadImage(FileName2, 1);//è®€å–å½©åœ–
+		IplImage *src2 = cvLoadImage(FileName2, 0);//Åª¶i­ì¹Ï
+		IplImage *src3 = cvLoadImage(FileName2, 1);//Åª¨ú±m¹Ï
 		
 		if(src2==NULL||src3==NULL) break;
 
 		
 		CvSize pImgB_size;  
-		CvSize pImgColor_size; //æ–°çš„picå¤§å°
+		CvSize pImgColor_size; //·sªºpic¤j¤p
 
 
 		
-		pImgB_size.width = src2->width* (640.0 / src2->width); //é‡è¨­pImgBå¤§å°
-		pImgB_size.height = src2->height* (480.0 / src2->height);
-		//cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBGç”¨
+		pImgB_size.width = src2->width* (1280.0 / src2->width); //­«³]pImgB¤j¤p
+		pImgB_size.height = src2->height* (720.0 / src2->height);
+		//cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG¥Î
 		
 		
-		IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (640.0 / src2->width), src2->height* (480.0 / src2->height)), src3->depth, src3->nChannels);
+		IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (1280.0 / src2->width), src2->height* (720.0 / src2->height)), src3->depth, src3->nChannels);
 		
 		
 		cvCopy(pImgB, pImgA); //img1 copy to imgout
-		//æ”¹è®Šå¤§å°
+		//§ïÅÜ¤j¤p
 		cvResize(src2, pImgB, CV_INTER_LINEAR);
 		cvResize(src3, pImgColor, CV_INTER_LINEAR);
 
@@ -96,21 +94,25 @@ int main(int argc, char *argv[])
 		cvReleaseImage(&src2);
 		cvReleaseImage(&src3);
 
-		//å‰ç½®è™•ç†======
+		//«e¸m³B²z======
 		
 
-		IplImage *pImgC = cvCreateImage(cvSize(pImgA->width, pImgA->height), pImgA->depth, pImgA->nChannels); //ç©ºåœ–å±¤ åˆå§‹åŒ–
+		IplImage *pImgC = cvCreateImage(cvSize(pImgA->width, pImgA->height), pImgA->depth, pImgA->nChannels); //ªÅ¹Ï¼h ªì©l¤Æ
 		cvCopy(pImgA, pImgC); //img1 copy to imgout
 		
 		//===========================================================
 
 
-		//===========ç–Šåœ–=====================
-		//ç–Šåœ–(input1,input2, *output)
-			pImgC = xxhh(pImgA, pImgB, pImgC);  
-	
-		//============canny==========
+
+		//===========Å|¹Ï=====================
+		//Å|¹Ï(input1,input2, *output)
+		pImgC = xxhh(pImgA, pImgB, pImgC);  
+
+		//============²Ä¤@±i¥ı°µcanny==========
+		//²Ä¤@±iªºcanny(¨S¦³¹LÂo)
+		if (i == FristPic){  
 			pImgCanny = canny(pImgC, pImgBuffer);
+<<<<<<< HEAD
 			
 		//===========å°æ¯”ç·š(é»)===================
 			pImgC = drawline(pImgC, oldXX, oldYY); //drawline (è¼¸å…¥åœ–ç‰‡,æ¶ˆå¤±é»X,æ¶ˆå¤±é»Y)//åŠƒå‡ºå°æ¯”é»(å–å¾—)
@@ -156,17 +158,59 @@ int main(int argc, char *argv[])
 		
 
 		//è»Šé“åç§»
+=======
+		}
+
+		//============®ø¥¢ÂIfunction===========
+		//Find the vanishing point
+		//Create savePoint of Vector<CvPoint>
+		static vector<CvPoint> savePoint;
+		//call vanishing point function and get the vanishing point to vpfnpoint
+		CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &savePoint);
+		cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
+
+		//ÀË¬d®ø¥¢ÂI¥¿½T©Ê
+		Check_VPoint(VanishingPoint.x,VanishingPoint.y); 
+		//cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //¹º¥X®ø¥¢ÂI
+
+		cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// ²£¥Í®ø¥¢ÂI(debug)
+		//§â²Ä¤@­Ó®ø¥¢ÂI©ñ¶i ¹ï¤ñÂI°}¦C(100¬O¤W­­)
+		RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y; 
+
+		//============«á¹Ïªºcanny==============
+		if (i != FristPic) pImgCanny = canny(pImgC, pImgBuffer); //¤§«á¦A°µªºcanny
+		cout << "Video-" << i - 1 << "and Video-" << i << "print out C" << endl; //debug
+
+		//===========¹ï¤ñ½u(ÂI)===================
+		pImgC = drawline(pImgC, VanishingPoint.x, VanishingPoint.y); //drawline (¿é¤J¹Ï¤ù,®ø¥¢ÂIX,®ø¥¢ÂIY)//¹º¥X¹ï¤ñÂI(¨ú±o)
+
+		//========================================
+		//draw the vanishing point range
+		if (VanishingPoint.x != NULL || VanishingPoint.y != NULL)
+			draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
+		//Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)¡^
+		FTBL ftblData = FindTheBestLines(pImgColor, pImgCanny, VanishingPoint, vp_range);
+
+		//¨®¹D°¾²¾
+>>>>>>> parent of ffb9864... 7/10 meeting progress
 		if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
 			CvFont font;
 			// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
-			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,4.0f,1.0f,0,3,CV_AA);
-			cvPutText(pImgColor,"Warning!" , Point(640/4,480/2),& font ,CV_RGB(255,0,0));
+			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,8.0f,1.0f,0,5,CV_AA);
+			cvPutText(pImgColor,"Warning!" , Point(1280/4,720/2),& font ,CV_RGB(255,0,0));
 		}
 		else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
 		}
+<<<<<<< HEAD
 		
 			
+=======
+>>>>>>> parent of ffb9864... 7/10 meeting progress
 		
+
+		//============¾B¸ncanny¹Ï (¦pªG¬O©]¶¡¼Ò¦¡½Ğ¨ú®ø)=======================
+		cvSet(pImgFilter,cvScalar(0,0,0));
+		Filter_Init(VanishingPoint.x);
 
 		//sprintf(maskout, "C:\\Users\\User\\Desktop\\LLSample\\Mask Test\\Mask\\MonXinFilterColor\\Video-%d.jpg",i);
 		//cvSaveImage(maskout,pImgCanny);
@@ -175,7 +219,7 @@ int main(int argc, char *argv[])
 		cvShowImage("pImgColor", pImgColor);
 		//cvShowImage("pImgCanny", pImgCanny);
 
-		 cvReleaseImage(&pImgC); //é‡‹æ”¾è¨˜æ†¶é«”
+		 cvReleaseImage(&pImgC); //ÄÀ©ñ°O¾ĞÅé
 		cvReleaseImage(&pImgColor);
 		//if(i==400) waitKey(0);
 		waitKey(1);

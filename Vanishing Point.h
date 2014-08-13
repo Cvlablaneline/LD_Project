@@ -23,7 +23,7 @@ public:
 	line_crosspoint(double slope1, double intercept1, double slope2, double intercept2);
 	~line_crosspoint(){};
 };
-CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<line_property> *LSPointSave,vector<line_property> *RSPointSave);
+CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<CvPoint> *pointSave);
 
 CvPoint check_point(CvPoint newPoint, vector<CvPoint> *pointSave);
 
