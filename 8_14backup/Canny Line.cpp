@@ -22,12 +22,8 @@ bool flag = false; //偏移是否成立
 IplImage *pImgFilter =NULL;
 IplImage *pImgCanny = NULL; //產生canny圖
 IplImage *pImgBuffer = NULL;
-IplImage *pImgHouf = NULL;
 IplImage *pImgA=NULL;
 IplImage *pImgB=NULL;
-IplImage *pImgC=NULL;
-IplImage *pImgGrayC=NULL;
-
 
 //====================================
 //===============初始化===============
@@ -49,13 +45,8 @@ void Mask_Init(char FileName[200])
 	pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
 	pImgCanny = cvCreateImage(cvSize(640,480),8,1); //產生canny圖
 	pImgBuffer =cvCreateImage(cvSize(640,480), 8,1);
-	pImgGrayC = cvCreateImage(cvSize(640,480), 8,1);
-	pImgC = cvCreateImage(cvSize(640,480), 8,1); //空圖層 初始化
-	pImgHouf = cvCreateImage(cvSize(640,480), 8,1);
 
 	 CPround=0; //最剛開始初始化消失點紀錄
-	 // Create Windows
-	 cvReleaseImage(&src1); //fix leak
 }
 
 //====================================
@@ -140,8 +131,9 @@ void Check_VPoint(int &VPx,int &VPy)
 void Filter_Init(int VPx){  // (傳入消失點X)
 	 
 	//====青黑
-	//pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
+	pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
 	cvSet(pImgFilter,cvScalar(0,0,0));
+	//cvCopy(pImgBlack ,pImgFilter); //img1 copy to imgout
 	
  //======產生遮罩圖 Filter================
  for(int fs=0;fs<100;fs++)
@@ -186,7 +178,7 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout)
 		unsigned  int sB=  img2->imageData[h*img2->widthStep+w];
 		unsigned  int sR=  img2->imageData[h*img2->widthStep+w+1];
 		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
-		if((sB+sR+sG)/3>120) //>80
+		if((sB+sR+sG)/3>80)
 		{
 			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
 			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
@@ -206,8 +198,18 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 {
 	
 	IplImage *Smo_pic =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //初始化
+	//IplImage *dst_DThrSmo =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //初始化
+	//cvCopy(img1 ,Smo_pic); //img1 copy to imgout
+	//cvCopy(img1 ,dst_DThrSmo); //img1 copy to imgout
 
+	//cvSmooth(img1, Smo_pic, CV_BLUR);               //濾波
+	//cvCanny(Smo_pic, dst_DThrSmo, 30, 200, 3);				// 邊緣檢測30, 200, 3
 	cvCanny(img1, dst_DThrSmo, 30, 200, 3);				// 邊緣檢測30, 200, 3
+
+	 ////霍夫線轉換
+		//CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
+		//CvSeq* lines_DThrSmo = cvHoughLines2(dst_DThrSmo, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 59, 10);
+		////輸入,儲存,變換方法,距離精度,角度精度,臨界值,最小長度,
 		 
     cout << "test canny" << endl;
 	img1 = dst_DThrSmo; 
@@ -219,7 +221,7 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 }
 //==================================================
 //===============對比點線(暫時)=====================
-IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖片,消失點X,消失點Y)
+IplImage* drawline(IplImage *pImgC,int centerX,int centerY) //drawline (輸入圖片,消失點X,消失點Y)
 {
 	 //int centerX =100; //消失點的中縣X
 	 int Arrpointindex=0;
@@ -237,7 +239,7 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
  CvPoint r1,r2;
  CvPoint L1,L2;
  v1=cvPoint(centerX,centerY);  //Y數字小的在上面
- v2=cvPoint(centerX,pImgDis->height-20);
+ v2=cvPoint(centerX,pImgC->height-100);
 
 
  int rindex=0 , lindex=0;
@@ -245,11 +247,11 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
  for(int index = v1.y;index<v2.y;index+=10){  //620-800
  //===========取上面座標點
  int h=index; //
-   for(int w = centerX;w< pImgDis->widthStep ;w++) //右上座標
+   for(int w = centerX;w< pImgC->widthStep ;w++) //右上座標
     {
-		unsigned  int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		unsigned  int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		unsigned  int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+		unsigned  int sB=  pImgC->imageData[h*pImgC->widthStep+w];
+		unsigned  int sR=  pImgC->imageData[h*pImgC->widthStep+w+1];
+		unsigned  int sG=  pImgC->imageData[h*pImgC->widthStep+w+2];
 
 		if (w==centerX){cRGB=(sB+sR+sG)/3;} //紀錄該次中線的RGB平均
 		
@@ -262,9 +264,9 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
    }
    for(int w = centerX-20;w >0 ;w--) //左上座標
     {
-		unsigned  int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		unsigned  int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		unsigned  int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+		unsigned  int sB=  pImgC->imageData[h*pImgC->widthStep+w];
+		unsigned  int sR=  pImgC->imageData[h*pImgC->widthStep+w+1];
+		unsigned  int sG=  pImgC->imageData[h*pImgC->widthStep+w+2];
 		if (w==centerX-20){cRGB=(sB+sR+sG)/3;} //紀錄該次中線的RGB平均
 		
 		else{   
@@ -276,11 +278,11 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
    }
 		//=============取下面座標點
      h=index+3;
-		for(int w = centerX;w< pImgDis->widthStep ;w++) //右下座標
+		for(int w = centerX;w< pImgC->widthStep ;w++) //右下座標
     {
-		unsigned  int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		unsigned  int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		unsigned  int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+		unsigned  int sB=  pImgC->imageData[h*pImgC->widthStep+w];
+		unsigned  int sR=  pImgC->imageData[h*pImgC->widthStep+w+1];
+		unsigned  int sG=  pImgC->imageData[h*pImgC->widthStep+w+2];
 		if (w==centerX){cRGB=(sB+sR+sG)/3;} //紀錄該次中線的RGB平均
 		
 		else{   
@@ -292,9 +294,9 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
 	}
 		for(int w = centerX-20;w>0 ;w--) //左下座標
     {
-		unsigned  int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		unsigned  int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		unsigned  int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+		unsigned  int sB=  pImgC->imageData[h*pImgC->widthStep+w];
+		unsigned  int sR=  pImgC->imageData[h*pImgC->widthStep+w+1];
+		unsigned  int sG=  pImgC->imageData[h*pImgC->widthStep+w+2];
 		if (w==centerX-20){cRGB=(sB+sR+sG)/3;} //紀錄該次中線的RGB平均
 		
 		else{   
@@ -314,7 +316,7 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
 			if(linelong<50)
 			{
             
-            cvLine( pImgDis, r1, r2, CV_RGB(255,255,255), 7);
+            cvLine( pImgC, r1, r2, CV_RGB(255,255,255), 7);
 			CvPoint RightAvg = (cvPoint)(((r1.x+r2.x)/2),((r1.y+r2.y)/2)); //取中間點
 			
 			//if(abs(RightAvg.x-centerX)>100){
@@ -337,7 +339,7 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
 			linelong= sqrt (pow(double(L2.x-L1.x),2) + pow(double(L2.y-L1.y),2));
 
 			if(linelong<50){
-			cvLine( pImgDis, L1, L2, CV_RGB(255,255,255), 7);
+			cvLine( pImgC, L1, L2, CV_RGB(255,255,255), 7);
 			CvPoint LeftAvg = (cvPoint)(((L1.x+L2.x)/2),((L1.y+L2.y)/2)); //取中間點
 
 			//if(abs(centerX-LeftAvg.x)>100){
@@ -363,14 +365,14 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
 //cout << "測試用" << Rxy[0][0] << endl;
  // pImgC=Keep_pic; //延長線要開要做
 
-return pImgDis;
+return pImgC;
 
 
 }
 //=========左右取範圍(矩形畫線)============
 
 //==========畫出延長的線段================
-IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis)
+IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgC)
 {
 	int linelong= sqrt (pow(double(bx-ax),2) + pow(double(by-ay),2));
 
@@ -388,9 +390,9 @@ IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis)
 		v1=cvPoint(cx,cy);  //Y數字小的在上面
 		v2=cvPoint(ax,ay);  //Y數字小的在上面
 		//cvLine( pImgC, v1,v2, CV_RGB(255,0,0), 3);
-		cvLine( pImgDis, v1,v2, CV_RGB(255,255,255), 3);
+		cvLine( pImgC, v1,v2, CV_RGB(255,255,255), 3);
 	}
-	return pImgDis;
+	return pImgC;
 }
 
 

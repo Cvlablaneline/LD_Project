@@ -16,14 +16,8 @@ bool Lane_Offset(CvPoint VPoint,int lx,int rx); //傳入 (消失點,左X,右X)
  extern IplImage *pImgCanny ; //產生canny圖
  extern IplImage *pImgBuffer; //緩衝圖層初始化
  extern IplImage *pImgFilter ; //對比遮罩圖層 初始化
- extern IplImage *pImgHouf; //霍夫線
 
  extern IplImage *pImgA; //第一章通用圖
  extern IplImage *pImgB; //第二章通用圖
- extern IplImage *pImgC;//通用對比點
- extern IplImage *pImgGrayC;
-
-
-
 
 #endif
