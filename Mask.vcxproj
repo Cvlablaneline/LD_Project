@@ -130,12 +130,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\opencv\build\include;C:\opencv\build\include\opencv;C:\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\OpenCV-2.4.7\opencv\build\include;C:\OpenCV-2.4.7\opencv\build\include\opencv;C:\OpenCV-2.4.7\opencv\build\include\opencv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>"C:\opencv\build\x64\vc10\lib\opencv_core249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_highgui249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_video249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_ml249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_legacy249d.lib";"C:\opencv\build\x64\vc10\lib\opencv_imgproc249d.lib";%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_core247d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_highgui247d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_video247d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_ml247d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_legacy247d.lib";"C:\OpenCV-2.4.7\opencv\build\x64\vc10\lib\opencv_imgproc247d.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">

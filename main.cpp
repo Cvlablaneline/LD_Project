@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	int oldXX=0,oldYY=0;
 	//第一張出現的圖片編號
-	int  FristPic = 1;  
+	int  FristPic =50;  
 	
 	for (int i = FristPic; i < 3000; i += 1){
 
@@ -57,12 +57,12 @@ int main(int argc, char *argv[])
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區day\\Video-%d.jpg",i);    //★市區
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區night\\Video-%d.jpg",i);    //★市區夜間
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i); //★日間高速(sing)
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i); //
 
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i+1); //★日間高速
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+1);
+		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//Mask 初始化 (在第一張 只做一次)
@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
 		//====================================
 		//===========疊圖=====================
 		//疊圖(input1,input2, *output)
+		//cvEqualizeHist( pImgB, pImgB );//直方圖均化
 			pImgC = xxhh(pImgA, pImgB, pImgC);  
 			//cvShowImage("canny",pImgC);
 		//============canny===================
@@ -122,10 +123,11 @@ int main(int argc, char *argv[])
             cout << "======END DRAWLINE========="<<endl;
 		 
 		//============遮罩canny圖 (如果是夜間模式請取消)=======================
-			//cvSet(pImgFilter,cvScalar(0,0,0));
-			//Filter_Init(oldXX);//VanishingPoint.x
+			if(i>FristPic+5){
+			cvSet(pImgFilter,cvScalar(0,0,0));
+			Filter_Init(oldXX,oldYY);//VanishingPoint.x
 			//cvShowImage("canny",pImgCanny);
-
+			}
 			//============消失點function===========
             //Find the vanishing point
             //Create savePoint of Vector<CvPoint>
@@ -192,7 +194,7 @@ int main(int argc, char *argv[])
 		};
 
 
-		//sprintf(maskout, "C:\\Users\\user\\Desktop\\meeting Video\\分析高速\\output-%d.jpg",i);
+		//sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\高速分析圖\\output-%d.jpg",i);
 		//cvSaveImage(maskout,pImgMar);
 
 		// Create Windows
@@ -229,7 +231,7 @@ void ImageMerge(IplImage*& pImageRes){
     cvCopy(pImgCanny, pImageRes);
     cvResetImageROI(pImageRes);
 
-	////載入Houf圖到目標圖像
+	////載入Houf圖到目標圖像 pImgHouf
     cvSetImageROI(pImageRes, cvRect(pImgHouf->width, pImgHouf->height-50, pImgHouf->width, pImgHouf->height));
     cvCopy(pImgHouf, pImageRes);
     cvResetImageROI(pImageRes);
