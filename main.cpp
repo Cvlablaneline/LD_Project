@@ -123,11 +123,14 @@ int main(int argc, char *argv[])
             cout << "======END DRAWLINE========="<<endl;
 		 
 		//============遮罩canny圖 (如果是夜間模式請取消)=======================
-			if(i>FristPic+5){
+			/***if(i>FristPic+5){
 			cvSet(pImgFilter,cvScalar(0,0,0));
-			Filter_Init(oldXX,oldYY);//VanishingPoint.x
+			Filter_Init(oldXX,oldYY);//VanishingPoint.x 
 			//cvShowImage("canny",pImgCanny);
-			}
+			}***/
+			cvSet(pImgFilter,cvScalar(0,0,0));
+			Filter_Init(oldXX,oldYY);//VanishingPoint.x 
+
 			//============消失點function===========
             //Find the vanishing point
             //Create savePoint of Vector<CvPoint>
@@ -240,6 +243,9 @@ void ImageMerge(IplImage*& pImageRes){
     cvSetImageROI(pImageRes, cvRect(0, 0, pImgGrayC->width, pImgGrayC->height));
     cvCopy(pImgGrayC, pImageRes);
     cvResetImageROI(pImageRes);
+	/*cvSetImageROI(pImageRes, cvRect(0, 0, pImgFilter->width, pImgFilter->height));
+    cvCopy(pImgFilter, pImageRes);
+    cvResetImageROI(pImageRes);*/
     
 	////載入對比點圖到目標圖像
     cvSetImageROI(pImageRes, cvRect(pImgC->width, 0, pImgC->width, pImgC->height));

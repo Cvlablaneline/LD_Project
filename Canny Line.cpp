@@ -150,41 +150,41 @@ void Filter_Init(int VPx,int VPy){  // (傳入消失點X)
 	 
 	//====青黑
 	//pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
-	cvSet(pImgFilter,cvScalar(255,255,255));
+	//cvSet(pImgFilter,cvScalar(255,255,255));
 	
  //======產生遮罩圖 Filter================
- //for(int fs=0;fs<100;fs++)
- //{
-	// //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
-	// if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
-	//	 if(RLpoint[fs][0]>=VPx){ //在右邊的點
-	//		 for(int i=RLpoint[fs][0]-20;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-	//	for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
-	//		if(j<0)continue;
-	//		pImgFilter->imageData[j*pImgFilter->width+i]=255;
-	//	}}
+ for(int fs=0;fs<100;fs++)
+ {
+	 //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
+	 if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
+		 if(RLpoint[fs][0]>=VPx){ //在右邊的點
+			 for(int i=RLpoint[fs][0]-20;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+			if(j<0)continue;
+			pImgFilter->imageData[j*pImgFilter->width+i]=255;
+		}}
 
-	//	  if(RLpoint[fs][0]<=VPx){ //在左邊的點
-	// for(int i=0;i<RLpoint[fs][0]+20;i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-	//	for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
-	//		//if(j>pImgFilter->height)continue;
-	//		pImgFilter->imageData[j*pImgFilter->width+i]=255;}
-	//	  }
-	//	 }
- //}
+		  if(RLpoint[fs][0]<=VPx){ //在左邊的點
+	 for(int i=0;i<RLpoint[fs][0]+20;i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+			//if(j>pImgFilter->height)continue;
+			pImgFilter->imageData[j*pImgFilter->width+i]=255;}
+		  }
+		 }
+ }
 
-	//--------新遮罩三角畫法--------
-	CvPoint ** PointArray1 = new CvPoint*[1];  
-	int arr[1];  
-	arr[0] = 3;  
-	PointArray1[0] = new CvPoint[3];  
-	PointArray1[0][0]=cvPoint(VPx,VPy); //
-    PointArray1[0][1]=cvPoint(newfilter_rx,450);
-    PointArray1[0][2]=cvPoint(newfilter_lx,450);
-	cvFillPoly(pImgFilter,PointArray1,arr,1,CV_RGB(0,0,0));  
+	////--------新遮罩三角畫法--------
+	//CvPoint ** PointArray1 = new CvPoint*[1];  
+	//int arr[1];  
+	//arr[0] = 3;  
+	//PointArray1[0] = new CvPoint[3];  
+	//PointArray1[0][0]=cvPoint(VPx,VPy); //
+ //   PointArray1[0][1]=cvPoint(newfilter_rx,450);
+ //   PointArray1[0][2]=cvPoint(newfilter_lx,450);
+	//cvFillPoly(pImgFilter,PointArray1,arr,1,CV_RGB(0,0,0));  
 
  cvAnd(pImgFilter,pImgCanny,pImgCanny);
- //=======================================
+ ////=======================================
 
 
 }
@@ -460,8 +460,8 @@ IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX
 	//-----觸發三角遮罩估算-----
 	if(CLrun==1){
 		
-		avgR = avgR / (Arrpointindex/2)+0.3;
-		avgL = avgL / (Arrpointindex/2)-0.3;
+		avgR = avgR / (Arrpointindex/2); //+0.3
+		avgL = avgL / (Arrpointindex/2); //-0.3
 		y=450; //Y為固定軸
 		newfilter_rx= (y-centerY+ avgR*centerX) / avgR; //avgR 計算出坐落於Y軸的X
 		cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_rx,y), CV_RGB(255,255,255), 3);
