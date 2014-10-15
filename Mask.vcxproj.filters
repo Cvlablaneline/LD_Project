@@ -24,13 +24,16 @@
     <ClInclude Include="targetver.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
-    <ClInclude Include="Vanishing Point.h">
-      <Filter>標頭檔</Filter>
-    </ClInclude>
     <ClInclude Include="Canny Line.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
+    <ClInclude Include="TimeRecorder.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
     <ClInclude Include="Find the best lines.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="Vanishing Point.h">
       <Filter>標頭檔</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,16 +41,19 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="Vanishing Point.cpp">
+    <ClCompile Include="Canny Line.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="Canny Line.cpp">
+    <ClCompile Include="main.cpp">
+      <Filter>原始程式檔</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\CHFU s\LD_Project_xcode\TimeRecorder.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
     <ClCompile Include="Find the best lines.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Vanishing Point.cpp">
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>

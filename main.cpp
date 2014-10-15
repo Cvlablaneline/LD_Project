@@ -10,6 +10,9 @@
 #include "Canny Line.h"
 #include "Find the best lines.h"
 
+
+
+
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -39,6 +42,8 @@ using namespace cv;
 #define DBGflag 1 //##debug 資訊開關
 
 void ImageMerge(IplImage*& pImageRes);
+
+
 
 int main(int argc, char *argv[])
 {
@@ -132,12 +137,12 @@ int main(int argc, char *argv[])
 			Filter_Init(oldXX,oldYY);//VanishingPoint.x 
 
 			//============消失點function===========
-            //Find the vanishing point
-            //Create savePoint of Vector<CvPoint>
-            static vector<line_property> LSPointSave,RSPointSave;
-			CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
-            //call vanishing point function and get the vanishing point to vpfnpoint
-            CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &LSPointSave, &RSPointSave,storage_DThrSmo);
+            //記錄霍夫線段資訊
+            static vector<line_property> AllVPHoughLineSlopeRecorder;
+            //for vp
+            CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
+            //call vanishing point function and get the vanishing point to VanishingPoint
+            CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &AllVPHoughLineSlopeRecorder, storage_DThrSmo);
             cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
             
 			//檢查消失點正確性
@@ -153,17 +158,16 @@ int main(int argc, char *argv[])
            
             //==============================
             //draw the vanishing point range
-            if (VanishingPoint.x != NULL || VanishingPoint.y != NULL)
+            if (VanishingPoint.x != 0.0 || VanishingPoint.y != 0.0)
                 draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
             //Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)）
-            FTBL ftblData = FindTheBestLines(pImgColor, &LSPointSave, &RSPointSave, VanishingPoint, vp_range);
+            FTBL ftblData = FindTheBestLines(pImgColor, &AllVPHoughLineSlopeRecorder,  VanishingPoint, vp_range);
             //清除車道線斜率記錄vector
-            vector <line_property> Nls, Nrs;
-            LSPointSave.clear();
-            RSPointSave.clear();
-            LSPointSave.swap(Nls);
-            RSPointSave.swap(Nrs); 
-		
+            vector <line_property> Nhl;
+            AllVPHoughLineSlopeRecorder.clear();
+            AllVPHoughLineSlopeRecorder.swap(Nhl);
+            
+            
 			//release storage_DThrSmo
 			cvReleaseMemStorage(&storage_DThrSmo);
 
