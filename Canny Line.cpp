@@ -157,15 +157,15 @@ void Filter_Init(int VPx,int VPy){  // (傳入消失點X)
  {
 	 //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
 	 if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
-		 if(RLpoint[fs][0]>=VPx){ //在右邊的點
-			 for(int i=RLpoint[fs][0]-20;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+		 if(RLpoint[fs][0]>=VPx){ //在右邊的點 RLpoint[fs][0]-20
+			 for(int i=RLpoint[fs][0]-30;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
 		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
 			if(j<0)continue;
 			pImgFilter->imageData[j*pImgFilter->width+i]=255;
 		}}
 
-		  if(RLpoint[fs][0]<=VPx){ //在左邊的點
-	 for(int i=0;i<RLpoint[fs][0]+20;i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+		  if(RLpoint[fs][0]<=VPx){ //在左邊的點 RLpoint[fs][0]+20
+	 for(int i=0;i<RLpoint[fs][0]+30;i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
 		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
 			//if(j>pImgFilter->height)continue;
 			pImgFilter->imageData[j*pImgFilter->width+i]=255;}

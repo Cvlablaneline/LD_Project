@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	int oldXX=0,oldYY=0;
 	//第一張出現的圖片編號
-	int  FristPic =50;  
+	int  FristPic =2;  
 	
 	for (int i = FristPic; i < 3000; i += 1){
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 		
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\rainday\\Video-%d.jpg",i);    //★雨天
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\rainday2\\Video-%d.jpg",i);    //★雨天2
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區day\\Video-%d.jpg",i);    //★市區
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區day\\Video-%d.jpg",i);    //★市區
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區night\\Video-%d.jpg",i);    //★市區夜間
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i); //★日間高速(sing)
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
+		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//Mask 初始化 (在第一張 只做一次)
@@ -172,14 +172,14 @@ int main(int argc, char *argv[])
 			cvReleaseMemStorage(&storage_DThrSmo);
 
 		//車道偏移
-		if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
-			CvFont font;
-			// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
-			cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,4.0f,1.0f,0,3,CV_AA);
-			cvPutText(pImgColor,"Warning!" , Point(640/4,480/2),& font ,CV_RGB(255,0,0));
-		}
-		else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
-		}
+		//if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
+		//	CvFont font;
+		//	// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
+		//	cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,4.0f,1.0f,0,3,CV_AA);
+		//	cvPutText(pImgColor,"Warning!" , Point(640/4,480/2),& font ,CV_RGB(255,0,0));
+		//}
+		//else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
+		//}
 		
 		//=========DBG開關=======
 		if(DBGflag==1){
@@ -201,8 +201,8 @@ int main(int argc, char *argv[])
 		};
 
 
-		//sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\高速分析圖\\output-%d.jpg",i);
-		//cvSaveImage(maskout,pImgMar);
+		sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\10_15_meeting\\市區day\\output-%d.jpg",i);
+		cvSaveImage(maskout,pImgColor);
 
 		// Create Windows
 		cvShowImage("pImgColor", pImgColor);
