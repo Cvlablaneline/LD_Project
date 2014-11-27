@@ -2,6 +2,7 @@
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
+#include "cvaux.h"
 #include "math.h"
 #include <vector>
 #include "Vanishing Point.h"
@@ -160,7 +161,7 @@ void Filter_Init(int VPx,int VPy){  // (傳入消失點X)
 		 if(RLpoint[fs][0]>=VPx){ //在右邊的點 RLpoint[fs][0]-20
 			 for(int i=RLpoint[fs][0]-30;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //右邊擴展 i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 左邊擴展 i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
 		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
-			if(j<0)continue;
+			//if(j<0)continue;
 			pImgFilter->imageData[j*pImgFilter->width+i]=255;
 		}}
 
@@ -192,30 +193,155 @@ void Filter_Init(int VPx,int VPy){  // (傳入消失點X)
 
 //=======================================
 //==========影像疊圖(網狀)=============== xxhh(輸入影像1,輸入影像2,輸出疊圖)
-IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout)
+IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor)
 {
-	 for(int j=0;j<100;j++){ RLpoint[j][0]=0;RLpoint[j][1]=0;}//陣列初始化
 
-	 int startX = 1;int startY = 1; //start index
- for(int h = 0 ;h< img2->height ;h++) //高度跳躍+=2
+	//測試CANNY蝶圖輸出
+			IplImage *pImgDCanny = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+			//cvCanny(src2, src2, 40,120, 3);	
+			IplImage *pImgDCanny2 = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+			IplImage *pImgDCannyS = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+			IplImage *pImgDCannyMo = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+			
+			//預設黑底
+			cvSet(pImgDCanny,cvScalar(0,0,0));
+			cvSet(pImgDCannyS,cvScalar(0,0,0));
+			cvSet(pImgDCannyMo,cvScalar(0,0,0));
+
+			//pImgDCanny = canny(img1, pImgBuffer);
+			//pImgDCanny2 = canny(img2, pImgBuffer);
+			cvCanny(img1, pImgDCanny ,40,120, 3);	 //40,120
+			cvCanny(img2, pImgDCanny2 ,40,120, 3);	
+			
+			cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
+			// Create Windows
+
+			cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIAN濾波 CV_BLUR_NO_SCALE
+			cvOr(pImgDCannyS,pImgDCannyMo,pImgDCannyS);
+			
+			//cvShowImage("DCanny TestB", pImgDCannyS);
+			
+			
+////=============old 疊圖=====================================
+//	 for(int j=0;j<100;j++){ RLpoint[j][0]=0;RLpoint[j][1]=0;}//陣列初始化
+//
+//	 int startX = 1;int startY = 1; //start index
+// for(int h = 0 ;h< img2->height ;h++) //高度跳躍+=2 
+// {
+//   for(int w = 0;w< img2->widthStep ;w++) //寬度跳躍(BGR)+=4
+//    {
+//		unsigned  int sB=  img2->imageData[h*img2->widthStep+w];
+//		unsigned  int sR=  img2->imageData[h*img2->widthStep+w+1];
+//		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
+//		if((sB+sR+sG)/3>120) //>80
+//		{
+//			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
+//			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
+//			imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
+//		}
+//	  
+//     }
+//   
+// }
+// //===============================================================================
+
+
+ IplImage* pImg3C = cvCreateImage(cvSize(pImgDCannyS->width,pImgDCannyS->height), IPL_DEPTH_8U, 3);
+ cvCvtColor(pImgDCannyS, pImg3C, CV_GRAY2BGR);//change channel
+
+// cvAnd(pImg3C,pImgColor,pImg3C); //融合顏色
+ //cvCvtColor(pImg3C, pImg3C,CV_BGR2HSV);//change channel
+
+
+ //TEST=================================
+	IplImage* sumMat = cvCreateImage(cvSize(pImg3C->width,pImg3C->height), IPL_DEPTH_8U, 3);
+	cvSet(sumMat,cvScalar(0,0,0));
+    //建立儲存影像積分的陣列，格式可為32-bit整數或64F浮點數
+
+  for(int h = 0 ;h< pImg3C->height ;h++) //高度跳躍+=40  (40*40)
  {
-   for(int w = 0;w< img2->widthStep ;w++) //寬度跳躍(BGR)+=4
+	 int oldh=h;
+	 float line_val=0;
+   for(int w = 0;w< pImg3C->width ;w++) //寬度跳躍(BGR)+=4 
     {
-		unsigned  int sB=  img2->imageData[h*img2->widthStep+w];
-		unsigned  int sR=  img2->imageData[h*img2->widthStep+w+1];
-		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
-		if((sB+sR+sG)/3>120) //>80
+		//unsigned  int sB=  pImg3C->imageData[h*pImg3C->widthStep+w];
+		//unsigned  int sR=  pImg3C->imageData[h*pImg3C->widthStep+w+1];
+		//unsigned  int sG=  pImg3C->imageData[h*pImg3C->widthStep+w+2];
+		
+		CvScalar s=cvGet2D(pImg3C,h,w); // get the (i,j) pixel value
+        //printf("B=%f, G=%f, R=%f \n",s.val[0],s.val[1],s.val[2]);
+		
+		
+		if (s.val[0]>0) //有雜訊
 		{
-			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
-			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
-			imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
+		//cvLine( pImg3C, cvPoint(w,oldh), cvPoint(w,h-s.val[0]/15), CV_RGB(255,0,0), 1); //h-s.val[0]/20  //紅點
+		//oldh = h-s.val[0]/15;
+			float now_point = s.val[0];
+
+			int sumc=0,out_c=0;
+			//===7x9矩陣單位===
+			for(int hh=-3; hh<=3;hh++)
+				for(int ww=-4; ww<=4;ww++)
+				{
+					if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
+					CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //鄰域
+					sumc += s2.val[0]; }//0~255's sum
+					else
+					{out_c++;}
+				}
+				int all_i=(7*9) -1;//out_c; //總次數
+				//line_val= (sumc/all_i)/ now_point ; // 鄰域/中值 (0~1)
+				line_val=( (sumc/all_i) )/255.0; // 鄰域/中值 (0~1)
+
+
+				if(line_val>0.5)
+					cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
+				
 		}
-	  
+		else //沒有雜訊
+		{
+		//cvLine( pImg3C, cvPoint(w,oldh), cvPoint(w,h), CV_RGB(0,250,0), 1); //綠線
+		//oldh = h;
+			/*if(line_val>0)
+			line_val-=255;*/
+
+		}
      }
    
+   
+   //if(count > pImg3C->width/2.5 ) cvLine(pImg3C,cvPoint(0,h),cvPoint(pImg3C->width,h),CV_RGB(0,0,0)); //(pImg3C->width/5)
  }
- //cvEqualizeHist( imgout, imgout );//直方圖均化
 
+   
+
+ 
+	////顯示積分影像的值
+	cvNamedWindow("sumMat", 3);
+	cvShowImage("sumMat", sumMat);
+	//cvNamedWindow("sqsumMat", 3);
+	//cvShowImage("sqsumMat", sqsumMat);
+  //========================================
+
+	//cvAnd(pImg3C,sumMat,pImg3C);
+ cvShowImage("DCanny TestB", pImg3C);
+
+ // cvEqualizeHist( pImg3C, pImg3C );//直方圖均化
+
+
+ cvNot(sumMat,sumMat);
+ cvAnd(pImg3C,sumMat,pImg3C);
+ cvCvtColor( pImg3C, pImgGrayC, CV_BGR2GRAY );
+
+ cvThreshold(pImgGrayC,pImgGrayC,70,255,CV_THRESH_BINARY); //二值化(界分模糊點)
+ cvShowImage("Mask's pImgGrayC", pImgGrayC);
+
+
+	cvReleaseImage(&pImgDCannyS); 
+	cvReleaseImage(&pImgDCanny); 
+	cvReleaseImage(&pImgDCanny2); 
+	cvReleaseImage(&pImgDCannyMo); 
+	cvReleaseImage(&pImg3C); 
+			
  return imgout;
   //cvReleaseImage(&imgout);//釋放記憶體
 }
@@ -231,7 +357,7 @@ IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(輸入圖片,緩衝圖層
 
 	cvCanny(img1, dst_DThrSmo, 40,120, 3);				// 邊緣檢測30, 200, 3
 		 
-    cout << "test canny" << endl;
+    //cout << "test canny" << endl;
 	img1 = dst_DThrSmo; 
     //cvReleaseImage(&dst_DThrSmo);
 	cvReleaseImage(&Smo_pic);
@@ -265,7 +391,7 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
  CvPoint r1,r2;
  CvPoint L1,L2;
  v1=cvPoint(centerX,centerY);  //Y數字小的在上面
- v2=cvPoint(centerX,pImgDis->height-20);
+ v2=cvPoint(centerX,pImgDis->height-80);
 
 
  int rindex=0 , lindex=0;
@@ -443,7 +569,7 @@ IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX
 	float m =  ((float)(ay - by) / (float)(ax - bx)) ;//取得斜率
 	//--過濾水平線--
 	if(CLrun==0)
-	if(abs(m)>0.3){ 
+	if(abs(m)>0.3 && abs(m)<0.98){ // && abs(m)<0.9
 	cout << "M = " << m << endl;
 	///直線的斜率為 3 及經過點 (1, 2) 方程：y - 2 = 3(x - 1)  y-cy=m(x-cx)
 	///x= (y-cy+mcx)/m
@@ -455,7 +581,7 @@ IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX
 	if(flag==0) avgR += m;
 	if(flag==1) avgL += m;
 	cout<<"avgR="<<avgR<<"  avgL="<<avgL<<endl;
-	//cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(x,y), CV_RGB(255,255,255), 1);
+	cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(x,y), CV_RGB(255,255,255), 1); //全部列舉
 	}
 	//-----觸發三角遮罩估算-----
 	if(CLrun==1){
@@ -464,12 +590,12 @@ IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX
 		avgL = avgL / (Arrpointindex/2); //-0.3
 		y=450; //Y為固定軸
 		newfilter_rx= (y-centerY+ avgR*centerX) / avgR; //avgR 計算出坐落於Y軸的X
-		cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_rx,y), CV_RGB(255,255,255), 3);
+		//cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_rx,y), CV_RGB(0,0,0), 3);
 		newfilter_lx= (y-centerY+ avgL*centerX) / avgL; //avgL 計算出坐落於Y軸的X
-		cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_lx,y), CV_RGB(255,255,255), 3);
+		//cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_lx,y), CV_RGB(0,0,0), 3);
 	}
 
-
+	
 
 	return pImgDis;
 }

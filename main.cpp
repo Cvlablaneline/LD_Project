@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	int oldXX=0,oldYY=0;
 	//第一張出現的圖片編號
-	int  FristPic =2;  
+	int  FristPic =30;  
 	
 	for (int i = FristPic; i < 3000; i += 1){
 
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 		
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\rainday\\Video-%d.jpg",i);    //★雨天
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\rainday2\\Video-%d.jpg",i);    //★雨天2
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區day\\Video-%d.jpg",i);    //★市區
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區day\\Video-%d.jpg",i);    //★市區
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\市區15s\\市區night\\Video-%d.jpg",i);    //★市區夜間
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i); //★日間高速(sing)
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
+		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//Mask 初始化 (在第一張 只做一次)
@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
 		cvResize(src2, pImgB, CV_INTER_LINEAR);
 		cvResize(src3, pImgColor, CV_INTER_LINEAR);
 
+
 		//cvReleaseImage(&src1);
 		cvReleaseImage(&src2);
 		cvReleaseImage(&src3);
@@ -117,11 +118,14 @@ int main(int argc, char *argv[])
 		//====================================
 		//===========疊圖=====================
 		//疊圖(input1,input2, *output)
-		//cvEqualizeHist( pImgB, pImgB );//直方圖均化
-			pImgC = xxhh(pImgA, pImgB, pImgC);  
+
+			pImgC = xxhh(pImgA, pImgB, pImgC,pImgColor);  
 			//cvShowImage("canny",pImgC);
+
 		//============canny===================
-			pImgCanny = canny(pImgC, pImgBuffer);
+			//pImgCanny = canny(pImgGrayC, pImgBuffer);
+			cvCopy(pImgGrayC,pImgCanny);
+			
 			
 		//===========對比線(點)===============
 			pImgC = drawline(pImgC, oldXX, oldYY); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
@@ -133,8 +137,9 @@ int main(int argc, char *argv[])
 			Filter_Init(oldXX,oldYY);//VanishingPoint.x 
 			//cvShowImage("canny",pImgCanny);
 			}***/
-			cvSet(pImgFilter,cvScalar(0,0,0));
-			Filter_Init(oldXX,oldYY);//VanishingPoint.x 
+
+			//cvSet(pImgFilter,cvScalar(0,0,0));
+			//Filter_Init(oldXX,oldYY);//VanishingPoint.x 
 
 			//============消失點function===========
             //記錄霍夫線段資訊
@@ -201,18 +206,19 @@ int main(int argc, char *argv[])
 		};
 
 
-		sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\10_15_meeting\\市區day\\output-%d.jpg",i);
-		cvSaveImage(maskout,pImgColor);
+		//sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\10_15_meeting\\市區day\\output-%d.jpg",i);
+		//cvSaveImage(maskout,pImgColor);
 
 		// Create Windows
 		cvShowImage("pImgColor", pImgColor);
 		//cvShowImage("pImgCanny", pImgCanny);
 
-		 
+		//cvReleaseImage(&pImgDCanny); 
+
 		 cvReleaseImage(&pImgColor);
 		 cvReleaseImage(&pImgMar);
 		//if(i==400) waitKey(0);
-		waitKey(1);
+		waitKey(0);
 		
 		//_CrtDumpMemoryLeaks();		
 

@@ -2,7 +2,7 @@
 #define CANNY_LINE
 
 //CvPoint find_Vanishing_Point(IplImage* Canny,IplImage* Ori_pic);
-IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout);
+IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor);
 IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo);  //canny(輸入圖片,緩衝圖層)
 IplImage* drawline(IplImage *pImgC,int centerX,int centerY);
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis);
@@ -27,7 +27,7 @@ bool Lane_Offset(CvPoint VPoint,int lx,int rx); //傳入 (消失點,左X,右X)
  extern IplImage *pImgB; //第二章通用圖
  extern IplImage *pImgC;//通用對比點
  extern IplImage *pImgGrayC;
-
+ extern IplImage* pImg3C;
 
 
 
