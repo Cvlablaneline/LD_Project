@@ -2,7 +2,7 @@
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
-#include "cvaux.h"
+//#include "cvaux.h"
 #include "math.h"
 #include <vector>
 #include "Vanishing Point.h"
@@ -203,6 +203,16 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 			IplImage *pImgDCannyS = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
 			IplImage *pImgDCannyMo = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
 			
+			int pos = 1;
+			IplConvKernel * pKernel = NULL;
+			pKernel = cvCreateStructuringElementEx( 
+				pos*2+1, 
+				pos*2+1, 
+				pos, 
+				pos, 
+				CV_SHAPE_ELLIPSE, 
+				NULL);
+
 			//預設黑底
 			cvSet(pImgDCanny,cvScalar(0,0,0));
 			cvSet(pImgDCannyS,cvScalar(0,0,0));
@@ -216,7 +226,8 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 			cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
 			// Create Windows
 
-			cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIAN濾波 CV_BLUR_NO_SCALE
+			//cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIAN濾波 CV_BLUR_NO_SCALE
+			cvDilate( pImgDCannyS, pImgDCannyMo, pKernel, 1); //擴散Dilation
 			cvOr(pImgDCannyS,pImgDCannyMo,pImgDCannyS);
 			
 			//cvShowImage("DCanny TestB", pImgDCannyS);
@@ -279,9 +290,11 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 			float now_point = s.val[0];
 
 			int sumc=0,out_c=0;
-			//===7x9矩陣單位===
-			for(int hh=-3; hh<=3;hh++)
-				for(int ww=-4; ww<=4;ww++)
+			int level_flag=0,blump_flag=0;
+			//===1x13矩陣單位(水平掃描)===
+			int hh=0;
+			//for(int hh=0; hh<=1;hh++)
+				for(int ww=-8; ww<=8;ww++)
 				{
 					if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
 					CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //鄰域
@@ -289,26 +302,38 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 					else
 					{out_c++;}
 				}
-				int all_i=(7*9) -1;//out_c; //總次數
+				int all_i=(1*17) -1;//out_c; //總次數
+				
+				//line_val= (sumc/all_i)/ now_point ; // 鄰域/中值 (0~1)
+				line_val=( (sumc/all_i) )/255.0; // 鄰域/中值 (0~1)
+				
+				if(line_val>0.6)
+					cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
+
+				sumc=0;
+
+			//===13x1矩陣單位(垂直掃描)===
+			int ww=0;
+			for(int hh=-8; hh<=8;hh++)
+				//for(int ww=-6; ww<=6;ww++)
+				{
+					if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
+					CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //鄰域
+					sumc += s2.val[0]; }//0~255's sum
+					else
+					{out_c++;}
+				}
+				 all_i=(1*17) -1;//out_c; //總次數
 				//line_val= (sumc/all_i)/ now_point ; // 鄰域/中值 (0~1)
 				line_val=( (sumc/all_i) )/255.0; // 鄰域/中值 (0~1)
 
-
-				if(line_val>0.5)
+				if(line_val>0.8)
 					cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
 				
-		}
-		else //沒有雜訊
-		{
-		//cvLine( pImg3C, cvPoint(w,oldh), cvPoint(w,h), CV_RGB(0,250,0), 1); //綠線
-		//oldh = h;
-			/*if(line_val>0)
-			line_val-=255;*/
-
-		}
+				
      }
    
-   
+  }
    //if(count > pImg3C->width/2.5 ) cvLine(pImg3C,cvPoint(0,h),cvPoint(pImg3C->width,h),CV_RGB(0,0,0)); //(pImg3C->width/5)
  }
 
@@ -316,8 +341,9 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 
  
 	////顯示積分影像的值
-	cvNamedWindow("sumMat", 3);
-	cvShowImage("sumMat", sumMat);
+	//cvNamedWindow("sumMat(水平掃描)", 3);
+	cvShowImage("sumMat(水平垂直掃描)", sumMat);
+
 	//cvNamedWindow("sqsumMat", 3);
 	//cvShowImage("sqsumMat", sqsumMat);
   //========================================
@@ -332,7 +358,7 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
  cvAnd(pImg3C,sumMat,pImg3C);
  cvCvtColor( pImg3C, pImgGrayC, CV_BGR2GRAY );
 
- cvThreshold(pImgGrayC,pImgGrayC,70,255,CV_THRESH_BINARY); //二值化(界分模糊點)
+ //cvThreshold(pImgGrayC,pImgGrayC,1,255,CV_THRESH_BINARY); //二值化(界分模糊點)
  cvShowImage("Mask's pImgGrayC", pImgGrayC);
 
 
@@ -341,7 +367,8 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 	cvReleaseImage(&pImgDCanny2); 
 	cvReleaseImage(&pImgDCannyMo); 
 	cvReleaseImage(&pImg3C); 
-			
+	cvReleaseImage(&sumMat);		
+
  return imgout;
   //cvReleaseImage(&imgout);//釋放記憶體
 }
@@ -410,7 +437,7 @@ IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (輸入圖
 
 		if (w==centerX){
 			cRGB=(sB+sR+sG)/3;
-			cout <<"cRGB==="<< sB<<","<<sR <<","<<sG << endl;
+			//cout <<"cRGB==="<< sB<<","<<sR <<","<<sG << endl;
 			if (FMflag<=3) {FixMask_Ru[FMflag]=cRGB;} //紀錄右上中線前4平均
 		} 
 		else{   

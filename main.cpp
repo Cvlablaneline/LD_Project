@@ -64,10 +64,13 @@ int main(int argc, char *argv[])
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i); //★日間高速(sing)
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i); //
+		//-------------------new pic----------------------------------
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\3\\vedio-%d.jpg",i);
+
 
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-		sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
+		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//★日間高速
 		////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
 
 		//Mask 初始化 (在第一張 只做一次)
@@ -128,8 +131,8 @@ int main(int argc, char *argv[])
 			
 			
 		//===========對比線(點)===============
-			pImgC = drawline(pImgC, oldXX, oldYY); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
-            cout << "======END DRAWLINE========="<<endl;
+			//pImgC = drawline(pImgC, oldXX, oldYY); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
+           // cout << "======END DRAWLINE========="<<endl;
 		 
 		//============遮罩canny圖 (如果是夜間模式請取消)=======================
 			/***if(i>FristPic+5){
@@ -201,7 +204,7 @@ int main(int argc, char *argv[])
 			ImageMerge(pImgMar);
 			cvNamedWindow("ImageMerge", CV_WINDOW_NORMAL);
 			//設定Window屬性為全螢幕,所以就不會有最上面的Title Bar
-			cvSetWindowProperty("ImageMerge", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+			//cvSetWindowProperty("ImageMerge", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 			cvShowImage("ImageMerge", pImgMar);
 		};
 
@@ -218,7 +221,7 @@ int main(int argc, char *argv[])
 		 cvReleaseImage(&pImgColor);
 		 cvReleaseImage(&pImgMar);
 		//if(i==400) waitKey(0);
-		waitKey(0);
+		waitKey(1);
 		
 		//_CrtDumpMemoryLeaks();		
 
