@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <crtdbg.h>
 
+
 //#include <windows.h>
 //#pragma comment(lib, "Winmm.lib")
 
@@ -38,19 +39,20 @@ using namespace cv;
 
 //畫出消失點位置與周圍感應區
 //設定偵測消失點的上下左右多少範圍
-#define vp_range 50
+#define vp_range 80
 #define DBGflag 1 //##debug 資訊開關
+#define XXHHflag 0//##疊圖 開關
 
 void ImageMerge(IplImage*& pImageRes);
 
 
-
 int main(int argc, char *argv[])
 {
+	 _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
 	char FileName[200], FileName2[200], FileName3[200], maskout[200];
 	int oldXX=0,oldYY=0;
 	//第一張出現的圖片編號
-	int  FristPic =30;  
+	int  FristPic =1;  
 	
 	for (int i = FristPic; i < 3000; i += 1){
 
@@ -66,7 +68,9 @@ int main(int argc, char *argv[])
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i); //
 		//-------------------new pic----------------------------------
 		sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\3\\vedio-%d.jpg",i);
-
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\12560012\\vedio-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\night\\CIMG3463\\vedio-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\out\\Video-%d.jpg",i);
 
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
@@ -120,9 +124,9 @@ int main(int argc, char *argv[])
 		
 		//====================================
 		//===========疊圖=====================
-		//疊圖(input1,input2, *output)
-
-			pImgC = xxhh(pImgA, pImgB, pImgC,pImgColor);  
+		//疊圖(input1,input2, *output)	
+			{pImgC = xxhh(pImgA, pImgB, pImgC,pImgColor,XXHHflag); }
+		
 			//cvShowImage("canny",pImgC);
 
 		//============canny===================
@@ -209,8 +213,8 @@ int main(int argc, char *argv[])
 		};
 
 
-		//sprintf(maskout, "C:\\Users\\user\\Desktop\\Xian開會影片\\10_15_meeting\\市區day\\output-%d.jpg",i);
-		//cvSaveImage(maskout,pImgColor);
+		//sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\3_Merge\\output-%d.jpg",i);
+		//cvSaveImage(maskout,pImgMar);
 
 		// Create Windows
 		cvShowImage("pImgColor", pImgColor);
@@ -221,7 +225,7 @@ int main(int argc, char *argv[])
 		 cvReleaseImage(&pImgColor);
 		 cvReleaseImage(&pImgMar);
 		//if(i==400) waitKey(0);
-		waitKey(1);
+		waitKey(0);
 		
 		//_CrtDumpMemoryLeaks();		
 

@@ -9,6 +9,8 @@
 #include "Find the best lines.h"
 #include "Canny Line.h"
 
+
+
 #define CPIndex 5
 
 using namespace cv;
@@ -193,9 +195,9 @@ void Filter_Init(int VPx,int VPy){  // (傳入消失點X)
 
 //=======================================
 //==========影像疊圖(網狀)=============== xxhh(輸入影像1,輸入影像2,輸出疊圖)
-IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor)
+IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor,int XXHHflag)
 {
-
+	
 	//測試CANNY蝶圖輸出
 			IplImage *pImgDCanny = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
 			//cvCanny(src2, src2, 40,120, 3);	
@@ -223,7 +225,11 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
 			cvCanny(img1, pImgDCanny ,40,120, 3);	 //40,120
 			cvCanny(img2, pImgDCanny2 ,40,120, 3);	
 			
-			cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
+			if(XXHHflag==1)
+				cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
+			else
+				cvCopy(pImgDCanny,pImgDCannyS);
+			
 			// Create Windows
 
 			//cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIAN濾波 CV_BLUR_NO_SCALE
@@ -362,6 +368,7 @@ IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgCol
  cvShowImage("Mask's pImgGrayC", pImgGrayC);
 
 
+	
 	cvReleaseImage(&pImgDCannyS); 
 	cvReleaseImage(&pImgDCanny); 
 	cvReleaseImage(&pImgDCanny2); 
