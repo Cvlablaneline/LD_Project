@@ -67,10 +67,10 @@ int main(int argc, char *argv[])
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\夜間車道線\\CIMG3461 (2014-4-20 下午 10-15-45)\\Video-%d.jpg",i); //★夜間高速
 		//sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i); //
 		//-------------------new pic----------------------------------
-		sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\3\\vedio-%d.jpg",i);
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\3\\vedio-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\12560012\\vedio-%d.jpg",i);
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\night\\CIMG3463\\vedio-%d.jpg",i);
-		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\out\\Video-%d.jpg",i);
+		sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\out\\Video-%d.jpg",i);
 
 		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
 		//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
@@ -124,10 +124,9 @@ int main(int argc, char *argv[])
 		
 		//====================================
 		//===========疊圖=====================
-		//疊圖(input1,input2, *output)	
+		//疊圖(input1,input2, *output,inputcolor,開關(1/on))	
 			{pImgC = xxhh(pImgA, pImgB, pImgC,pImgColor,XXHHflag); }
 		
-			//cvShowImage("canny",pImgC);
 
 		//============canny===================
 			//pImgCanny = canny(pImgGrayC, pImgBuffer);
@@ -213,7 +212,7 @@ int main(int argc, char *argv[])
 		};
 
 
-		//sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\3_Merge\\output-%d.jpg",i);
+		//sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\out_noxxhh\\output-%d.jpg",i);
 		//cvSaveImage(maskout,pImgMar);
 
 		// Create Windows
@@ -225,7 +224,7 @@ int main(int argc, char *argv[])
 		 cvReleaseImage(&pImgColor);
 		 cvReleaseImage(&pImgMar);
 		//if(i==400) waitKey(0);
-		waitKey(0);
+		waitKey(1);
 		
 		//_CrtDumpMemoryLeaks();		
 
