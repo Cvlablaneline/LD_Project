@@ -1,4 +1,4 @@
-#ifndef VANISHING_POINT
+﻿#ifndef VANISHING_POINT
 #define VANISHING_POINT
 #include <vector>
 using namespace std;
