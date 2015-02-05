@@ -1,9 +1,9 @@
-#ifndef CANNY_LINE
+ï»¿#ifndef CANNY_LINE
 #define CANNY_LINE
 
 //CvPoint find_Vanishing_Point(IplImage* Canny,IplImage* Ori_pic);
-IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor,int XXHHflag);
-IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo);  //canny(¿é¤J¹Ï¤ù,½w½Ä¹Ï¼h)
+IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor,int XXHHflag,IplConvKernel *pKernel);
+IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo);  //canny(è¼¸å…¥åœ–ç‰‡,ç·©è¡åœ–å±¤)
 IplImage* drawline(IplImage *pImgC,int centerX,int centerY);
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis);
 
@@ -12,22 +12,22 @@ IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis);
 void Mask_Init(char FileName[200]);
 void Filter_Init(int VPx,int VPy);
 void Check_VPoint(int &VPx,int &VPy);
-bool Lane_Offset(CvPoint VPoint,int lx,int rx); //¶Ç¤J (®ø¥¢ÂI,¥ªX,¥kX)
+bool Lane_Offset(CvPoint VPoint,int lx,int rx); //å‚³å…¥ (æ¶ˆå¤±é»,å·¦X,å³X)
 
 
 
- extern int RLpoint[][2];
- extern int MaskRL[][2];  //·s¾B¸n¥ª¥k¤À¸sÂI
- extern IplImage *pImgCanny ; //²£¥Ícanny¹Ï
- extern IplImage *pImgBuffer; //½w½Ä¹Ï¼hªì©l¤Æ
- extern IplImage *pImgFilter ; //¹ï¤ñ¾B¸n¹Ï¼h ªì©l¤Æ
- extern IplImage *pImgHouf; //ÀN¤Ò½u
+extern int RLpoint[][2];
+extern int MaskRL[][2];  //æ–°é®ç½©å·¦å³åˆ†ç¾¤é»
+extern IplImage *pImgCanny ; //ç”¢ç”Ÿcannyåœ–
+extern IplImage *pImgBuffer; //ç·©è¡åœ–å±¤åˆå§‹åŒ–
+extern IplImage *pImgFilter ; //å°æ¯”é®ç½©åœ–å±¤ åˆå§‹åŒ–
+extern IplImage *pImgHouf; //éœå¤«ç·š
 
- extern IplImage *pImgA; //²Ä¤@³¹³q¥Î¹Ï
- extern IplImage *pImgB; //²Ä¤G³¹³q¥Î¹Ï
- extern IplImage *pImgC;//³q¥Î¹ï¤ñÂI
- extern IplImage *pImgGrayC;
- extern IplImage* pImg3C;
+extern IplImage *pImgA; //ç¬¬ä¸€ç« é€šç”¨åœ–
+extern IplImage *pImgB; //ç¬¬äºŒç« é€šç”¨åœ–
+extern IplImage *pImgC;//é€šç”¨å°æ¯”é»
+extern IplImage *pImgGrayC;
+extern IplImage* pImg3C;
 
 
 

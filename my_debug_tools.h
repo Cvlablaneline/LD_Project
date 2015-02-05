@@ -1,4 +1,10 @@
-
+//
+//  my_debug_tools.h
+//  LD_Project_xcode
+//
+//  Created by Chienfu Huang on 2014/11/28.
+//  Copyright (c) 2014年 ___HCF___. All rights reserved.
+//
 
 #ifndef __LD_Project_xcode__my_debug_tools__
 #define __LD_Project_xcode__my_debug_tools__

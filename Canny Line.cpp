@@ -1,4 +1,3 @@
-#include "StdAfx.h" //"By xxhh"
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
@@ -14,7 +13,7 @@
 #define CPIndex 5
 
 using namespace cv;
-using namespace std; 
+using namespace std;
 
 IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX,int centerY,int flag,int CLrun);
 
@@ -22,17 +21,17 @@ IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX
 int RLpoint[100][2]={0};
 int MaskRL[200][2]={0};
 int CPround;
-int CheckXY[5][2]={0};   //±Æ§ÇXY
-int AddressXY[5][2]={0}; //°òÂ¦XY
+int CheckXY[5][2]={0};   //æ’åºXY
+int AddressXY[5][2]={0}; //åŸºç¤XY
 
 int Arrpointindex;
 
-bool flag = false; //°¾²¾¬O§_¦¨¥ß
+bool flag = false; //åç§»æ˜¯å¦æˆç«‹
 float avgR,avgL;
 int newfilter_rx,newfilter_lx;
 
 IplImage *pImgFilter =NULL;
-IplImage *pImgCanny = NULL; //²£¥Ícanny¹Ï
+IplImage *pImgCanny = NULL; //ç”¢ç”Ÿcannyåœ–
 IplImage *pImgBuffer = NULL;
 IplImage *pImgHouf = NULL;
 IplImage *pImgA=NULL;
@@ -42,626 +41,618 @@ IplImage *pImgGrayC=NULL;
 
 
 //====================================
-//===============ªì©l¤Æ===============
+//===============åˆå§‹åŒ–===============
 void Mask_Init(char FileName[200])
 {
-	//char FileName[200];
-	//sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",1);    //¡¹¤é¶¡°ª³t
-	IplImage *src1 = cvLoadImage(FileName, 0); //Åª¶i­ì¹Ï
-	CvSize pImgA_size; //·sªºpic¤j¤p
-
-	pImgA_size.width = src1->width* (640.0 / src1->width); //­«³]pImgA¤j¤p
-	pImgA_size.height = src1->height* (480.0 / src1->height);
-	pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels);
-	pImgB = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //³Ğ¥ß¥Ø¼Ğ¼v¹³B
-
-	cvResize(src1, pImgA, CV_INTER_LINEAR);  //§ïÅÜ¤j¤p
-
-
-	pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
-	pImgCanny = cvCreateImage(cvSize(640,480),8,1); //²£¥Ícanny¹Ï
-	pImgBuffer =cvCreateImage(cvSize(640,480), 8,1);
-	pImgGrayC = cvCreateImage(cvSize(640,480), 8,1);
-	pImgC = cvCreateImage(cvSize(640,480), 8,1); //ªÅ¹Ï¼h ªì©l¤Æ
-	pImgHouf = cvCreateImage(cvSize(640,480), 8,1);
-
-	 CPround=0; //³Ì­è¶}©lªì©l¤Æ®ø¥¢ÂI¬ö¿ı
-	 // Create Windows
-	 cvReleaseImage(&src1); //fix leak
+    //char FileName[200];
+    //sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",1);    //â˜…æ—¥é–“é«˜é€Ÿ
+    IplImage *src1 = cvLoadImage(FileName, 0); //è®€é€²åŸåœ–
+    CvSize pImgA_size; //æ–°çš„picå¤§å°
+    
+    pImgA_size.width = src1->width* (640.0 / src1->width); //é‡è¨­pImgAå¤§å°
+    pImgA_size.height = src1->height* (480.0 / src1->height);
+    pImgA = cvCreateImage(pImgA_size, src1->depth, src1->nChannels);
+    pImgB = cvCreateImage(pImgA_size, src1->depth, src1->nChannels); //å‰µç«‹ç›®æ¨™å½±åƒB
+    
+    cvResize(src1, pImgA, CV_INTER_LINEAR);  //æ”¹è®Šå¤§å°
+    
+    
+    pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
+    pImgCanny = cvCreateImage(cvSize(640,480),8,1); //ç”¢ç”Ÿcannyåœ–
+    pImgBuffer =cvCreateImage(cvSize(640,480), 8,1);
+    pImgGrayC = cvCreateImage(cvSize(640,480), 8,1);
+    pImgC = cvCreateImage(cvSize(640,480), 8,1); //ç©ºåœ–å±¤ åˆå§‹åŒ–
+    pImgHouf = cvCreateImage(cvSize(640,480), 8,1);
+    
+    CPround=0; //æœ€å‰›é–‹å§‹åˆå§‹åŒ–æ¶ˆå¤±é»ç´€éŒ„
+    // Create Windows
+    cvReleaseImage(&src1); //fix leak
 }
 
 //====================================
-//===========¨®¹D½u°¾²¾ÀË´ú===========
+//===========è»Šé“ç·šåç§»æª¢æ¸¬===========
 
-bool Lane_Offset(CvPoint VPoint,int lx,int rx) //¶Ç¤J (®ø¥¢ÂI,¥ªX,¥kX)
+bool Lane_Offset(CvPoint VPoint,int lx,int rx) //å‚³å…¥ (æ¶ˆå¤±é»,å·¦X,å³X)
 {
-	if(lx!=0 || rx!=0){
-
-		float sumLong=abs(rx-lx); //¥ª¥k¨®¹DÁ`ªø
-
-		if(abs(VPoint.x-lx)/sumLong<=0.33){
-			flag=true;
-			return flag; //¥ª½u°¾²¾
-		}
-		else if(abs(rx-VPoint.x)/sumLong<=0.33){
-			flag = true;
-			return flag; //¥ª½u°¾²¾
-		}
-		else{
-			flag = false;
-			return flag;
-		}
-	}
-	return flag;
+    if(lx!=0 || rx!=0){
+        
+        float sumLong=abs(rx-lx); //å·¦å³è»Šé“ç¸½é•·
+        
+        if(abs(VPoint.x-lx)/sumLong<=0.33){
+            flag=true;
+            return flag; //å·¦ç·šåç§»
+        }
+        else if(abs(rx-VPoint.x)/sumLong<=0.33){
+            flag = true;
+            return flag; //å·¦ç·šåç§»
+        }
+        else{
+            flag = false;
+            return flag;
+        }
+    }
+    return flag;
 }
 //====================================
-//==============ÀË¬d®ø¥¢ÂI¥¿½T©Ê======
+//==============æª¢æŸ¥æ¶ˆå¤±é»æ­£ç¢ºæ€§======
 void Check_VPoint(int &VPx,int &VPy)
 {
-	int oldx=VPx;int oldy=VPy;
-	if (CPround<CPIndex) //«e¤­±i¥á°}¦C
-	{
-		AddressXY[CPround][0] = CheckXY[CPround][0]= VPx; //save X
-		AddressXY[CPround][1] = CheckXY[CPround][1]= VPy; //save Y
-	}
-	else
-	{
-		for(int i=0;i<CPIndex;i++) //CheckXY±Æ§Ç
-			for(int j=0;j<CPIndex-1;j++)
-			{
-				if(CheckXY[j][0]>CheckXY[j+1][0]){ //X ±Æ§Ç
-				int resx=CheckXY[j][0];
-				CheckXY[j][0]=CheckXY[j+1][0];
-				CheckXY[j+1][0]=resx;
-				}
-				if(CheckXY[j][1]>CheckXY[j+1][1]){ //Y ±Æ§Ç
-				int resy=CheckXY[j][1];
-				CheckXY[j][1]=CheckXY[j+1][1];
-				CheckXY[j+1][1]=resy;
-				}
-			}
-			//===================
-			//cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
-			//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
-			int midx=CheckXY[2][0]; //¤¤¶¡ªºX
-			int midy=CheckXY[2][1];//¤¤¶¡ªºY
-
-			VPx=midx;
-			VPy=midy;
-			//if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "­×¥¿X ¡¹¡¹¡¹¡¹¡¹¡¹ "<< midx <<endl; }//»~®t¤Ó¤j(20) ­×¥¿
-			//if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "­×¥¿Y ¡¸¡¸¡¸¡¸¡¸¡¸ "<<  midy <<endl; }//»~®t¤Ó¤j(20) ­×¥¿
-
-			for(int i=1;i<CPIndex;i++) {
-				AddressXY[i-1][0]=AddressXY[i][0]; //°òÂ¦·h²¾X
-				AddressXY[i-1][1]=AddressXY[i][1]; //°òÂ¦·h²¾Y
-				CheckXY[i-1][0]=AddressXY[i-1][0];
-				CheckXY[i-1][1]=AddressXY[i-1][1];
-			}
-			AddressXY[CPIndex-1][0] = CheckXY[CPIndex-1][0]= oldx; //save X
-			AddressXY[CPIndex-1][1] = CheckXY[CPIndex-1][1]= oldy; //save Y
-
-	}
-
-	if(CPround <= CPIndex) 
-		CPround++;
-	//if(CPround ==15) CPround=0;
-	//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+    int oldx=VPx;int oldy=VPy;
+    if (CPround<CPIndex) //å‰äº”å¼µä¸Ÿé™£åˆ—
+    {
+        AddressXY[CPround][0] = CheckXY[CPround][0]= VPx; //save X
+        AddressXY[CPround][1] = CheckXY[CPround][1]= VPy; //save Y
+    }
+    else
+    {
+        for(int i=0;i<CPIndex;i++) //CheckXYæ’åº
+            for(int j=0;j<CPIndex-1;j++)
+            {
+                if(CheckXY[j][0]>CheckXY[j+1][0]){ //X æ’åº
+                    int resx=CheckXY[j][0];
+                    CheckXY[j][0]=CheckXY[j+1][0];
+                    CheckXY[j+1][0]=resx;
+                }
+                if(CheckXY[j][1]>CheckXY[j+1][1]){ //Y æ’åº
+                    int resy=CheckXY[j][1];
+                    CheckXY[j][1]=CheckXY[j+1][1];
+                    CheckXY[j+1][1]=resy;
+                }
+            }
+        //===================
+        //cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
+        //cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+        int midx=CheckXY[2][0]; //ä¸­é–“çš„X
+        int midy=CheckXY[2][1];//ä¸­é–“çš„Y
+        
+        VPx=midx;
+        VPy=midy;
+        //if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "ä¿®æ­£X â˜…â˜…â˜…â˜…â˜…â˜… "<< midx <<endl; }//èª¤å·®å¤ªå¤§(20) ä¿®æ­£
+        //if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "ä¿®æ­£Y â˜†â˜†â˜†â˜†â˜†â˜† "<<  midy <<endl; }//èª¤å·®å¤ªå¤§(20) ä¿®æ­£
+        
+        for(int i=1;i<CPIndex;i++) {
+            AddressXY[i-1][0]=AddressXY[i][0]; //åŸºç¤æ¬ç§»X
+            AddressXY[i-1][1]=AddressXY[i][1]; //åŸºç¤æ¬ç§»Y
+            CheckXY[i-1][0]=AddressXY[i-1][0];
+            CheckXY[i-1][1]=AddressXY[i-1][1];
+        }
+        AddressXY[CPIndex-1][0] = CheckXY[CPIndex-1][0]= oldx; //save X
+        AddressXY[CPIndex-1][1] = CheckXY[CPIndex-1][1]= oldy; //save Y
+        
+    }
+    
+    if(CPround <= CPIndex)
+        CPround++;
+    //if(CPround ==15) CPround=0;
+    //cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
 }
 //=====================================
-//==============ImgFilter ³Ğ³y=========
-void Filter_Init(int VPx,int VPy){  // (¶Ç¤J®ø¥¢ÂIX)
-	 
-	//====«C¶Â
-	//pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
-	//cvSet(pImgFilter,cvScalar(255,255,255));
-	
- //======²£¥Í¾B¸n¹Ï Filter================
- for(int fs=0;fs<100;fs++)
- {
-	 //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
-	 if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
-		 if(RLpoint[fs][0]>=VPx){ //¦b¥kÃäªºÂI RLpoint[fs][0]-20
-			 for(int i=RLpoint[fs][0]-30;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //¥kÃäÂX®i i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 ¥ªÃäÂX®i i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
-			//if(j<0)continue;
-			pImgFilter->imageData[j*pImgFilter->width+i]=255;
-		}}
-
-		  if(RLpoint[fs][0]<=VPx){ //¦b¥ªÃäªºÂI RLpoint[fs][0]+20
-	 for(int i=0;i<RLpoint[fs][0]+30;i++) //¥kÃäÂX®i i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 ¥ªÃäÂX®i i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
-		for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
-			//if(j>pImgFilter->height)continue;
-			pImgFilter->imageData[j*pImgFilter->width+i]=255;}
-		  }
-		 }
- }
-
-	////--------·s¾B¸n¤T¨¤µeªk--------
-	//CvPoint ** PointArray1 = new CvPoint*[1];  
-	//int arr[1];  
-	//arr[0] = 3;  
-	//PointArray1[0] = new CvPoint[3];  
-	//PointArray1[0][0]=cvPoint(VPx,VPy); //
- //   PointArray1[0][1]=cvPoint(newfilter_rx,450);
- //   PointArray1[0][2]=cvPoint(newfilter_lx,450);
-	//cvFillPoly(pImgFilter,PointArray1,arr,1,CV_RGB(0,0,0));  
-
- cvAnd(pImgFilter,pImgCanny,pImgCanny);
- ////=======================================
-
-
+//==============ImgFilter å‰µé€ =========
+void Filter_Init(int VPx,int VPy){  // (å‚³å…¥æ¶ˆå¤±é»X)
+    
+    //====é’é»‘
+    //pImgFilter = cvCreateImage(cvSize(640,480), 8,1);
+    //cvSet(pImgFilter,cvScalar(255,255,255));
+    
+    //======ç”¢ç”Ÿé®ç½©åœ– Filter================
+    for(int fs=0;fs<100;fs++)
+    {
+        //if (RLpoint[fs][0]<=0)RLpoint[fs][0]=0;if (RLpoint[fs][1]<=0)RLpoint[fs][1]=0;
+        if(RLpoint[fs][0]!=0 && RLpoint[fs][1]!=0){
+            if(RLpoint[fs][0]>=VPx){ //åœ¨å³é‚Šçš„é» RLpoint[fs][0]-20
+                for(int i=RLpoint[fs][0]-30;i<RLpoint[fs][0]+(pImgFilter->widthStep-RLpoint[fs][0]);i++) //å³é‚Šæ“´å±• i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 å·¦é‚Šæ“´å±• i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+                    for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+                        //if(j<0)continue;
+                        pImgFilter->imageData[j*pImgFilter->width+i]=255;
+                    }}
+            
+            if(RLpoint[fs][0]<=VPx){ //åœ¨å·¦é‚Šçš„é» RLpoint[fs][0]+20
+                for(int i=0;i<RLpoint[fs][0]+30;i++) //å³é‚Šæ“´å±• i=RLpoint[fs][0];i<RLpoint[fs][0]+1000 å·¦é‚Šæ“´å±• i=RLpoint[fs][0]-1000;i<RLpoint[fs][0]
+                    for(int j=RLpoint[fs][1]+30;j>RLpoint[fs][1]-30;j--){
+                        //if(j>pImgFilter->height)continue;
+                        pImgFilter->imageData[j*pImgFilter->width+i]=255;}
+            }
+        }
+    }
+    
+    ////--------æ–°é®ç½©ä¸‰è§’ç•«æ³•--------
+    //CvPoint ** PointArray1 = new CvPoint*[1];
+    //int arr[1];
+    //arr[0] = 3;
+    //PointArray1[0] = new CvPoint[3];
+    //PointArray1[0][0]=cvPoint(VPx,VPy); //
+    //   PointArray1[0][1]=cvPoint(newfilter_rx,450);
+    //   PointArray1[0][2]=cvPoint(newfilter_lx,450);
+    //cvFillPoly(pImgFilter,PointArray1,arr,1,CV_RGB(0,0,0));
+    
+    cvAnd(pImgFilter,pImgCanny,pImgCanny);
+    ////=======================================
+    
+    
 }
 
 
 //=======================================
-//==========¼v¹³Å|¹Ï(ºôª¬)=============== xxhh(¿é¤J¼v¹³1,¿é¤J¼v¹³2,¿é¥XÅ|¹Ï)
-IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor,int XXHHflag)
+//==========å½±åƒç–Šåœ–(ç¶²ç‹€)=============== xxhh(è¼¸å…¥å½±åƒ1,è¼¸å…¥å½±åƒ2,è¼¸å‡ºç–Šåœ–)
+IplImage* xxhh( IplImage *img1,IplImage *img2,IplImage *imgout,IplImage *pImgColor,int XXHHflag,IplConvKernel *pKernel)
 {
-	
-	//´ú¸ÕCANNY½º¹Ï¿é¥X
-			IplImage *pImgDCanny = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
-			//cvCanny(src2, src2, 40,120, 3);	
-			IplImage *pImgDCanny2 = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
-			IplImage *pImgDCannyS = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
-			IplImage *pImgDCannyMo = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
-			
-			int pos = 1;
-			IplConvKernel * pKernel = NULL;
-			pKernel = cvCreateStructuringElementEx( 
-				pos*2+1, 
-				pos*2+1, 
-				pos, 
-				pos, 
-				CV_SHAPE_ELLIPSE, 
-				NULL);
-
-			//¹w³]¶Â©³
-			cvSet(pImgDCanny,cvScalar(0,0,0));
-			cvSet(pImgDCannyS,cvScalar(0,0,0));
-			cvSet(pImgDCannyMo,cvScalar(0,0,0));
-
-			//pImgDCanny = canny(img1, pImgBuffer);
-			//pImgDCanny2 = canny(img2, pImgBuffer);
-			cvCanny(img1, pImgDCanny ,40,120, 3);	 //40,120
-			cvCanny(img2, pImgDCanny2 ,40,120, 3);	
-			
-			if(XXHHflag==1)
-				cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
-			else
-				cvCopy(pImgDCanny,pImgDCannyS);
-			
-			// Create Windows
-
-			//cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIANÂoªi CV_BLUR_NO_SCALE
-			cvDilate( pImgDCannyS, pImgDCannyMo, pKernel, 1); //ÂX´²Dilation
-			cvOr(pImgDCannyS,pImgDCannyMo,pImgDCannyS);
-			
-			//cvShowImage("DCanny TestB", pImgDCannyS);
-			
-			
-////=============old Å|¹Ï=====================================
-//	 for(int j=0;j<100;j++){ RLpoint[j][0]=0;RLpoint[j][1]=0;}//°}¦Cªì©l¤Æ
-//
-//	 int startX = 1;int startY = 1; //start index
-// for(int h = 0 ;h< img2->height ;h++) //°ª«×¸õÅD+=2 
-// {
-//   for(int w = 0;w< img2->widthStep ;w++) //¼e«×¸õÅD(BGR)+=4
-//    {
-//		unsigned  int sB=  img2->imageData[h*img2->widthStep+w];
-//		unsigned  int sR=  img2->imageData[h*img2->widthStep+w+1];
-//		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
-//		if((sB+sR+sG)/3>120) //>80
-//		{
-//			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
-//			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
-//			imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
-//		}
-//	  
-//     }
-//   
-// }
-// //===============================================================================
-
-
- IplImage* pImg3C = cvCreateImage(cvSize(pImgDCannyS->width,pImgDCannyS->height), IPL_DEPTH_8U, 3);
- cvCvtColor(pImgDCannyS, pImg3C, CV_GRAY2BGR);//change channel
-
-// cvAnd(pImg3C,pImgColor,pImg3C); //¿Ä¦XÃC¦â
- //cvCvtColor(pImg3C, pImg3C,CV_BGR2HSV);//change channel
-
-
- //TEST=================================
-	IplImage* sumMat = cvCreateImage(cvSize(pImg3C->width,pImg3C->height), IPL_DEPTH_8U, 3);
-	cvSet(sumMat,cvScalar(0,0,0));
-    //«Ø¥ßÀx¦s¼v¹³¿n¤Àªº°}¦C¡A®æ¦¡¥i¬°32-bit¾ã¼Æ©Î64F¯BÂI¼Æ
-
-  for(int h = 0 ;h< pImg3C->height ;h++) //°ª«×¸õÅD+=40  (40*40)
- {
-	 int oldh=h;
-	 float line_val=0;
-   for(int w = 0;w< pImg3C->width ;w++) //¼e«×¸õÅD(BGR)+=4 
+    
+    //æ¸¬è©¦CANNYè¶åœ–è¼¸å‡º
+    IplImage *pImgDCanny = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+    //cvCanny(src2, src2, 40,120, 3);
+    IplImage *pImgDCanny2 = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+    IplImage *pImgDCannyS = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+    IplImage *pImgDCannyMo = cvCreateImage(cvSize(img1->width* (640.0 / img1->width), img1->height* (480.0 / img1->height)), img1->depth, img1->nChannels);
+    
+    
+    
+    //é è¨­é»‘åº•
+    cvSet(pImgDCanny,cvScalar(0,0,0));
+    cvSet(pImgDCannyS,cvScalar(0,0,0));
+    cvSet(pImgDCannyMo,cvScalar(0,0,0));
+    
+    //pImgDCanny = canny(img1, pImgBuffer);
+    //pImgDCanny2 = canny(img2, pImgBuffer);
+    cvCanny(img1, pImgDCanny ,40,120, 3);	 //40,120
+    cvCanny(img2, pImgDCanny2 ,40,120, 3);
+    
+    if(XXHHflag==1)
+        cvOr(pImgDCanny,pImgDCanny2,pImgDCannyS);
+    else
+        cvCopy(pImgDCanny,pImgDCannyS);
+    
+    // Create Windows
+    
+    //cvSmooth(pImgDCannyS,pImgDCannyMo,CV_BLUR ,5,5,1,1); //GAUSSIANæ¿¾æ³¢ CV_BLUR_NO_SCALE
+    cvDilate( pImgDCannyS, pImgDCannyMo, pKernel, 1); //æ“´æ•£Dilation
+    cvOr(pImgDCannyS,pImgDCannyMo,pImgDCannyS);
+    
+    //cvShowImage("DCanny TestB", pImgDCannyS);
+    
+    
+    ////=============old ç–Šåœ–=====================================
+    //	 for(int j=0;j<100;j++){ RLpoint[j][0]=0;RLpoint[j][1]=0;}//é™£åˆ—åˆå§‹åŒ–
+    //
+    //	 int startX = 1;int startY = 1; //start index
+    // for(int h = 0 ;h< img2->height ;h++) //é«˜åº¦è·³èº+=2
+    // {
+    //   for(int w = 0;w< img2->widthStep ;w++) //å¯¬åº¦è·³èº(BGR)+=4
+    //    {
+    //		unsigned  int sB=  img2->imageData[h*img2->widthStep+w];
+    //		unsigned  int sR=  img2->imageData[h*img2->widthStep+w+1];
+    //		unsigned  int sG=  img2->imageData[h*img2->widthStep+w+2];
+    //		if((sB+sR+sG)/3>120) //>80
+    //		{
+    //			imgout->imageData[h*imgout->widthStep+w]=img2->imageData[h*img2->widthStep+w];
+    //			imgout->imageData[h*imgout->widthStep+w+1]=img2->imageData[h*img2->widthStep+w+1];
+    //			imgout->imageData[h*imgout->widthStep+w+2]=img2->imageData[h*img2->widthStep+w+2];
+    //		}
+    //
+    //     }
+    //
+    // }
+    // //===============================================================================
+    
+    
+    IplImage* pImg3C = cvCreateImage(cvSize(pImgDCannyS->width,pImgDCannyS->height), IPL_DEPTH_8U, 3);
+    cvCvtColor(pImgDCannyS, pImg3C, CV_GRAY2BGR);//change channel
+    
+    // cvAnd(pImg3C,pImgColor,pImg3C); //èåˆé¡è‰²
+    //cvCvtColor(pImg3C, pImg3C,CV_BGR2HSV);//change channel
+    
+    
+    //TEST=================================
+    IplImage* sumMat = cvCreateImage(cvSize(pImg3C->width,pImg3C->height), IPL_DEPTH_8U, 3);
+    cvSet(sumMat,cvScalar(0,0,0));
+    //å»ºç«‹å„²å­˜å½±åƒç©åˆ†çš„é™£åˆ—ï¼Œæ ¼å¼å¯ç‚º32-bitæ•´æ•¸æˆ–64Fæµ®é»æ•¸
+    
+    for(int h = 0 ;h< pImg3C->height ;h++) //é«˜åº¦è·³èº+=40  (40*40)
     {
-		//unsigned  int sB=  pImg3C->imageData[h*pImg3C->widthStep+w];
-		//unsigned  int sR=  pImg3C->imageData[h*pImg3C->widthStep+w+1];
-		//unsigned  int sG=  pImg3C->imageData[h*pImg3C->widthStep+w+2];
-		
-		CvScalar s=cvGet2D(pImg3C,h,w); // get the (i,j) pixel value
-        //printf("B=%f, G=%f, R=%f \n",s.val[0],s.val[1],s.val[2]);
-		
-		
-		if (s.val[0]>0) //¦³Âø°T
-		{
-		//cvLine( pImg3C, cvPoint(w,oldh), cvPoint(w,h-s.val[0]/15), CV_RGB(255,0,0), 1); //h-s.val[0]/20  //¬õÂI
-		//oldh = h-s.val[0]/15;
-			float now_point = s.val[0];
-
-			int sumc=0,out_c=0;
-			int level_flag=0,blump_flag=0;
-			//===1x13¯x°}³æ¦ì(¤ô¥­±½´y)===
-			int hh=0;
-			//for(int hh=0; hh<=1;hh++)
-				for(int ww=-8; ww<=8;ww++)
-				{
-					if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
-					CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //¾F°ì
-					sumc += s2.val[0]; }//0~255's sum
-					else
-					{out_c++;}
-				}
-				int all_i=(1*17) -1;//out_c; //Á`¦¸¼Æ
-				
-				//line_val= (sumc/all_i)/ now_point ; // ¾F°ì/¤¤­È (0~1)
-				line_val=( (sumc/all_i) )/255.0; // ¾F°ì/¤¤­È (0~1)
-				
-				if(line_val>0.6)
-					cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
-
-				sumc=0;
-
-			//===13x1¯x°}³æ¦ì(««ª½±½´y)===
-			int ww=0;
-			for(int hh=-8; hh<=8;hh++)
-				//for(int ww=-6; ww<=6;ww++)
-				{
-					if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
-					CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //¾F°ì
-					sumc += s2.val[0]; }//0~255's sum
-					else
-					{out_c++;}
-				}
-				 all_i=(1*17) -1;//out_c; //Á`¦¸¼Æ
-				//line_val= (sumc/all_i)/ now_point ; // ¾F°ì/¤¤­È (0~1)
-				line_val=( (sumc/all_i) )/255.0; // ¾F°ì/¤¤­È (0~1)
-
-				if(line_val>0.8)
-					cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
-				
-				
-     }
-   
-  }
-   //if(count > pImg3C->width/2.5 ) cvLine(pImg3C,cvPoint(0,h),cvPoint(pImg3C->width,h),CV_RGB(0,0,0)); //(pImg3C->width/5)
- }
-
-   
-
- 
-	////Åã¥Ü¿n¤À¼v¹³ªº­È
-	//cvNamedWindow("sumMat(¤ô¥­±½´y)", 3);
-	cvShowImage("sumMat(¤ô¥­««ª½±½´y)", sumMat);
-
-	//cvNamedWindow("sqsumMat", 3);
-	//cvShowImage("sqsumMat", sqsumMat);
-  //========================================
-
-	//cvAnd(pImg3C,sumMat,pImg3C);
- cvShowImage("DCanny TestB", pImg3C);
-
- // cvEqualizeHist( pImg3C, pImg3C );//ª½¤è¹Ï§¡¤Æ
-
-
- cvNot(sumMat,sumMat);
- cvAnd(pImg3C,sumMat,pImg3C);
- cvCvtColor( pImg3C, pImgGrayC, CV_BGR2GRAY );
-
- //cvThreshold(pImgGrayC,pImgGrayC,1,255,CV_THRESH_BINARY); //¤G­È¤Æ(¬É¤À¼Ò½kÂI)
- cvShowImage("Mask's pImgGrayC", pImgGrayC);
-
-
-	
-	cvReleaseImage(&pImgDCannyS); 
-	cvReleaseImage(&pImgDCanny); 
-	cvReleaseImage(&pImgDCanny2); 
-	cvReleaseImage(&pImgDCannyMo); 
-	cvReleaseImage(&pImg3C); 
-	cvReleaseImage(&sumMat);		
-
- return imgout;
-  //cvReleaseImage(&imgout);//ÄÀ©ñ°O¾ĞÅé
+        int oldh=h;
+        float line_val=0;
+        for(int w = 0;w< pImg3C->width ;w++) //å¯¬åº¦è·³èº(BGR)+=4
+        {
+            //unsigned  int sB=  pImg3C->imageData[h*pImg3C->widthStep+w];
+            //unsigned  int sR=  pImg3C->imageData[h*pImg3C->widthStep+w+1];
+            //unsigned  int sG=  pImg3C->imageData[h*pImg3C->widthStep+w+2];
+            
+            CvScalar s=cvGet2D(pImg3C,h,w); // get the (i,j) pixel value
+            //printf("B=%f, G=%f, R=%f \n",s.val[0],s.val[1],s.val[2]);
+            
+            
+            if (s.val[0]>0) //æœ‰é›œè¨Š
+            {
+                //cvLine( pImg3C, cvPoint(w,oldh), cvPoint(w,h-s.val[0]/15), CV_RGB(255,0,0), 1); //h-s.val[0]/20  //ç´…é»
+                //oldh = h-s.val[0]/15;
+                float now_point = s.val[0];
+                
+                int sumc=0,out_c=0;
+                int level_flag=0,blump_flag=0;
+                //===1x13çŸ©é™£å–®ä½(æ°´å¹³æƒæ)===
+                int hh=0;
+                //for(int hh=0; hh<=1;hh++)
+                for(int ww=-8; ww<=8;ww++)
+                {
+                    if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
+                        CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //é„°åŸŸ
+                        sumc += s2.val[0]; }//0~255's sum
+                    else
+                    {out_c++;}
+                }
+                int all_i=(1*17) -1;//out_c; //ç¸½æ¬¡æ•¸
+                
+                //line_val= (sumc/all_i)/ now_point ; // é„°åŸŸ/ä¸­å€¼ (0~1)
+                line_val=( (sumc/all_i) )/255.0; // é„°åŸŸ/ä¸­å€¼ (0~1)
+                
+                if(line_val>0.6)
+                    cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
+                
+                sumc=0;
+                
+                //===13x1çŸ©é™£å–®ä½(å‚ç›´æƒæ)===
+                int ww=0;
+                for(int hh=-8; hh<=8;hh++)
+                    //for(int ww=-6; ww<=6;ww++)
+                {
+                    if((h+hh>0 && w+ww>0) && (h+hh < pImg3C->height && w+ww < pImg3C->width) ){
+                        CvScalar s2=cvGet2D(pImg3C,h+hh,w+ww); //é„°åŸŸ
+                        sumc += s2.val[0]; }//0~255's sum
+                    else
+                    {out_c++;}
+                }
+                all_i=(1*17) -1;//out_c; //ç¸½æ¬¡æ•¸
+                //line_val= (sumc/all_i)/ now_point ; // é„°åŸŸ/ä¸­å€¼ (0~1)
+                line_val=( (sumc/all_i) )/255.0; // é„°åŸŸ/ä¸­å€¼ (0~1)
+                
+                if(line_val>0.8)
+                    cvSet2D(sumMat,h,w,CV_RGB(255,255,255));
+                
+                
+            }
+            
+        }
+        //if(count > pImg3C->width/2.5 ) cvLine(pImg3C,cvPoint(0,h),cvPoint(pImg3C->width,h),CV_RGB(0,0,0)); //(pImg3C->width/5)
+    }
+    
+    
+    
+    
+    ////é¡¯ç¤ºç©åˆ†å½±åƒçš„å€¼
+    //cvNamedWindow("sumMat(æ°´å¹³æƒæ)", 3);
+    cvShowImage("sumMat(æ°´å¹³å‚ç›´æƒæ)", sumMat);
+    
+    //cvNamedWindow("sqsumMat", 3);
+    //cvShowImage("sqsumMat", sqsumMat);
+    //========================================
+    
+    //cvAnd(pImg3C,sumMat,pImg3C);
+    cvShowImage("DCanny TestB", pImg3C);
+    
+    // cvEqualizeHist( pImg3C, pImg3C );//ç›´æ–¹åœ–å‡åŒ–
+    
+    
+    cvNot(sumMat,sumMat);
+    cvAnd(pImg3C,sumMat,pImg3C);
+    cvCvtColor( pImg3C, pImgGrayC, CV_BGR2GRAY );
+    
+    //cvThreshold(pImgGrayC,pImgGrayC,1,255,CV_THRESH_BINARY); //äºŒå€¼åŒ–(ç•Œåˆ†æ¨¡ç³Šé»)
+    cvShowImage("Mask's pImgGrayC", pImgGrayC);
+    
+    
+    
+    cvReleaseImage(&pImgDCannyS);
+    cvReleaseImage(&pImgDCanny);
+    cvReleaseImage(&pImgDCanny2);
+    cvReleaseImage(&pImgDCannyMo);
+    cvReleaseImage(&pImg3C);
+    cvReleaseImage(&sumMat);
+    
+    return imgout;
+    //cvReleaseImage(&imgout);//é‡‹æ”¾è¨˜æ†¶é«”
 }
 //========================================
-//============¿é¤J­ì¹Ï ¿é¥X canny¹Ï=======
-IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(¿é¤J¹Ï¤ù,½w½Ä¹Ï¼h(ªÅªº))
+//============è¼¸å…¥åŸåœ– è¼¸å‡º cannyåœ–=======
+IplImage *canny(IplImage *img1,IplImage *dst_DThrSmo)  //canny(è¼¸å…¥åœ–ç‰‡,ç·©è¡åœ–å±¤(ç©ºçš„))
 {
-	
-	IplImage *Smo_pic =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //ªì©l¤Æ
-
-	
-	cvSmooth(img1,img1,CV_GAUSSIAN,3,3,0,0); //GAUSSIANÂoªi
-
-	cvCanny(img1, dst_DThrSmo, 40,120, 3);				// Ãä½tÀË´ú30, 200, 3
-		 
+    
+    IplImage *Smo_pic =cvCreateImage(cvSize(img1->width,img1->height),img1->depth,img1->nChannels); //åˆå§‹åŒ–
+    
+    
+    cvSmooth(img1,img1,CV_GAUSSIAN,3,3,0,0); //GAUSSIANæ¿¾æ³¢
+    
+    cvCanny(img1, dst_DThrSmo, 40,120, 3);				// é‚Šç·£æª¢æ¸¬30, 200, 3
+    
     //cout << "test canny" << endl;
-	img1 = dst_DThrSmo; 
+    img1 = dst_DThrSmo;
     //cvReleaseImage(&dst_DThrSmo);
-	cvReleaseImage(&Smo_pic);
-	
-	return img1;
-	
+    cvReleaseImage(&Smo_pic);
+    
+    return img1;
+    
 }
 //==================================================
-//===============¹ï¤ñÂI½u(¼È®É)=====================
-IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (¿é¤J¹Ï¤ù,®ø¥¢ÂIX,®ø¥¢ÂIY)
+//===============å°æ¯”é»ç·š(æš«æ™‚)=====================
+IplImage* drawline(IplImage *pImgDis,int centerX,int centerY) //drawline (è¼¸å…¥åœ–ç‰‡,æ¶ˆå¤±é»X,æ¶ˆå¤±é»Y)
 {
-	 //int centerX =100; //®ø¥¢ÂIªº¤¤¿¤X
-	 Arrpointindex=0;
-	 int RGBavg ; //ÃC¦âºë½T«×¶V¤j¶V¥Õ
-	 int RGBdiff=40; //¤¤½u»P©P³ò°»´úªºÃC¦â®t²§ (¶V¤p¶Vºë²Ó)
-	 int cRGB;
-	 int LBef=5,RBef=5; //°O¿ı«e¤@­Ó¹ï¤ñÂI»P®ø¥¢ÂIXªº¶ZÂ÷
-
-	 int FixMask_Lu[5],FixMask_Ld[5],FixMask_Ru[5],FixMask_Rd[5]; //­×¥¿¤¤¶¡Âø°T¹LÂo
-	 int FMflag = 0 ;//­×¥¿¤¤¶¡Âø°T¹LÂo
-
-	 int CLflag = 0 ;//¬ö¿ı¬O§_¨ìµ²§À¤F¡AÄ²µo¤T¨¤¾B¸n¹Bºâ
-	 avgR=0.0,avgL=0.0; //¥­§¡±×²vÂk¹s
-	
-	 	
-	//IplImage *Keep_pic =cvCreateImage(cvSize(pImgC->width,pImgC->height),pImgC->depth,pImgC->nChannels); //ªì©l¤Æ
-	//cvCopy(pImgC ,Keep_pic); //img1 copy to imgout
-
-	int check=0,check2=0;
-	 CvPoint v1,v2;
- CvPoint r1,r2;
- CvPoint L1,L2;
- v1=cvPoint(centerX,centerY);  //Y¼Æ¦r¤pªº¦b¤W­±
- v2=cvPoint(centerX,pImgDis->height-80);
-
-
- int rindex=0 , lindex=0;
-
- for(int index = v1.y;index<v2.y;index+=10){  //620-800
-
-	 
- //===========¨ú¤W­±®y¼ĞÂI
- int h=index; //
- 
-   for(int w = centerX;w< pImgDis->widthStep ;w++) //¥k¤W®y¼Ğ
-    {
-		int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];  //unsigned
-		int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
-
-		if (w==centerX){
-			cRGB=(sB+sR+sG)/3;
-			//cout <<"cRGB==="<< sB<<","<<sR <<","<<sG << endl;
-			if (FMflag<=3) {FixMask_Ru[FMflag]=cRGB;} //¬ö¿ı¥k¤W¤¤½u«e4¥­§¡
-		} 
-		else{   
-			//if(FMflag>3 && abs(cRGB-FixMask_Ru[4])>90 ) continue;
-			RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
-			if(RGBavg>RGBdiff && check ==0){  //if((sB+sR+sG)/3>RGBavg && check ==0){
-			r1=cvPoint(w,h);
-			check++;}
-		}
-   }
-   for(int w = centerX-20;w >0 ;w--) //¥ª¤W®y¼Ğ
-    {
-		int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
-		if (w==centerX-20){
-			cRGB=(sB+sR+sG)/3;//¬ö¿ı¸Ó¦¸¤¤½uªºRGB¥­§¡
-			if (FMflag<=3) {FixMask_Lu[FMflag]=cRGB;} //¬ö¿ı¥ª¤W¤¤½u«e4¥­§¡
-		} 
-		else{   
-			//if(FMflag>3 && abs(cRGB-FixMask_Lu[4])>90 ) continue;
-			RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
-			if(RGBavg>RGBdiff && check2 ==0){  //if((sB+sR+sG)/3>RGBavg && check2 ==0){
-			L1=cvPoint(w,h);
-			check2++;}
-		}
-   }
-		//=============¨ú¤U­±®y¼ĞÂI
-     h=index+3;
-		for(int w = centerX;w< pImgDis->widthStep ;w++) //¥k¤U®y¼Ğ
-    {
-		int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
-		if (w==centerX){
-			cRGB=(sB+sR+sG)/3;//¬ö¿ı¸Ó¦¸¤¤½uªºRGB¥­§¡	
-			if (FMflag<=3) {FixMask_Rd[FMflag]=cRGB;} //¬ö¿ı¥k¤U¤¤½u«e4¥­§¡
-		} 
-		else{   
-			//if(FMflag>3 && abs(cRGB-FixMask_Rd[4])>90 ) continue;
-			RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
-			if(RGBavg>RGBdiff && check ==1){  //if((sB+sR+sG)/3>RGBavg && check ==1){
-			r2=cvPoint(w,h);
-			check++;}
-		}
-	}
-		for(int w = centerX-20;w>0 ;w--) //¥ª¤U®y¼Ğ
-    {
-		int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
-		int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
-		int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
-		if (w==centerX-20){
-			cRGB=(sB+sR+sG)/3; //¬ö¿ı¸Ó¦¸¤¤½uªºRGB¥­§¡
-			if (FMflag<=3) {FixMask_Ld[FMflag]=cRGB;} //¬ö¿ı¥ª¤U¤¤½u«e4¥­§¡
-		}
-		else{   
-			//if(FMflag>3 && abs(cRGB-FixMask_Ld[4])>90 ) continue;
-			RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
-			if(RGBavg>RGBdiff && check2 ==1){  //if((sB+sR+sG)/3>RGBavg && check2 ==1){
-			L2=cvPoint(w,h);
-			check2++;}
-		}
-	}
-		//ºâ½u¬qªø¥[¤J§P¬q ­pºâ¤èªk: ®Ú¸¹[ (x®y¼Ğ-x®y¼Ğ)^2 + (y®y¼Ğ-y®y¼Ğ)^2 ]
-		double linelong=0;
-		//
-		if(check==2 ){
-			linelong= sqrt (pow(double(r2.x-r1.x),2) + pow(double(r2.y-r1.y),2));
-			//double m = abs( (double)(r1.y - r2.y) / (r1.x - r2.x) ) -  0.0 ;//¨ú±o±×²v-0 ªº®t¶Z
-			//if(m > 0.5)  //¹LÂo¤Ó±µªñ¤ô¥­
-			if(linelong<100) //linelong<50
-			{
+    //int centerX =100; //æ¶ˆå¤±é»çš„ä¸­ç¸£X
+    Arrpointindex=0;
+    int RGBavg ; //é¡è‰²ç²¾ç¢ºåº¦è¶Šå¤§è¶Šç™½
+    int RGBdiff=40; //ä¸­ç·šèˆ‡å‘¨åœåµæ¸¬çš„é¡è‰²å·®ç•° (è¶Šå°è¶Šç²¾ç´°)
+    int cRGB;
+    int LBef=5,RBef=5; //è¨˜éŒ„å‰ä¸€å€‹å°æ¯”é»èˆ‡æ¶ˆå¤±é»Xçš„è·é›¢
+    
+    int FixMask_Lu[5],FixMask_Ld[5],FixMask_Ru[5],FixMask_Rd[5]; //ä¿®æ­£ä¸­é–“é›œè¨Šéæ¿¾
+    int FMflag = 0 ;//ä¿®æ­£ä¸­é–“é›œè¨Šéæ¿¾
+    
+    int CLflag = 0 ;//ç´€éŒ„æ˜¯å¦åˆ°çµå°¾äº†ï¼Œè§¸ç™¼ä¸‰è§’é®ç½©é‹ç®—
+    avgR=0.0,avgL=0.0; //å¹³å‡æ–œç‡æ­¸é›¶
+    
+    
+    //IplImage *Keep_pic =cvCreateImage(cvSize(pImgC->width,pImgC->height),pImgC->depth,pImgC->nChannels); //åˆå§‹åŒ–
+    //cvCopy(pImgC ,Keep_pic); //img1 copy to imgout
+    
+    int check=0,check2=0;
+    CvPoint v1,v2;
+    CvPoint r1,r2;
+    CvPoint L1,L2;
+    v1=cvPoint(centerX,centerY);  //Yæ•¸å­—å°çš„åœ¨ä¸Šé¢
+    v2=cvPoint(centerX,pImgDis->height-80);
+    
+    
+    int rindex=0 , lindex=0;
+    
+    for(int index = v1.y;index<v2.y;index+=10){  //620-800
+        
+        
+        //===========å–ä¸Šé¢åº§æ¨™é»
+        int h=index; //
+        
+        for(int w = centerX;w< pImgDis->widthStep ;w++) //å³ä¸Šåº§æ¨™
+        {
+            int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];  //unsigned
+            int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
+            int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
             
-            cvLine( pImgDis, r1, r2, CV_RGB(255,255,255), 1);
-			CvPoint RightAvg = (cvPoint)(((r1.x+r2.x)/2),((r1.y+r2.y)/2)); //¨ú¤¤¶¡ÂI
-			
-			//if(abs(RightAvg.x-centerX)>100){
-
-			 RLpoint[Arrpointindex][0]=RightAvg.x; //§âXY¶b¦s¶i°}¦C
-			 RLpoint[Arrpointindex][1]=RightAvg.y;
-			 Arrpointindex++;
-			 //RBef=abs(RightAvg.x-centerX);
-			//}
-			//pImgC=KeepLine(r1.x,r1.y,r2.x,r2.y,pImgC);//=====¹º¥X©µ¦ù½u=====
-			 pImgDis=ClusterLine(RightAvg.x,RightAvg.y,centerX,centerY,pImgDis,centerX,centerY,0,0);
-			
-			//rindex++;
-			}
-
-			check=0;
-		}
-
-		//linelong= sqrt (pow(double(L2.x-L1.x),2) + pow(double(L2.y-L1.y),2));
-		if(check2==2){
-			linelong= sqrt (pow(double(L2.x-L1.x),2) + pow(double(L2.y-L1.y),2));
-			//double m = abs( (double)(L1.y - L2.y) / (L1.x - L2.x) ) -  0.0 ;//¨ú±o±×²v-0 ªº®t¶Z
-			//if(m > 0.5)  //¹LÂo¤Ó±µªñ¤ô¥­
-			if(linelong<100){ //linelong<50
-			cvLine( pImgDis, L1, L2, CV_RGB(255,255,255), 1);
-
-			CvPoint LeftAvg = (cvPoint)(((L1.x+L2.x)/2),((L1.y+L2.y)/2)); //¨ú¤¤¶¡ÂI
-			
-			//if(abs(centerX-LeftAvg.x)>100){
-
-			 RLpoint[Arrpointindex][0]=LeftAvg.x; //§âXY¶b¦s¶i°}¦C
-			 RLpoint[Arrpointindex][1]=LeftAvg.y;
-			 Arrpointindex++; 
-			 //LBef=abs(LeftAvg.x-centerX);
-			//}
-			//pImgC=KeepLine(L1.x,L1.y,L2.x,L2.y,pImgC);//=====¹º¥X©µ¦ù½u=====
-			 pImgDis=ClusterLine(LeftAvg.x,LeftAvg.y,centerX,centerY,pImgDis,centerX,centerY,1,0);
-			
-			//lindex++;
-			}
-
-			check2=0;
-		}
-
-		
-		
-
-		//=====­×¥¿¤¤½u¼Ğ·Ç¥­§¡====
-		FMflag++;
-		if(FMflag==4)
-		{
-			FixMask_Lu[4]=FixMask_Ld[4]=FixMask_Ru[4]=FixMask_Rd[4]=0; //Init 0
-			for(int fi=0;fi<4;fi++)
-			{
-				FixMask_Lu[4]+=FixMask_Lu[fi];
-				FixMask_Ru[4]+=FixMask_Ru[fi];
-				FixMask_Ld[4]+=FixMask_Ld[fi];
-				FixMask_Rd[4]+=FixMask_Rd[fi];
-			}
-			FixMask_Lu[4]/=4;
-			FixMask_Ru[4]/=4;
-			FixMask_Ld[4]/=4;
-			FixMask_Rd[4]/=4;
-		}
-
-
- }
- pImgDis=ClusterLine(0,0,centerX,centerY,pImgDis,centerX,centerY,NULL,1);
-  //cvLine( pImgC, v1, v2, CV_RGB(255,255,255), 2);
-//cout << "´ú¸Õ¥Î" << Rxy[0][0] << endl;
- // pImgC=Keep_pic; //©µªø½u­n¶}­n°µ
-
-return pImgDis;
-
-
+            if (w==centerX){
+                cRGB=(sB+sR+sG)/3;
+                //cout <<"cRGB==="<< sB<<","<<sR <<","<<sG << endl;
+                if (FMflag<=3) {FixMask_Ru[FMflag]=cRGB;} //ç´€éŒ„å³ä¸Šä¸­ç·šå‰4å¹³å‡
+            }
+            else{
+                //if(FMflag>3 && abs(cRGB-FixMask_Ru[4])>90 ) continue;
+                RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
+                if(RGBavg>RGBdiff && check ==0){  //if((sB+sR+sG)/3>RGBavg && check ==0){
+                    r1=cvPoint(w,h);
+                    check++;}
+            }
+        }
+        for(int w = centerX-20;w >0 ;w--) //å·¦ä¸Šåº§æ¨™
+        {
+            int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
+            int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
+            int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+            if (w==centerX-20){
+                cRGB=(sB+sR+sG)/3;//ç´€éŒ„è©²æ¬¡ä¸­ç·šçš„RGBå¹³å‡
+                if (FMflag<=3) {FixMask_Lu[FMflag]=cRGB;} //ç´€éŒ„å·¦ä¸Šä¸­ç·šå‰4å¹³å‡
+            }
+            else{
+                //if(FMflag>3 && abs(cRGB-FixMask_Lu[4])>90 ) continue;
+                RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
+                if(RGBavg>RGBdiff && check2 ==0){  //if((sB+sR+sG)/3>RGBavg && check2 ==0){
+                    L1=cvPoint(w,h);
+                    check2++;}
+            }
+        }
+        //=============å–ä¸‹é¢åº§æ¨™é»
+        h=index+3;
+        for(int w = centerX;w< pImgDis->widthStep ;w++) //å³ä¸‹åº§æ¨™
+        {
+            int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
+            int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
+            int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+            if (w==centerX){
+                cRGB=(sB+sR+sG)/3;//ç´€éŒ„è©²æ¬¡ä¸­ç·šçš„RGBå¹³å‡
+                if (FMflag<=3) {FixMask_Rd[FMflag]=cRGB;} //ç´€éŒ„å³ä¸‹ä¸­ç·šå‰4å¹³å‡
+            }
+            else{
+                //if(FMflag>3 && abs(cRGB-FixMask_Rd[4])>90 ) continue;
+                RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
+                if(RGBavg>RGBdiff && check ==1){  //if((sB+sR+sG)/3>RGBavg && check ==1){
+                    r2=cvPoint(w,h);
+                    check++;}
+            }
+        }
+        for(int w = centerX-20;w>0 ;w--) //å·¦ä¸‹åº§æ¨™
+        {
+            int sB=  pImgDis->imageData[h*pImgDis->widthStep+w];
+            int sR=  pImgDis->imageData[h*pImgDis->widthStep+w+1];
+            int sG=  pImgDis->imageData[h*pImgDis->widthStep+w+2];
+            if (w==centerX-20){
+                cRGB=(sB+sR+sG)/3; //ç´€éŒ„è©²æ¬¡ä¸­ç·šçš„RGBå¹³å‡
+                if (FMflag<=3) {FixMask_Ld[FMflag]=cRGB;} //ç´€éŒ„å·¦ä¸‹ä¸­ç·šå‰4å¹³å‡
+            }
+            else{
+                //if(FMflag>3 && abs(cRGB-FixMask_Ld[4])>90 ) continue;
+                RGBavg=abs(cRGB-(int)((sB+sR+sG)/3));
+                if(RGBavg>RGBdiff && check2 ==1){  //if((sB+sR+sG)/3>RGBavg && check2 ==1){
+                    L2=cvPoint(w,h);
+                    check2++;}
+            }
+        }
+        //ç®—ç·šæ®µé•·åŠ å…¥åˆ¤æ®µ è¨ˆç®—æ–¹æ³•: æ ¹è™Ÿ[ (xåº§æ¨™-xåº§æ¨™)^2 + (yåº§æ¨™-yåº§æ¨™)^2 ]
+        double linelong=0;
+        //
+        if(check==2 ){
+            linelong= sqrt (pow(double(r2.x-r1.x),2) + pow(double(r2.y-r1.y),2));
+            //double m = abs( (double)(r1.y - r2.y) / (r1.x - r2.x) ) -  0.0 ;//å–å¾—æ–œç‡-0 çš„å·®è·
+            //if(m > 0.5)  //éæ¿¾å¤ªæ¥è¿‘æ°´å¹³
+            if(linelong<100) //linelong<50
+            {
+                
+                cvLine( pImgDis, r1, r2, CV_RGB(255,255,255), 1);
+                CvPoint RightAvg = (cvPoint)(((r1.x+r2.x)/2),((r1.y+r2.y)/2)); //å–ä¸­é–“é»
+                
+                //if(abs(RightAvg.x-centerX)>100){
+                
+                RLpoint[Arrpointindex][0]=RightAvg.x; //æŠŠXYè»¸å­˜é€²é™£åˆ—
+                RLpoint[Arrpointindex][1]=RightAvg.y;
+                Arrpointindex++;
+                //RBef=abs(RightAvg.x-centerX);
+                //}
+                //pImgC=KeepLine(r1.x,r1.y,r2.x,r2.y,pImgC);//=====åŠƒå‡ºå»¶ä¼¸ç·š=====
+                pImgDis=ClusterLine(RightAvg.x,RightAvg.y,centerX,centerY,pImgDis,centerX,centerY,0,0);
+                
+                //rindex++;
+            }
+            
+            check=0;
+        }
+        
+        //linelong= sqrt (pow(double(L2.x-L1.x),2) + pow(double(L2.y-L1.y),2));
+        if(check2==2){
+            linelong= sqrt (pow(double(L2.x-L1.x),2) + pow(double(L2.y-L1.y),2));
+            //double m = abs( (double)(L1.y - L2.y) / (L1.x - L2.x) ) -  0.0 ;//å–å¾—æ–œç‡-0 çš„å·®è·
+            //if(m > 0.5)  //éæ¿¾å¤ªæ¥è¿‘æ°´å¹³
+            if(linelong<100){ //linelong<50
+                cvLine( pImgDis, L1, L2, CV_RGB(255,255,255), 1);
+                
+                CvPoint LeftAvg = (cvPoint)(((L1.x+L2.x)/2),((L1.y+L2.y)/2)); //å–ä¸­é–“é»
+                
+                //if(abs(centerX-LeftAvg.x)>100){
+                
+                RLpoint[Arrpointindex][0]=LeftAvg.x; //æŠŠXYè»¸å­˜é€²é™£åˆ—
+                RLpoint[Arrpointindex][1]=LeftAvg.y;
+                Arrpointindex++; 
+                //LBef=abs(LeftAvg.x-centerX);
+                //}
+                //pImgC=KeepLine(L1.x,L1.y,L2.x,L2.y,pImgC);//=====åŠƒå‡ºå»¶ä¼¸ç·š=====
+                pImgDis=ClusterLine(LeftAvg.x,LeftAvg.y,centerX,centerY,pImgDis,centerX,centerY,1,0);
+                
+                //lindex++;
+            }
+            
+            check2=0;
+        }
+        
+        
+        
+        
+        //=====ä¿®æ­£ä¸­ç·šæ¨™æº–å¹³å‡====
+        FMflag++;
+        if(FMflag==4)
+        {
+            FixMask_Lu[4]=FixMask_Ld[4]=FixMask_Ru[4]=FixMask_Rd[4]=0; //Init 0
+            for(int fi=0;fi<4;fi++)
+            {
+                FixMask_Lu[4]+=FixMask_Lu[fi];
+                FixMask_Ru[4]+=FixMask_Ru[fi];
+                FixMask_Ld[4]+=FixMask_Ld[fi];
+                FixMask_Rd[4]+=FixMask_Rd[fi];
+            }
+            FixMask_Lu[4]/=4;
+            FixMask_Ru[4]/=4;
+            FixMask_Ld[4]/=4;
+            FixMask_Rd[4]/=4;
+        }
+        
+        
+    }
+    pImgDis=ClusterLine(0,0,centerX,centerY,pImgDis,centerX,centerY,NULL,1);
+    //cvLine( pImgC, v1, v2, CV_RGB(255,255,255), 2);
+    //cout << "æ¸¬è©¦ç”¨" << Rxy[0][0] << endl;
+    // pImgC=Keep_pic; //å»¶é•·ç·šè¦é–‹è¦åš
+    
+    return pImgDis;
+    
+    
 }
 
 //=========
 IplImage* ClusterLine(int ax,int ay,int bx,int by, IplImage *pImgDis,int centerX,int centerY,int flag,int CLrun)
 {
-	int y,x;
-	float m =  ((float)(ay - by) / (float)(ax - bx)) ;//¨ú±o±×²v
-	//--¹LÂo¤ô¥­½u--
-	if(CLrun==0)
-	if(abs(m)>0.3 && abs(m)<0.98){ // && abs(m)<0.9
-	cout << "M = " << m << endl;
-	///ª½½uªº±×²v¬° 3 ¤Î¸g¹LÂI (1, 2) ¤èµ{¡Gy - 2 = 3(x - 1)  y-cy=m(x-cx)
-	///x= (y-cy+mcx)/m
-	y=450; //Y¬°©T©w¶b
-	x= (y-centerY+ m*centerX) / m; //­pºâ¥X§¤¸¨©óY¶bªºX
-
-	MaskRL[Arrpointindex][flag]=x;
-
-	if(flag==0) avgR += m;
-	if(flag==1) avgL += m;
-	cout<<"avgR="<<avgR<<"  avgL="<<avgL<<endl;
-	cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(x,y), CV_RGB(255,255,255), 1); //¥ş³¡¦CÁ|
-	}
-	//-----Ä²µo¤T¨¤¾B¸n¦ôºâ-----
-	if(CLrun==1){
-		
-		avgR = avgR / (Arrpointindex/2); //+0.3
-		avgL = avgL / (Arrpointindex/2); //-0.3
-		y=450; //Y¬°©T©w¶b
-		newfilter_rx= (y-centerY+ avgR*centerX) / avgR; //avgR ­pºâ¥X§¤¸¨©óY¶bªºX
-		//cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_rx,y), CV_RGB(0,0,0), 3);
-		newfilter_lx= (y-centerY+ avgL*centerX) / avgL; //avgL ­pºâ¥X§¤¸¨©óY¶bªºX
-		//cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_lx,y), CV_RGB(0,0,0), 3);
-	}
-
-	
-
-	return pImgDis;
+    int y,x;
+    float m =  ((float)(ay - by) / (float)(ax - bx)) ;//å–å¾—æ–œç‡
+    //--éæ¿¾æ°´å¹³ç·š--
+    if(CLrun==0)
+        if(abs(m)>0.3 && abs(m)<0.98){ // && abs(m)<0.9
+            cout << "M = " << m << endl;
+            ///ç›´ç·šçš„æ–œç‡ç‚º 3 åŠç¶“éé» (1, 2) æ–¹ç¨‹ï¼šy - 2 = 3(x - 1)  y-cy=m(x-cx)
+            ///x= (y-cy+mcx)/m
+            y=450; //Yç‚ºå›ºå®šè»¸
+            x= (y-centerY+ m*centerX) / m; //è¨ˆç®—å‡ºåè½æ–¼Yè»¸çš„X
+            
+            MaskRL[Arrpointindex][flag]=x;
+            
+            if(flag==0) avgR += m;
+            if(flag==1) avgL += m;
+            cout<<"avgR="<<avgR<<"  avgL="<<avgL<<endl;
+            cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(x,y), CV_RGB(255,255,255), 1); //å…¨éƒ¨åˆ—èˆ‰
+        }
+    //-----è§¸ç™¼ä¸‰è§’é®ç½©ä¼°ç®—-----
+    if(CLrun==1){
+        
+        avgR = avgR / (Arrpointindex/2); //+0.3
+        avgL = avgL / (Arrpointindex/2); //-0.3
+        y=450; //Yç‚ºå›ºå®šè»¸
+        newfilter_rx= (y-centerY+ avgR*centerX) / avgR; //avgR è¨ˆç®—å‡ºåè½æ–¼Yè»¸çš„X
+        //cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_rx,y), CV_RGB(0,0,0), 3);
+        newfilter_lx= (y-centerY+ avgL*centerX) / avgL; //avgL è¨ˆç®—å‡ºåè½æ–¼Yè»¸çš„X
+        //cvLine( pImgC, cvPoint(centerX,centerY),cvPoint(newfilter_lx,y), CV_RGB(0,0,0), 3);
+    }
+    
+    
+    
+    return pImgDis;
 }
 
 
-//=========¥ª¥k¨ú½d³ò(¯x§Îµe½u)============
+//=========å·¦å³å–ç¯„åœ(çŸ©å½¢ç•«ç·š)============
 
-//==========µe¥X©µªøªº½u¬q================
+//==========ç•«å‡ºå»¶é•·çš„ç·šæ®µ================
 IplImage* KeepLine(int ax,int ay,int bx,int by, IplImage *pImgDis)
 {
-	int linelong= sqrt (pow(double(bx-ax),2) + pow(double(by-ay),2));
-
-	double m = abs( (double)(ay - by) / (ax - bx) ) -  0.0 ;//¨ú±o±×²v-0 ªº®t¶Z
-	if(m > 0.5)  //¹LÂo¤Ó±µªñ¤ô¥­
-	if(linelong<50  ){
-
-		CvPoint v1,v2;
-		int distance=500;
-		int dab=sqrt((double)(ax-bx)*(ax-bx)+(double)(ay-by)*(ay-by));
-		int cx=distance*(ax-bx)/dab+bx;  //(ax-bx)¬°¦V«e©µ¦ù (bx-ax)¬°¦V«á
-		int cy=distance*(ay-by)/dab+by;  //(ay-by)¬°¦V«e©µ¦ù (by-ay)¬°¦V«á
-		//cout<<"("<<cx<<", "<<cy<<")"<<endl;
-	
-		v1=cvPoint(cx,cy);  //Y¼Æ¦r¤pªº¦b¤W­±
-		v2=cvPoint(ax,ay);  //Y¼Æ¦r¤pªº¦b¤W­±
-		//cvLine( pImgC, v1,v2, CV_RGB(255,0,0), 3);
-		cvLine( pImgDis, v1,v2, CV_RGB(255,255,255), 3);
-	}
-	return pImgDis;
+    int linelong= sqrt (pow(double(bx-ax),2) + pow(double(by-ay),2));
+    
+    double m = abs( (double)(ay - by) / (ax - bx) ) -  0.0 ;//å–å¾—æ–œç‡-0 çš„å·®è·
+    if(m > 0.5)  //éæ¿¾å¤ªæ¥è¿‘æ°´å¹³
+        if(linelong<50  ){
+            
+            CvPoint v1,v2;
+            int distance=500;
+            int dab=sqrt((double)(ax-bx)*(ax-bx)+(double)(ay-by)*(ay-by));
+            int cx=distance*(ax-bx)/dab+bx;  //(ax-bx)ç‚ºå‘å‰å»¶ä¼¸ (bx-ax)ç‚ºå‘å¾Œ
+            int cy=distance*(ay-by)/dab+by;  //(ay-by)ç‚ºå‘å‰å»¶ä¼¸ (by-ay)ç‚ºå‘å¾Œ
+            //cout<<"("<<cx<<", "<<cy<<")"<<endl;
+            
+            v1=cvPoint(cx,cy);  //Yæ•¸å­—å°çš„åœ¨ä¸Šé¢
+            v2=cvPoint(ax,ay);  //Yæ•¸å­—å°çš„åœ¨ä¸Šé¢
+            //cvLine( pImgC, v1,v2, CV_RGB(255,0,0), 3);
+            cvLine( pImgDis, v1,v2, CV_RGB(255,255,255), 3);
+        }
+    return pImgDis;
 }
 
 
- 
+
 
 

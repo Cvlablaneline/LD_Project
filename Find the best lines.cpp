@@ -1,5 +1,7 @@
 ﻿#include "Find the best lines.h"
 #include "Vanishing Point.h"
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -189,6 +191,11 @@ bool sort_for_line_group_class_ANGLE(const line_group a, const line_group b)
     return a.angle < b.angle;
 }
 
+bool sort_for_vpRecoder(const CvPoint a, const CvPoint b)
+{
+    return a.y < b.y;
+}
+
 //計算延伸線段座標
 CvPoint Calculation_extension(CvPoint Vanishing_Point,double slope,int y)
 {
@@ -222,11 +229,37 @@ void draw_VPoint(IplImage* img, int x, int y, int vp_range)
 
 
 //找出最佳車道線
-FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, CvPoint vpfnpoint, int vp_range)
+FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, CvPoint vpfnpoint, int vp_range,vector<CvPoint> *vpRecoder,IplImage* showLineGroup_line)
 {
+#define drawGroupLine //是否畫出線群的線段
+    
     //線段分群
     vector <line_group> line_group_data_l;
     vector <line_group> line_group_data_r;
+    //消失點記錄（水平線紀錄）
+    if ((*vpRecoder).size() < 3)
+    {
+        (*vpRecoder).push_back(vpfnpoint);
+    }
+    else
+    {
+        (*vpRecoder).push_back(vpfnpoint);
+        (*vpRecoder).erase((*vpRecoder).begin());
+    }
+    
+    cout << (*vpRecoder).size() << endl;
+    for (int i = 0;i<(*vpRecoder).size();i++)
+    {
+        cout << (*vpRecoder)[i].x<<","<<(*vpRecoder)[i].y << endl;
+    }
+    //計算水平線紀錄最高點(y最小)
+    sort((*vpRecoder).begin(), (*vpRecoder).end(), sort_for_vpRecoder);
+    cout << "水平線y軸使用:" << (*vpRecoder)[0].y << endl;
+    
+    //文字顯示設定
+    CvFont font;
+    cvInitFont(&font, CV_FONT_HERSHEY_TRIPLEX, 0.5f, 0.5f, 0, 1, CV_AA);
+    stringstream lg_score;
     
     for (int AHLSNum = 0; AHLSNum < (*AllHLineSlope).size(); AHLSNum++)
     {
@@ -298,17 +331,37 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
     {
         //分群計算與消失點的個別角度
         vector<line_group>::iterator lgd_first = line_group_data_l.begin();
-        for (lgd_first; lgd_first != line_group_data_l.end(); lgd_first++)
-            lgd_first->calculate_the_angle(vpfnpoint);
+        for (lgd_first; lgd_first != line_group_data_l.end();)
+        {
+            if (lgd_first->GroupPoint.y <= (*vpRecoder).begin()->y)
+            {
+                lgd_first = line_group_data_l.erase(lgd_first);
+            }
+            else
+            {
+                lgd_first->calculate_the_angle(vpfnpoint);
+                ++lgd_first;
+            }
+            
+        }
         lgd_first = line_group_data_r.begin();
-        for (lgd_first; lgd_first != line_group_data_r.end(); lgd_first++)
-            lgd_first->calculate_the_angle(vpfnpoint);
+        for (lgd_first; lgd_first != line_group_data_r.end(); )
+        {
+            if (lgd_first->GroupPoint.y <= (*vpRecoder).begin()->y)
+            {
+                lgd_first = line_group_data_r.erase(lgd_first);
+            }
+            else
+            {
+                lgd_first->calculate_the_angle(vpfnpoint);
+                ++lgd_first;
+            }
+        }
         
-        //#define a
+//#define a
         
         //以角度排序
         sort(line_group_data_l.begin(), line_group_data_l.end(), sort_for_line_group_class_ANGLE);
-        //maxLeft = line_group_data_l[0].GroupPoint;
 #ifdef a
         maxLeft = Calculation_extension(vpfnpoint, line_group_data_l[0].group_line_slope, Ori_pic->height);
 #else
@@ -316,12 +369,32 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
 #endif
         for (int i = 0; i<line_group_data_l.size();i++)
         {
-            cvCircle(Ori_pic, line_group_data_l[i].GroupPoint,4,CV_RGB(255,255,0), 10);
+            if (i == 0)
+            {
+                lg_score.str("");
+                lg_score.clear();
+                lg_score << line_group_data_l[i].GroupScore;
+                cvCircle(Ori_pic, line_group_data_l[i].GroupPoint,4,CV_RGB(255,0,0), 3);
+                cvPutText(Ori_pic, lg_score.str().c_str(), cvPoint(line_group_data_l[i].GroupPoint.x-2, line_group_data_l[i].GroupPoint.y) , &font ,CV_RGB(0,0,255));
+            }
+            else
+            {
+                lg_score.str("");
+                lg_score.clear();
+                lg_score << line_group_data_l[i].GroupScore;
+                cvCircle(Ori_pic, line_group_data_l[i].GroupPoint,4,CV_RGB(255,255,0), 3);
+                cvPutText(Ori_pic, lg_score.str().c_str(), cvPoint(line_group_data_l[i].GroupPoint.x-2, line_group_data_l[i].GroupPoint.y) , &font ,CV_RGB(0,0,255));
+            }
+            //畫出線群的線段
+#ifdef drawGroupLine
+            cvCircle(showLineGroup_line, line_group_data_l[i].GroupPoint,4,CV_RGB(255,255,0), 3);
+            cvCircle(showLineGroup_line, line_group_data_l[i].GroupPoint_up,4,CV_RGB(255,255,0), 3);
+            cvLine(showLineGroup_line, line_group_data_l[i].GroupPoint, line_group_data_l[i].GroupPoint_up, CV_RGB(255, 0, 0), 2);
+#endif
+            
         }
-        cout << "A "<< line_group_data_l[0].angle<<endl;
         
         sort(line_group_data_r.begin(), line_group_data_r.end(), sort_for_line_group_class_ANGLE);
-        //maxRight = line_group_data_r[line_group_data_r.size()-1].GroupPoint;
 #ifdef a
         maxRight = Calculation_extension(vpfnpoint, line_group_data_r[line_group_data_r.size() - 1].group_line_slope, Ori_pic->height);
 #else
@@ -330,28 +403,30 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
 #endif
         for (int i = 0; i<line_group_data_r.size();i++)
         {
-            cvCircle(Ori_pic, line_group_data_r[i].GroupPoint,4,CV_RGB(255,255,0), 10);
+            if (i == line_group_data_r.size()-1)
+            {
+                lg_score.str("");
+                lg_score.clear();
+                lg_score << line_group_data_r[i].GroupScore;
+                cvCircle(Ori_pic, line_group_data_r[i].GroupPoint,4,CV_RGB(255,0,0), 3);
+                cvPutText(Ori_pic, lg_score.str().c_str(), cvPoint(line_group_data_r[i].GroupPoint.x-2, line_group_data_r[i].GroupPoint.y), &font ,CV_RGB(0,255,0));
+            }
+            else
+            {
+                lg_score.str("");
+                lg_score.clear();
+                lg_score << line_group_data_r[i].GroupScore;
+                cvCircle(Ori_pic, line_group_data_r[i].GroupPoint,4,CV_RGB(255,255,0), 3);
+                cvPutText(Ori_pic, lg_score.str().c_str(), cvPoint(line_group_data_r[i].GroupPoint.x-2, line_group_data_r[i].GroupPoint.y), &font ,CV_RGB(0,255,0));
+                
+            }
+            //畫出線群的線段
+#ifdef drawGroupLine
+            cvCircle(showLineGroup_line, line_group_data_r[i].GroupPoint,4,CV_RGB(255,255,255), 3);
+            cvCircle(showLineGroup_line, line_group_data_r[i].GroupPoint_up,4,CV_RGB(255,255,255), 3);
+            cvLine(showLineGroup_line, line_group_data_r[i].GroupPoint, line_group_data_r[i].GroupPoint_up, CV_RGB(255, 0, 0), 2);
+#endif
         }
-        cout << "B "<< line_group_data_r[line_group_data_r.size() - 1].angle<<endl;
-        //cvWaitKey();
-        
-        /*
-         //以分數排序
-         sort(line_group_data_l.begin(), line_group_data_l.end(), sort_for_line_group_class);
-         maxLeft = line_group_data_l[line_group_data_l.size() - 1].GroupPoint;
-         
-         sort(line_group_data_r.begin(), line_group_data_r.end(), sort_for_line_group_class);
-         maxRight = line_group_data_r[line_group_data_r.size() - 1].GroupPoint;
-         */
-        
-        /*
-         vector<line_group>::iterator psfirst = line_group_data_l.begin();
-         for (psfirst; psfirst != line_group_data_l.end(); psfirst++)
-         cout <<"左線分數" <<psfirst->GroupScore << endl;
-         vector<line_group>::iterator psfirst2 = line_group_data_r.begin();
-         for (psfirst2; psfirst2 != line_group_data_r.end(); psfirst2++)
-         cout << "右線分數" << psfirst2->GroupScore << endl;
-         */
     }
     
     /*=======================線段配對==============================*/
