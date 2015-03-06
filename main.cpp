@@ -40,7 +40,7 @@ using namespace cv;
 //設定偵測消失點的上下左右多少範圍
 #define vp_range 80
 #define DBGflag 1 //##debug 資訊開關
-#define XXHHflag 1//##疊圖 開關
+#define XXHHflag 0//##疊圖 開關
 
 void ImageMerge(IplImage*& pImageRes);
 
@@ -91,10 +91,11 @@ int main(int argc, char *argv[])
         //====for os x
         //sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xian開會影片\\out\\Video-%d.jpg",i); //
         //sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-        sprintf(FileName2, "/Users/Chienfu/Desktop/車道線偵測/demo/Video- (%d).jpg",i);//★日間高速
+        //sprintf(FileName2, "/Users/Chienfu/Desktop/車道線偵測/demo/Video- (%d).jpg",i);//★日間高速
         //sprintf(FileName2, "/Users/chienfu/Desktop/車道線偵測/行車記錄/pic/3/vedio-%d.jpg",i);
         //sprintf(FileName2, "/Users/Chienfu/Desktop/車道線偵測/夜間2/Video-%d.jpg",i);
         //sprintf(FileName2, "/Users/Chienfu/Desktop/車道線偵測/新影片/rainday/Video-%d.jpg",i);
+        sprintf(FileName2, "/Volumes/Macintosh\ DATA/實驗室（專題）相關/車道線偵測/demo/Video- (%d).jpg",i);//★日間高速
         ////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
         
         //Mask 初始化 (在第一張 只做一次)
@@ -179,13 +180,12 @@ int main(int argc, char *argv[])
             cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
             
             //檢查消失點正確性
-            Check_VPoint(VanishingPoint.x,VanishingPoint.y);
-            //cvLine(pImgColor,VanishingPoint,VanishingPoint,CV_RGB(225,0,0),20,4); //劃出消失點
+            //////Check_VPoint(VanishingPoint.x,VanishingPoint.y);
             
             cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// 產生消失點(debug)
             //把第一個消失點放進 對比點陣列(100是上限)
-            RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y;
-            oldXX=VanishingPoint.x;oldYY=VanishingPoint.y;
+            /////RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y;
+            /////oldXX=VanishingPoint.x;oldYY=VanishingPoint.y;
             
             
             
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
             cvReleaseImage(&pImgMar);
             cvReleaseImage(&showLineGroup_line);
             //if(i==400) waitKey(0);
-            cvWaitKey(0);
+            cvWaitKey(1);
             //_CrtDumpMemoryLeaks();		
             
         }

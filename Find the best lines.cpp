@@ -191,11 +191,24 @@ bool sort_for_line_group_class_ANGLE(const line_group a, const line_group b)
     return a.angle < b.angle;
 }
 
-bool sort_for_vpRecoder(const CvPoint a, const CvPoint b)
+//計算哪個是最高點
+int WhoIsTop(vector<CvPoint> *vpRecoder)
 {
-    return a.y < b.y;
+    if ((*vpRecoder).size() <= 1)//若資料只有1筆直接回傳0
+        return 0;
+    
+    int top = 0;
+    int temp = (*vpRecoder)[0].y;
+    for (int i = 1; i < (*vpRecoder).size(); i++)
+    {
+        if (temp > (*vpRecoder)[i].y)
+        {
+            top = i;
+            temp = (*vpRecoder)[i].y;
+        }
+    }
+    return top;
 }
-
 //計算延伸線段座標
 CvPoint Calculation_extension(CvPoint Vanishing_Point,double slope,int y)
 {
@@ -232,7 +245,8 @@ void draw_VPoint(IplImage* img, int x, int y, int vp_range)
 FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, CvPoint vpfnpoint, int vp_range,vector<CvPoint> *vpRecoder,IplImage* showLineGroup_line)
 {
 #define drawGroupLine //是否畫出線群的線段
-    
+#define NoGroup
+
     //線段分群
     vector <line_group> line_group_data_l;
     vector <line_group> line_group_data_r;
@@ -253,8 +267,8 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
         cout << (*vpRecoder)[i].x<<","<<(*vpRecoder)[i].y << endl;
     }
     //計算水平線紀錄最高點(y最小)
-    sort((*vpRecoder).begin(), (*vpRecoder).end(), sort_for_vpRecoder);
-    cout << "水平線y軸使用:" << (*vpRecoder)[0].y << endl;
+    int topVP = WhoIsTop(vpRecoder);
+    cout << "水平線y軸使用:" << (*vpRecoder)[topVP].y << endl;
     
     //文字顯示設定
     CvFont font;
@@ -271,6 +285,13 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
                 line_group tmp(AllHLineSlope,AHLSNum);
                 line_group_data_l.push_back(tmp);
             }
+#ifdef NoGroup
+            else if (1)
+            {
+                line_group tmp(AllHLineSlope,AHLSNum);
+                line_group_data_l.push_back(tmp);
+            }
+#endif
             else
             {
                 bool isPass = false;
@@ -298,6 +319,13 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
                 line_group tmp(AllHLineSlope,AHLSNum);
                 line_group_data_r.push_back(tmp);
             }
+#ifdef NoGroup
+            else if (1)
+            {
+                line_group tmp(AllHLineSlope,AHLSNum);
+                line_group_data_r.push_back(tmp);
+            }
+#endif
             else
             {
                 bool isPass = false;
@@ -333,7 +361,7 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
         vector<line_group>::iterator lgd_first = line_group_data_l.begin();
         for (lgd_first; lgd_first != line_group_data_l.end();)
         {
-            if (lgd_first->GroupPoint.y <= (*vpRecoder).begin()->y)
+            if (lgd_first->GroupPoint.y <= (*vpRecoder)[topVP].y)
             {
                 lgd_first = line_group_data_l.erase(lgd_first);
             }
@@ -347,7 +375,7 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
         lgd_first = line_group_data_r.begin();
         for (lgd_first; lgd_first != line_group_data_r.end(); )
         {
-            if (lgd_first->GroupPoint.y <= (*vpRecoder).begin()->y)
+            if (lgd_first->GroupPoint.y <= (*vpRecoder)[topVP].y)
             {
                 lgd_first = line_group_data_r.erase(lgd_first);
             }
