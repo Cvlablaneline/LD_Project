@@ -24,6 +24,8 @@ class line_group
 protected:
     vector<int> LineNumTable;
     vector<line_property> *AllLineData;
+	double group_Normal_sum;
+	double group_Normal;
 public:
 	CvPoint GroupPoint;
     CvPoint GroupPoint_up;
@@ -39,10 +41,16 @@ public:
     void update(CvPoint newPoint,double newslope);
     void update(int LineNum);
 	double calculate_the_angle(CvPoint Vanishing_Point);
+	
     //確認是否為該群線段
     bool CompareLine2Group (int LineNum, int range, double lenRange);
     double countDistance (CvPoint line1,CvPoint line2);
 };
+
+//計算法線
+double CountAngleForNormal(CvPoint point1, CvPoint point2);
+double countNormal(vector<line_property> *line, int LineNum);
+
 //分群Vector sort
 bool sort_for_line_group_class(const line_group a, const line_group b);
 bool sort_for_line_group_class_ANGLE(const line_group a, const line_group b);
@@ -57,5 +65,6 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
 CvPoint Calculation_extension(CvPoint Vanishing_Point, double slope, int y);
 //算截距
 double calculate_intercept(CvPoint point_1,double line_slope);
+
 
 #endif /* defined(__MacOpenCV__Find_the_best_lines__) */

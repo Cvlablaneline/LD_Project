@@ -21,26 +21,21 @@
 //#pragma comment(lib, "Winmm.lib")
 
 /********************
- *****Commit7/7*******
- ********************/
+*****Commit7/7*******
+********************/
 
 using namespace std;
 using namespace cv;
 
-//åœ–åƒæª”æ¡ˆä½ç½®
-//#define	SEQ_NAME	"/Users/chienfu/Desktop/è»Šé“ç·šåµæ¸¬/demo/Video- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\demo\\Video- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\Maskout\\Video-%d.jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\downtown\\Video-%d.jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\night\\Vidio- (%d).jpg"
-//#define	SEQ_NAME	"D:\\è»Šé“ç·šphoto\\freeway2\\Vidoi- (%d).jpg"
+//¹Ï¹³ÀÉ®×¦ì¸m
+//#define	SEQ_NAME	"/Users/chienfu/Desktop/¨®¹D½u°»´ú/demo/Video- (%d).jpg"
+//#define	SEQ_NAME	"D:\\¨®¹D½uphoto\\demo\\Video- (%d).jpg"
 
-
-//ç•«å‡ºæ¶ˆå¤±é»ä½ç½®èˆ‡å‘¨åœæ„Ÿæ‡‰å€
-//è¨­å®šåµæ¸¬æ¶ˆå¤±é»çš„ä¸Šä¸‹å·¦å³å¤šå°‘ç¯„åœ
+//µe¥X®ø¥¢ÂI¦ì¸m»P©P³ò·PÀ³°Ï
+//³]©w°»´ú®ø¥¢ÂIªº¤W¤U¥ª¥k¦h¤Ö½d³ò
 #define vp_range 80
-#define DBGflag 1 //##debug è³‡è¨Šé–‹é—œ
-#define XXHHflag 0//##ç–Šåœ– é–‹é—œ
+#define DBGflag 1 //##debug ¸ê°T¶}Ãö
+#define XXHHflag 0//##Å|¹Ï ¶}Ãö
 
 void ImageMerge(IplImage*& pImageRes);
 
@@ -49,259 +44,236 @@ void ImageMerge(IplImage*& pImageRes);
 
 int main(int argc, char *argv[])
 {
-    //_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-    char FileName[200], FileName2[200], FileName3[200], maskout[200];
-    int oldXX=0,oldYY=0;
-    //ç¬¬ä¸€å¼µå‡ºç¾çš„åœ–ç‰‡ç·¨è™Ÿ
-    int  FristPic =1;
-    
-    IplConvKernel * pKernel = NULL;
-    int pos = 1;
-    pKernel = cvCreateStructuringElementEx(
-                                           pos*2+1,
-                                           pos*2+1,
-                                           pos,
-                                           pos,
-                                           CV_SHAPE_ELLIPSE,
-                                           NULL);
-    
-    for (int i = FristPic; i < 3000; i += 1){
-        
-        
-        //===========åœ–ç‰‡brbrbr
-        
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\å¸‚å€15s\\rainday\\Video-%d.jpg",i);    //â˜…é›¨å¤©
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\å¸‚å€15s\\rainday2\\Video-%d.jpg",i);    //â˜…é›¨å¤©2
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\å¸‚å€15s\\å¸‚å€day\\Video-%d.jpg",i);    //â˜…å¸‚å€
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\å¸‚å€15s\\å¸‚å€night\\Video-%d.jpg",i);    //â˜…å¸‚å€å¤œé–“
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\output\\Out2\\Video-%d.jpg",i); //â˜…æ—¥é–“é«˜é€Ÿ(sing)
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\å¤œé–“è»Šé“ç·š\\CIMG3461 (2014-4-20 ä¸‹åˆ 10-15-45)\\Video-%d.jpg",i); //â˜…å¤œé–“é«˜é€Ÿ
-        //sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i); //
-        //-------------------new pic----------------------------------
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\3\\vedio-%d.jpg",i);
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\12560012\\vedio-%d.jpg",i);
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\night\\CIMG3463\\vedio-%d.jpg",i);
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\NewPicout\\morning\\out\\Video-%d.jpg",i);
-        
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xiané–‹æœƒå½±ç‰‡\\out\\Video-%d.jpg",i); //
-        //sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-        //sprintf(FileName2, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);//â˜…æ—¥é–“é«˜é€Ÿ
-        ////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
-        
-        //====for os x
-        //sprintf(FileName2, "C:\\Users\\user\\Desktop\\Xiané–‹æœƒå½±ç‰‡\\out\\Video-%d.jpg",i); //
-        //sprintf(FileName, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i);
-        //sprintf(FileName2, "/Users/Chienfu/Desktop/è»Šé“ç·šåµæ¸¬/demo/Video- (%d).jpg",i);//â˜…æ—¥é–“é«˜é€Ÿ
-        //sprintf(FileName2, "/Users/chienfu/Desktop/è»Šé“ç·šåµæ¸¬/è¡Œè»Šè¨˜éŒ„/pic/3/vedio-%d.jpg",i);
-        //sprintf(FileName2, "/Users/Chienfu/Desktop/è»Šé“ç·šåµæ¸¬/å¤œé–“2/Video-%d.jpg",i);
-        //sprintf(FileName2, "/Users/Chienfu/Desktop/è»Šé“ç·šåµæ¸¬/æ–°å½±ç‰‡/rainday/Video-%d.jpg",i);
-        sprintf(FileName2, "/Volumes/Macintosh\ DATA/å¯¦é©—å®¤ï¼ˆå°ˆé¡Œï¼‰ç›¸é—œ/è»Šé“ç·šåµæ¸¬/demo/Video- (%d).jpg",i);//â˜…æ—¥é–“é«˜é€Ÿ
-        ////sprintf(FileName3, "C:\\Users\\User\\Desktop\\LLSample\\output\\Video-%d.jpg",i+2);
-        
-        //Mask åˆå§‹åŒ– (åœ¨ç¬¬ä¸€å¼µ åªåšä¸€æ¬¡)
-        if(i==FristPic)
-        {
-            Mask_Init(FileName2);
-        }
-        else
-        {
-            
-            //===================è®€é€²åœ–ç‰‡(é‡è¨­å¤§å°)==================
-            //=======================================================
-            
-            IplImage *src2 = cvLoadImage(FileName2, 0);//è®€é€²åŸåœ–
-            IplImage *src3 = cvLoadImage(FileName2, 1);//è®€å–å½©åœ–
-            
-            if(src2==NULL||src3==NULL) break;
-            
-            
-            CvSize pImgB_size;
-            CvSize pImgColor_size; //æ–°çš„picå¤§å°
-            
-            
-            
-            pImgB_size.width = src2->width* (640.0 / src2->width); //é‡è¨­pImgBå¤§å°
-            pImgB_size.height = src2->height* (480.0 / src2->height);
-            //cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBGç”¨
-            
-            
-            IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (640.0 / src2->width), src2->height* (480.0 / src2->height)), src3->depth, src3->nChannels);
-            
-            //é¡¯ç¤ºç·šç¾¤åœ–
-            IplImage *showLineGroup_line = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
-            
-            cvCopy(pImgB, pImgA); //img1 copy to imgout
-            //æ”¹è®Šå¤§å°
-            cvResize(src2, pImgB, CV_INTER_LINEAR);
-            cvResize(src3, pImgColor, CV_INTER_LINEAR);
-            cvResize(src3, showLineGroup_line, CV_INTER_LINEAR);
-            
-            //cvReleaseImage(&src1);
-            cvReleaseImage(&src2);
-            cvReleaseImage(&src3);
-            
-            //å‰ç½®è™•ç†======
-            IplImage *pImgMar = cvCreateImage(cvSize(pImgColor->width*2, pImgColor->height*2), pImgA->depth ,pImgA->nChannels);  ///##Debug
-            cvZero(pImgMar);
-            cvCopy(pImgA, pImgC); //img1 copy to imgout
-            
-            //====================================
-            //===========ç–Šåœ–=====================
-            //ç–Šåœ–(input1,input2, *output,inputcolor,é–‹é—œ(1/on))
-            {pImgC = xxhh(pImgA, pImgB, pImgC,pImgColor,XXHHflag,pKernel); }
-            
-            
-            //============canny===================
-            //pImgCanny = canny(pImgGrayC, pImgBuffer);
-            cvCopy(pImgGrayC,pImgCanny);
-            
-            
-            //===========å°æ¯”ç·š(é»)===============
-            //pImgC = drawline(pImgC, oldXX, oldYY); //drawline (è¼¸å…¥åœ–ç‰‡,æ¶ˆå¤±é»X,æ¶ˆå¤±é»Y)//åŠƒå‡ºå°æ¯”é»(å–å¾—)
-            // cout << "======END DRAWLINE========="<<endl;
-            
-            //============é®ç½©cannyåœ– (å¦‚æœæ˜¯å¤œé–“æ¨¡å¼è«‹å–æ¶ˆ)=======================
-            /***if(i>FristPic+5){
-             cvSet(pImgFilter,cvScalar(0,0,0));
-             Filter_Init(oldXX,oldYY);//VanishingPoint.x
-             //cvShowImage("canny",pImgCanny);
-             }***/
-            
-            //cvSet(pImgFilter,cvScalar(0,0,0));
-            //Filter_Init(oldXX,oldYY);//VanishingPoint.x
-            
-            //============æ¶ˆå¤±é»function===========
-            //è¨˜éŒ„éœå¤«ç·šæ®µè³‡è¨Š
-            static vector<line_property> AllVPHoughLineSlopeRecorder;
-            //for vp
-            CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
-            //call vanishing point function and get the vanishing point to VanishingPoint
-            CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &AllVPHoughLineSlopeRecorder, storage_DThrSmo);
-            cvLine( pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0,255,0), 7);
-            
-            //æª¢æŸ¥æ¶ˆå¤±é»æ­£ç¢ºæ€§
-            //////Check_VPoint(VanishingPoint.x,VanishingPoint.y);
-            
-            cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// ç”¢ç”Ÿæ¶ˆå¤±é»(debug)
-            //æŠŠç¬¬ä¸€å€‹æ¶ˆå¤±é»æ”¾é€² å°æ¯”é»é™£åˆ—(100æ˜¯ä¸Šé™)
-            /////RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y;
-            /////oldXX=VanishingPoint.x;oldYY=VanishingPoint.y;
-            
-            
-            
-            //==============================
-            //draw the vanishing point range
-            if (VanishingPoint.x != 0.0 || VanishingPoint.y != 0.0)
-                draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
-            
-            static vector<CvPoint> vpRecoder;
-            //Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)ï¼‰
-            FTBL ftblData = FindTheBestLines(pImgColor, &AllVPHoughLineSlopeRecorder,  VanishingPoint, vp_range,&vpRecoder,showLineGroup_line);
-            //æ¸…é™¤è»Šé“ç·šæ–œç‡è¨˜éŒ„vector
-            vector <line_property> Nhl;
-            AllVPHoughLineSlopeRecorder.clear();
-            AllVPHoughLineSlopeRecorder.swap(Nhl);
-            
-            
-            //release storage_DThrSmo
-            cvReleaseMemStorage(&storage_DThrSmo);
-            
-            //è»Šé“åç§»
-            if( Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x)==true){
-            	CvFont font;
-            	// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
-            	cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,4.0f,1.0f,0,3,CV_AA);
-            	cvPutText(pImgColor,"Warning!" , Point(640/4,480/2),& font ,CV_RGB(255,0,0));
-            }
-            else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
-            }
-            
-            //=========DBGé–‹é—œ=======
-            if(DBGflag==1){
-                //====
-                char ss[100];
-                sprintf(ss, "%d",i);
-                CvFont font;
-                // PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
-                cvInitFont(&font,CV_FONT_HERSHEY_TRIPLEX  ,2.0f,1.0f,0,2,CV_AA);
-                cvPutText(pImgColor,ss , Point(30,30),& font ,CV_RGB(255,0,0));
-                //==
-                
-                cvCvtColor(pImgColor,pImgGrayC,	CV_RGB2GRAY);
-                ImageMerge(pImgMar);
-                cvNamedWindow("ImageMerge", CV_WINDOW_NORMAL);
-                //è¨­å®šWindowå±¬æ€§ç‚ºå…¨è¢å¹•,æ‰€ä»¥å°±ä¸æœƒæœ‰æœ€ä¸Šé¢çš„Title Bar
-                //cvSetWindowProperty("ImageMerge", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-                cvShowImage("ImageMerge", pImgMar);
-            };
-            
-            
-            //sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\out_noxxhh\\output-%d.jpg",i);
-            //cvSaveImage(maskout,pImgMar);
-            
-            // Create Windows
-            cvShowImage("LineGroup", showLineGroup_line);
-            cvShowImage("pImgColor", pImgColor);
-            
-            //cvShowImage("pImgCanny", pImgCanny);
-            
-            //cvReleaseImage(&pImgDCanny);
-            
-            
-            
-            cvReleaseImage(&pImgColor);
-            cvReleaseImage(&pImgMar);
-            cvReleaseImage(&showLineGroup_line);
-            //if(i==400) waitKey(0);
-            cvWaitKey(1);
-            //_CrtDumpMemoryLeaks();		
-            
-        }
-    }
-    cvReleaseImage(&pImgA);
-    cvReleaseImage(&pImgB);
-    //cvReleaseImage(&pImgBlack); 
-    cvReleaseImage(&pImgCanny);  
-    //cvReleaseImage(&pImgFilter);
-    cvReleaseImage(&pImgC); //é‡‹æ”¾è¨˜æ†¶é«”
-    cvReleaseImage(&pImgGrayC);
-    //cvReleaseImage(&pImgHouf);
-    cvReleaseStructuringElement(&pKernel);
-    
-    return 0;
+	//_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	char FileName[200], FileName2[200], FileName3[200], maskout[200];
+	int oldXX = 0, oldYY = 0;
+	//²Ä¤@±i¥X²{ªº¹Ï¤ù½s¸¹
+	int  FristPic = 1;
+
+	IplConvKernel * pKernel = NULL;
+	int pos = 1;
+	pKernel = cvCreateStructuringElementEx(
+		pos * 2 + 1,
+		pos * 2 + 1,
+		pos,
+		pos,
+		CV_SHAPE_ELLIPSE,
+		NULL);
+
+	for (int i = FristPic; i < 3000; i += 1){
+
+
+		//===========¹Ï¤ùbrbrbr
+
+		sprintf(FileName2, "C:\\Users\\Chienfu\\Desktop\\¨®¹D½u°»´ú\\°ª³t¤½¸ô1\\Video- (%d).jpg", i); 
+		//sprintf(FileName2, "C:\\Users\\user\\Desktop\\meeting Video\\¥«°Ï15s\\rainday2\\Video-%d.jpg",i);    //¡¹«B¤Ñ2
+
+		//====for os x
+		//sprintf(FileName2, "/Users/chienfu/Desktop/¨®¹D½u°»´ú/¦æ¨®°O¿ı/pic/1/vedio-%d.jpg",i);
+
+		//Mask ªì©l¤Æ (¦b²Ä¤@±i ¥u°µ¤@¦¸)
+		if (i == FristPic)
+		{
+			Mask_Init(FileName2);
+		}
+		else
+		{
+
+			//===================Åª¶i¹Ï¤ù(­«³]¤j¤p)==================
+			//=======================================================
+
+			IplImage *src2 = cvLoadImage(FileName2, 0);//Åª¶i­ì¹Ï
+			IplImage *src3 = cvLoadImage(FileName2, 1);//Åª¨ú±m¹Ï
+
+			if (src2 == NULL || src3 == NULL) break;
+
+
+			CvSize pImgB_size;
+			CvSize pImgColor_size; //·sªºpic¤j¤p
+
+
+
+			pImgB_size.width = src2->width* (640.0 / src2->width); //­«³]pImgB¤j¤p
+			pImgB_size.height = src2->height* (480.0 / src2->height);
+			//cout << pImgA_size.width << "   " << pImgA_size.height << "         "<<endl;  //DBG¥Î
+
+
+			IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (640.0 / src2->width), src2->height* (480.0 / src2->height)), src3->depth, src3->nChannels);
+
+			//Åã¥Ü½u¸s¹Ï
+			IplImage *showLineGroup_line = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+
+			cvCopy(pImgB, pImgA); //img1 copy to imgout
+			//§ïÅÜ¤j¤p
+			cvResize(src2, pImgB, CV_INTER_LINEAR);
+			cvResize(src3, pImgColor, CV_INTER_LINEAR);
+			cvResize(src3, showLineGroup_line, CV_INTER_LINEAR);
+
+			//cvReleaseImage(&src1);
+			cvReleaseImage(&src2);
+			cvReleaseImage(&src3);
+
+			//«e¸m³B²z======
+			IplImage *pImgMar = cvCreateImage(cvSize(pImgColor->width * 2, pImgColor->height * 2), pImgA->depth, pImgA->nChannels);  ///##Debug
+			cvZero(pImgMar);
+			cvCopy(pImgA, pImgC); //img1 copy to imgout
+
+			//====================================
+			//===========Å|¹Ï=====================
+			//Å|¹Ï(input1,input2, *output,inputcolor,¶}Ãö(1/on))
+			{pImgC = xxhh(pImgA, pImgB, pImgC, pImgColor, XXHHflag, pKernel); }
+
+
+			//============canny===================
+			//pImgCanny = canny(pImgGrayC, pImgBuffer);
+			cvCopy(pImgGrayC, pImgCanny);
+
+
+			//===========¹ï¤ñ½u(ÂI)===============
+			//pImgC = drawline(pImgC, oldXX, oldYY); //drawline (¿é¤J¹Ï¤ù,®ø¥¢ÂIX,®ø¥¢ÂIY)//¹º¥X¹ï¤ñÂI(¨ú±o)
+			// cout << "======END DRAWLINE========="<<endl;
+
+			//============¾B¸ncanny¹Ï (¦pªG¬O©]¶¡¼Ò¦¡½Ğ¨ú®ø)=======================
+			/***if(i>FristPic+5){
+			cvSet(pImgFilter,cvScalar(0,0,0));
+			Filter_Init(oldXX,oldYY);//VanishingPoint.x
+			//cvShowImage("canny",pImgCanny);
+			}***/
+
+			//cvSet(pImgFilter,cvScalar(0,0,0));
+			//Filter_Init(oldXX,oldYY);//VanishingPoint.x
+
+			//============®ø¥¢ÂIfunction===========
+			//°O¿ıÀN¤Ò½u¬q¸ê°T
+			static vector<line_property> AllVPHoughLineSlopeRecorder;
+			//for vp
+			CvMemStorage* storage_DThrSmo = cvCreateMemStorage(0);
+			//call vanishing point function and get the vanishing point to VanishingPoint
+			CvPoint VanishingPoint = find_Vanishing_Point(pImgCanny, pImgC, &AllVPHoughLineSlopeRecorder, storage_DThrSmo);
+			cvLine(pImgColor, VanishingPoint, VanishingPoint, CV_RGB(0, 255, 0), 7);
+
+			//ÀË¬d®ø¥¢ÂI¥¿½T©Ê
+			//////Check_VPoint(VanishingPoint.x,VanishingPoint.y);
+
+			cout << "VanishingPoint Find!>> " << VanishingPoint.x << "   " << VanishingPoint.y << endl << endl;// ²£¥Í®ø¥¢ÂI(debug)
+			//§â²Ä¤@­Ó®ø¥¢ÂI©ñ¶i ¹ï¤ñÂI°}¦C(100¬O¤W­­)
+			/////RLpoint[0][0] = VanishingPoint.x; RLpoint[0][1] = VanishingPoint.y;
+			/////oldXX=VanishingPoint.x;oldYY=VanishingPoint.y;
+
+
+
+			//==============================
+			//draw the vanishing point range
+			if (VanishingPoint.x != 0.0 || VanishingPoint.y != 0.0)
+				draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
+
+			static vector<CvPoint> vpRecoder;
+			//Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)¡^
+			FTBL ftblData = FindTheBestLines(pImgColor, &AllVPHoughLineSlopeRecorder, VanishingPoint, vp_range, &vpRecoder, showLineGroup_line);
+			//²M°£¨®¹D½u±×²v°O¿ıvector
+			vector <line_property> Nhl;
+			AllVPHoughLineSlopeRecorder.clear();
+			AllVPHoughLineSlopeRecorder.swap(Nhl);
+
+
+			//release storage_DThrSmo
+			cvReleaseMemStorage(&storage_DThrSmo);
+
+			//¨®¹D°¾²¾
+			if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == true){
+				CvFont font;
+				// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
+				cvInitFont(&font, CV_FONT_HERSHEY_TRIPLEX, 4.0f, 1.0f, 0, 3, CV_AA);
+				cvPutText(pImgColor, "Warning!", Point(640 / 4, 480 / 2), &font, CV_RGB(255, 0, 0));
+			}
+			else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
+			}
+
+			//=========DBG¶}Ãö=======
+			if (DBGflag == 1){
+				//====
+				char ss[100];
+				sprintf(ss, "%d", i);
+				CvFont font;
+				// PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
+				cvInitFont(&font, CV_FONT_HERSHEY_TRIPLEX, 2.0f, 1.0f, 0, 2, CV_AA);
+				cvPutText(pImgColor, ss, Point(30, 30), &font, CV_RGB(255, 0, 0));
+				//==
+
+				cvCvtColor(pImgColor, pImgGrayC, CV_RGB2GRAY);
+				ImageMerge(pImgMar);
+				cvNamedWindow("ImageMerge", CV_WINDOW_NORMAL);
+				//³]©wWindowÄİ©Ê¬°¥ş¿Ã¹õ,©Ò¥H´N¤£·|¦³³Ì¤W­±ªºTitle Bar
+				//cvSetWindowProperty("ImageMerge", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+				cvShowImage("ImageMerge", pImgMar);
+			};
+
+
+			//sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\out_noxxhh\\output-%d.jpg",i);
+			//cvSaveImage(maskout,pImgMar);
+
+			// Create Windows
+			cvShowImage("LineGroup", showLineGroup_line);
+			cvShowImage("pImgColor", pImgColor);
+
+			//cvShowImage("pImgCanny", pImgCanny);
+
+			//cvReleaseImage(&pImgDCanny);
+
+
+
+			cvReleaseImage(&pImgColor);
+			cvReleaseImage(&pImgMar);
+			cvReleaseImage(&showLineGroup_line);
+			//if(i==400) waitKey(0);
+			cvWaitKey(0);
+			//_CrtDumpMemoryLeaks();		
+
+		}
+	}
+	cvReleaseImage(&pImgA);
+	cvReleaseImage(&pImgB);
+	//cvReleaseImage(&pImgBlack); 
+	cvReleaseImage(&pImgCanny);
+	//cvReleaseImage(&pImgFilter);
+	cvReleaseImage(&pImgC); //ÄÀ©ñ°O¾ĞÅé
+	cvReleaseImage(&pImgGrayC);
+	//cvReleaseImage(&pImgHouf);
+	cvReleaseStructuringElement(&pKernel);
+
+	return 0;
 }
 
 
 void ImageMerge(IplImage*& pImageRes){
-    
-    //è¼‰å…¥Cannyåœ–åˆ°ç›®æ¨™åœ–åƒ
-    cvSetImageROI(pImageRes, cvRect(0, pImgCanny->height-50,  pImgCanny->width,pImgCanny->height));
-    cvCopy(pImgCanny, pImageRes);
-    cvResetImageROI(pImageRes);
-    
-    ////è¼‰å…¥Houfåœ–åˆ°ç›®æ¨™åœ–åƒ pImgHouf
-    cvSetImageROI(pImageRes, cvRect(pImgHouf->width, pImgHouf->height-50, pImgHouf->width, pImgHouf->height));
-    cvCopy(pImgHouf, pImageRes);
-    cvResetImageROI(pImageRes);
-    
-    ////è¼‰å…¥ç°éšçµæœåœ–åˆ°ç›®æ¨™åœ–åƒ
-    cvSetImageROI(pImageRes, cvRect(0, 0, pImgGrayC->width, pImgGrayC->height));
-    cvCopy(pImgGrayC, pImageRes);
-    cvResetImageROI(pImageRes);
-    /*cvSetImageROI(pImageRes, cvRect(0, 0, pImgFilter->width, pImgFilter->height));
-     cvCopy(pImgFilter, pImageRes);
-     cvResetImageROI(pImageRes);*/
-    
-    ////è¼‰å…¥å°æ¯”é»åœ–åˆ°ç›®æ¨™åœ–åƒ
-    cvSetImageROI(pImageRes, cvRect(pImgC->width, 0, pImgC->width, pImgC->height));
-    cvCopy(pImgC, pImageRes);
-    cvResetImageROI(pImageRes);
-    
-    
-    
-    
-    
-    //cvReleaseImage(&pImageA);
-    //cvReleaseImage(&pImageB);
-}
 
+	//¸ü¤JCanny¹Ï¨ì¥Ø¼Ğ¹Ï¹³
+	cvSetImageROI(pImageRes, cvRect(0, pImgCanny->height - 50, pImgCanny->width, pImgCanny->height));
+	cvCopy(pImgCanny, pImageRes);
+	cvResetImageROI(pImageRes);
+
+	////¸ü¤JHouf¹Ï¨ì¥Ø¼Ğ¹Ï¹³ pImgHouf
+	cvSetImageROI(pImageRes, cvRect(pImgHouf->width, pImgHouf->height - 50, pImgHouf->width, pImgHouf->height));
+	cvCopy(pImgHouf, pImageRes);
+	cvResetImageROI(pImageRes);
+
+	////¸ü¤J¦Ç¶¥µ²ªG¹Ï¨ì¥Ø¼Ğ¹Ï¹³
+	cvSetImageROI(pImageRes, cvRect(0, 0, pImgGrayC->width, pImgGrayC->height));
+	cvCopy(pImgGrayC, pImageRes);
+	cvResetImageROI(pImageRes);
+	/*cvSetImageROI(pImageRes, cvRect(0, 0, pImgFilter->width, pImgFilter->height));
+	cvCopy(pImgFilter, pImageRes);
+	cvResetImageROI(pImageRes);*/
+
+	////¸ü¤J¹ï¤ñÂI¹Ï¨ì¥Ø¼Ğ¹Ï¹³
+	cvSetImageROI(pImageRes, cvRect(pImgC->width, 0, pImgC->width, pImgC->height));
+	cvCopy(pImgC, pImageRes);
+	cvResetImageROI(pImageRes);
+
+
+
+
+
+	//cvReleaseImage(&pImageA);
+	//cvReleaseImage(&pImageB);
+}
