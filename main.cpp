@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
 			cvReleaseImage(&pImgMar);
 			cvReleaseImage(&showLineGroup_line);
 			//if(i==400) waitKey(0);
-			cvWaitKey(0);
+			cvWaitKey(1);
 			//_CrtDumpMemoryLeaks();		
 
 		}

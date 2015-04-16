@@ -1,7 +1,7 @@
 #include <cv.h>
 #include <highgui.h>
 #include <stdio.h>
-//#include "cvaux.h"
+#include "cvaux.h"
 #include "math.h"
 #include <vector>
 #include "Vanishing Point.h"
@@ -95,57 +95,57 @@ bool Lane_Offset(CvPoint VPoint, int lx, int rx) //傳入 (消失點,左X,右X)
 }
 //====================================
 //==============檢查消失點正確性======
-void Check_VPoint(int &VPx, int &VPy)
-{
-	int oldx = VPx; int oldy = VPy;
-	if (CPround<CPIndex) //前五張丟陣列
-	{
-		AddressXY[CPround][0] = CheckXY[CPround][0] = VPx; //save X
-		AddressXY[CPround][1] = CheckXY[CPround][1] = VPy; //save Y
-	}
-	else
-	{
-		for (int i = 0; i<CPIndex; i++) //CheckXY排序
-		for (int j = 0; j<CPIndex - 1; j++)
-		{
-			if (CheckXY[j][0]>CheckXY[j + 1][0]){ //X 排序
-				int resx = CheckXY[j][0];
-				CheckXY[j][0] = CheckXY[j + 1][0];
-				CheckXY[j + 1][0] = resx;
-			}
-			if (CheckXY[j][1]>CheckXY[j + 1][1]){ //Y 排序
-				int resy = CheckXY[j][1];
-				CheckXY[j][1] = CheckXY[j + 1][1];
-				CheckXY[j + 1][1] = resy;
-			}
-		}
-		//===================
-		//cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
-		//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
-		int midx = CheckXY[2][0]; //中間的X
-		int midy = CheckXY[2][1];//中間的Y
-
-		VPx = midx;
-		VPy = midy;
-		//if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "修正X ★★★★★★ "<< midx <<endl; }//誤差太大(20) 修正
-		//if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "修正Y ☆☆☆☆☆☆ "<<  midy <<endl; }//誤差太大(20) 修正
-
-		for (int i = 1; i<CPIndex; i++) {
-			AddressXY[i - 1][0] = AddressXY[i][0]; //基礎搬移X
-			AddressXY[i - 1][1] = AddressXY[i][1]; //基礎搬移Y
-			CheckXY[i - 1][0] = AddressXY[i - 1][0];
-			CheckXY[i - 1][1] = AddressXY[i - 1][1];
-		}
-		AddressXY[CPIndex - 1][0] = CheckXY[CPIndex - 1][0] = oldx; //save X
-		AddressXY[CPIndex - 1][1] = CheckXY[CPIndex - 1][1] = oldy; //save Y
-
-	}
-
-	if (CPround <= CPIndex)
-		CPround++;
-	//if(CPround ==15) CPround=0;
-	//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
-}
+//void Check_VPoint(int &VPx, int &VPy)
+//{
+//	int oldx = VPx; int oldy = VPy;
+//	if (CPround<CPIndex) //前五張丟陣列
+//	{
+//		AddressXY[CPround][0] = CheckXY[CPround][0] = VPx; //save X
+//		AddressXY[CPround][1] = CheckXY[CPround][1] = VPy; //save Y
+//	}
+//	else
+//	{
+//		for (int i = 0; i<CPIndex; i++) //CheckXY排序
+//		for (int j = 0; j<CPIndex - 1; j++)
+//		{
+//			if (CheckXY[j][0]>CheckXY[j + 1][0]){ //X 排序
+//				int resx = CheckXY[j][0];
+//				CheckXY[j][0] = CheckXY[j + 1][0];
+//				CheckXY[j + 1][0] = resx;
+//			}
+//			if (CheckXY[j][1]>CheckXY[j + 1][1]){ //Y 排序
+//				int resy = CheckXY[j][1];
+//				CheckXY[j][1] = CheckXY[j + 1][1];
+//				CheckXY[j + 1][1] = resy;
+//			}
+//		}
+//		//===================
+//		//cout << CheckXY[0][0] << "  "<< CheckXY[1][0] << "  "<< CheckXY[2][0] << "  "<< CheckXY[3][0] << "  "<< CheckXY[4][0]  <<  endl;
+//		//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+//		int midx = CheckXY[2][0]; //中間的X
+//		int midy = CheckXY[2][1];//中間的Y
+//
+//		VPx = midx;
+//		VPy = midy;
+//		//if(abs(VPx-midx)>30){  VPx=midx; cout <<endl<< "修正X ★★★★★★ "<< midx <<endl; }//誤差太大(20) 修正
+//		//if(abs(VPy-midy)>30){  VPy=midy; cout <<endl<< "修正Y ☆☆☆☆☆☆ "<<  midy <<endl; }//誤差太大(20) 修正
+//
+//		for (int i = 1; i<CPIndex; i++) {
+//			AddressXY[i - 1][0] = AddressXY[i][0]; //基礎搬移X
+//			AddressXY[i - 1][1] = AddressXY[i][1]; //基礎搬移Y
+//			CheckXY[i - 1][0] = AddressXY[i - 1][0];
+//			CheckXY[i - 1][1] = AddressXY[i - 1][1];
+//		}
+//		AddressXY[CPIndex - 1][0] = CheckXY[CPIndex - 1][0] = oldx; //save X
+//		AddressXY[CPIndex - 1][1] = CheckXY[CPIndex - 1][1] = oldy; //save Y
+//
+//	}
+//
+//	if (CPround <= CPIndex)
+//		CPround++;
+//	//if(CPround ==15) CPround=0;
+//	//cout << AddressXY[0][0] << "  "<< AddressXY[1][0] << "  "<< AddressXY[2][0] << "  "<< AddressXY[3][0] << "  "<< AddressXY[4][0]  <<  endl;
+//}
 //=====================================
 //==============ImgFilter 創造=========
 void Filter_Init(int VPx, int VPy){  // (傳入消失點X)

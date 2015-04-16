@@ -11,7 +11,7 @@ IplImage* KeepLine(int ax, int ay, int bx, int by, IplImage *pImgDis);
 //void Mask_Init();
 void Mask_Init(char FileName[200]);
 void Filter_Init(int VPx, int VPy);
-void Check_VPoint(int &VPx, int &VPy);
+//void Check_VPoint(int &VPx, int &VPy);
 bool Lane_Offset(CvPoint VPoint, int lx, int rx); //傳入 (消失點,左X,右X)
 
 
