@@ -1,16 +1,18 @@
+#define _USE_MATH_DEFINES
 #include <cv.h>
 #include <highgui.h>
 #include <vector>
 #include "Vanishing Point.h"
 #include <iostream>
 #include "VP_hough_source.h"
+#include <cmath>
 using namespace std;
 //class of line_property
 line_property::line_property(CvPoint& point_1, CvPoint& point_2) :line_point_1(&point_1), line_point_2(&point_2)
 {
 	//斜率
 	if ((point_1.x - point_2.x) == 0)
-		line_slope = -1;
+		line_slope = -M_PI_2;
 	else
 		line_slope = (double)(point_1.y - point_2.y) / (point_1.x - point_2.x);
 

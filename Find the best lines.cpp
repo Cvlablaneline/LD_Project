@@ -1,9 +1,10 @@
-﻿#include "Find the best lines.h"
+﻿#define _USE_MATH_DEFINES
+
+#include "Find the best lines.h"
 #include "Vanishing Point.h"
 #include <string>
 #include <sstream>
-
-#define M_PI 3.14159265358979323846
+#include <cmath>
 
 using namespace std;
 
@@ -142,16 +143,10 @@ double countNormal(vector<line_property> *line, int LineNum)
 	//計算(x,0) & (0,Y)
 	CvPoint NewLineZeroPoint = cvPoint((-(*line)[LineNum].line_intercept) / (*line)[LineNum].line_slope,
 		(*line)[LineNum].line_intercept);
-	cout << "\t" << NewLineZeroPoint.x << "," << NewLineZeroPoint.y << endl;
-	cout << (*line)[LineNum].line_point_1->x << "," << (*line)[LineNum].line_point_1->y << "\n" << (*line)[LineNum].line_point_2->x << "," << (*line)[LineNum].line_point_2->y << endl;
 	double Angle = CountAngleForNormal(*(*line)[LineNum].line_point_1, *(*line)[LineNum].line_point_2);
 	//double Angle = CountAngleForNormal(cvPoint(NewLineZeroPoint.x,0), cvPoint(0,NewLineZeroPoint.y));
-	cout <<"angle"<< Angle << endl;
 
-	double R = abs(NewLineZeroPoint.x*cos(Angle) + NewLineZeroPoint.y*sin(Angle));
-	cout << R << endl;
-	cvWaitKey();
-
+	double R = NewLineZeroPoint.x*cos(Angle) + 0 * sin(Angle);
 	return R;
 }
 
@@ -159,13 +154,8 @@ double CountAngleForNormal(CvPoint point1, CvPoint point2)
 {
 	double NewAngle;
 	double line_slope = line_property(point1, point2).line_slope;
-	if (line_slope == -1)
-	{
-		NewAngle = 90;
-		return NewAngle;
-	}
 	NewAngle = atan(line_slope);
-	return (M_PI/2 - NewAngle);
+	return (M_PI_2 + NewAngle);
 }
 
 //確認是否為該群線段
@@ -218,7 +208,7 @@ bool line_group::CompareLine2Group(int LineNum, int range, double lenRange)
 {
 	if (!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope) * 180 / 3.1415)) > 6))
 	{
-		if (abs(group_Normal - countNormal(AllLineData, LineNum)) <= 0.15) {
+		if (abs(group_Normal - countNormal(AllLineData, LineNum)) <= 5) {
 			return true;
 		}
 	}
