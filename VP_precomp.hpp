@@ -1,44 +1,44 @@
 /*M///////////////////////////////////////////////////////////////////////////////////////
-//
-//  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
-//
-//  By downloading, copying, installing or using the software you agree to this license.
-//  If you do not agree to this license, do not download, install,
-//  copy or use the software.
-//
-//
-//                          License Agreement
-//                For Open Source Computer Vision Library
-//
-// Copyright (C) 2000-2008, Intel Corporation, all rights reserved.
-// Copyright (C) 2009, Willow Garage Inc., all rights reserved.
-// Third party copyrights are property of their respective owners.
-//
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//
-//   * Redistribution's of source code must retain the above copyright notice,
-//     this list of conditions and the following disclaimer.
-//
-//   * Redistribution's in binary form must reproduce the above copyright notice,
-//     this list of conditions and the following disclaimer in the documentation
-//     and/or other materials provided with the distribution.
-//
-//   * The name of the copyright holders may not be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// This software is provided by the copyright holders and contributors "as is" and
-// any express or implied warranties, including, but not limited to, the implied
-// warranties of merchantability and fitness for a particular purpose are disclaimed.
-// In no event shall the Intel Corporation or contributors be liable for any direct,
-// indirect, incidental, special, exemplary, or consequential damages
-// (including, but not limited to, procurement of substitute goods or services;
-// loss of use, data, or profits; or business interruption) however caused
-// and on any theory of liability, whether in contract, strict liability,
-// or tort (including negligence or otherwise) arising in any way out of
-// the use of this software, even if advised of the possibility of such damage.
-//
-//M*/
+ //
+ //  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
+ //
+ //  By downloading, copying, installing or using the software you agree to this license.
+ //  If you do not agree to this license, do not download, install,
+ //  copy or use the software.
+ //
+ //
+ //                          License Agreement
+ //                For Open Source Computer Vision Library
+ //
+ // Copyright (C) 2000-2008, Intel Corporation, all rights reserved.
+ // Copyright (C) 2009, Willow Garage Inc., all rights reserved.
+ // Third party copyrights are property of their respective owners.
+ //
+ // Redistribution and use in source and binary forms, with or without modification,
+ // are permitted provided that the following conditions are met:
+ //
+ //   * Redistribution's of source code must retain the above copyright notice,
+ //     this list of conditions and the following disclaimer.
+ //
+ //   * Redistribution's in binary form must reproduce the above copyright notice,
+ //     this list of conditions and the following disclaimer in the documentation
+ //     and/or other materials provided with the distribution.
+ //
+ //   * The name of the copyright holders may not be used to endorse or promote products
+ //     derived from this software without specific prior written permission.
+ //
+ // This software is provided by the copyright holders and contributors "as is" and
+ // any express or implied warranties, including, but not limited to, the implied
+ // warranties of merchantability and fitness for a particular purpose are disclaimed.
+ // In no event shall the Intel Corporation or contributors be liable for any direct,
+ // indirect, incidental, special, exemplary, or consequential damages
+ // (including, but not limited to, procurement of substitute goods or services;
+ // loss of use, data, or profits; or business interruption) however caused
+ // and on any theory of liability, whether in contract, strict liability,
+ // or tort (including negligence or otherwise) arising in any way out of
+ // the use of this software, even if advised of the possibility of such damage.
+ //
+ //M*/
 
 #ifndef __OPENCV_PRECOMP_H__
 #define __OPENCV_PRECOMP_H__
@@ -78,23 +78,23 @@ extern const float icv8x32fSqrTab[];
 
 namespace cv
 {
-
-static inline Point normalizeAnchor( Point anchor, Size ksize )
-{
-    if( anchor.x == -1 )
-        anchor.x = ksize.width/2;
-    if( anchor.y == -1 )
-        anchor.y = ksize.height/2;
-    CV_Assert( anchor.inside(Rect(0, 0, ksize.width, ksize.height)) );
-    return anchor;
-}
-
-void preprocess2DKernel( const Mat& kernel, vector<Point>& coords, vector<uchar>& coeffs );
-void crossCorr( const Mat& src, const Mat& templ, Mat& dst,
-                Size corrsize, int ctype,
-                Point anchor=Point(0,0), double delta=0,
-                int borderType=BORDER_REFLECT_101 );
-
+    
+    static inline Point normalizeAnchor( Point anchor, Size ksize )
+    {
+        if( anchor.x == -1 )
+            anchor.x = ksize.width/2;
+        if( anchor.y == -1 )
+            anchor.y = ksize.height/2;
+        CV_Assert( anchor.inside(Rect(0, 0, ksize.width, ksize.height)) );
+        return anchor;
+    }
+    
+    void preprocess2DKernel( const Mat& kernel, vector<Point>& coords, vector<uchar>& coeffs );
+    void crossCorr( const Mat& src, const Mat& templ, Mat& dst,
+                   Size corrsize, int ctype,
+                   Point anchor=Point(0,0), double delta=0,
+                   int borderType=BORDER_REFLECT_101 );
+    
 }
 
 typedef struct CvPyramid
@@ -109,14 +109,14 @@ typedef struct CvPyramid
 CvPyramid;
 
 #define  CV_COPY( dst, src, len, idx ) \
-    for( (idx) = 0; (idx) < (len); (idx)++) (dst)[idx] = (src)[idx]
+for( (idx) = 0; (idx) < (len); (idx)++) (dst)[idx] = (src)[idx]
 
 #define  CV_SET( dst, val, len, idx )  \
-    for( (idx) = 0; (idx) < (len); (idx)++) (dst)[idx] = (val)
+for( (idx) = 0; (idx) < (len); (idx)++) (dst)[idx] = (val)
 
 /* performs convolution of 2d floating-point array with 3x1, 1x3 or separable 3x3 mask */
 void icvSepConvSmall3_32f( float* src, int src_step, float* dst, int dst_step,
-            CvSize src_size, const float* kx, const float* ky, float* buffer );
+                          CvSize src_size, const float* kx, const float* ky, float* buffer );
 
 #undef   CV_CALC_MIN
 #define  CV_CALC_MIN(a, b) if((a) > (b)) (a) = (b)
@@ -126,29 +126,30 @@ void icvSepConvSmall3_32f( float* src, int src_step, float* dst, int dst_step,
 
 CvStatus CV_STDCALL
 icvCopyReplicateBorder_8u( const uchar* src, int srcstep, CvSize srcroi,
-                           uchar* dst, int dststep, CvSize dstroi,
-                           int left, int right, int cn, const uchar* value = 0 );
+                          uchar* dst, int dststep, CvSize dstroi,
+                          int left, int right, int cn, const uchar* value = 0 );
 
 CvStatus CV_STDCALL icvGetRectSubPix_8u_C1R
 ( const uchar* src, int src_step, CvSize src_size,
-  uchar* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
+ uchar* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
 CvStatus CV_STDCALL icvGetRectSubPix_8u32f_C1R
 ( const uchar* src, int src_step, CvSize src_size,
-  float* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
+ float* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
 CvStatus CV_STDCALL icvGetRectSubPix_32f_C1R
 ( const float* src, int src_step, CvSize src_size,
-  float* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
+ float* dst, int dst_step, CvSize win_size, CvPoint2D32f center );
 
 CvStatus CV_STDCALL icvGetQuadrangleSubPix_8u_C1R
 ( const uchar* src, int src_step, CvSize src_size,
-  uchar* dst, int dst_step, CvSize win_size, const float *matrix );
+ uchar* dst, int dst_step, CvSize win_size, const float *matrix );
 CvStatus CV_STDCALL icvGetQuadrangleSubPix_8u32f_C1R
 ( const uchar* src, int src_step, CvSize src_size,
-  float* dst, int dst_step, CvSize win_size, const float *matrix );
+ float* dst, int dst_step, CvSize win_size, const float *matrix );
 CvStatus CV_STDCALL icvGetQuadrangleSubPix_32f_C1R
 ( const float* src, int src_step, CvSize src_size,
-  float* dst, int dst_step, CvSize win_size, const float *matrix );
+ float* dst, int dst_step, CvSize win_size, const float *matrix );
 
-#include <C:\opencv\sources\modules\imgproc\src\_geom.h>
+//#include </Users/chienfu/Desktop/車道線偵測/LD_Project_xcode/opencv.10/modules/imgproc/src/_geom.h>
+#include "VP_geom.h"
 
 #endif /*__OPENCV_CV_INTERNAL_H_*/

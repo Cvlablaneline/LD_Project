@@ -48,9 +48,9 @@ line_group::line_group(vector<line_property> *line,int LineNum)
     group_line_slope = 0.0;
     group_slope = (*AllLineData)[LineNum].line_slope;
     group_slope_angle = atan(group_slope)*180/3.1415;
-	//R
-	group_Normal = countNormal(AllLineData, LineNum);
-	group_Normal_sum = group_Normal;
+    //R
+    group_Normal = countNormal(AllLineData, LineNum);
+    group_Normal_sum = group_Normal;
     //記錄點為最低點
     if ((*AllLineData)[LineNum].line_point_1->y > (*AllLineData)[LineNum].line_point_2->y)
     {
@@ -91,7 +91,7 @@ void line_group::update(int LineNum)
     GroupPoint.x = 0;
     GroupPoint.y = 0;
     group_slope = 0.0;
-
+    
     for (vector<int>::iterator lnt_first = LineNumTable.begin();
          lnt_first != LineNumTable.end();
          lnt_first++)
@@ -118,10 +118,10 @@ void line_group::update(int LineNum)
     GroupPoint.y /= LineNumTable.size();
     group_slope /= (float)LineNumTable.size();
     group_slope_angle = atan(group_slope)*180/3.1415;
-	//R
-	group_Normal_sum += countNormal(AllLineData, LineNum);
-	group_Normal = group_Normal_sum / LineNumTable.size();
-
+    //R
+    group_Normal_sum += countNormal(AllLineData, LineNum);
+    group_Normal = group_Normal_sum / LineNumTable.size();
+    
     GroupScore++;
 }
 
@@ -140,79 +140,79 @@ double line_group::calculate_the_angle(CvPoint Vanishing_Point)
 
 double countNormal(vector<line_property> *line, int LineNum)
 {
-	//計算(x,0) & (0,Y)
-	CvPoint NewLineZeroPoint = cvPoint((-(*line)[LineNum].line_intercept) / (*line)[LineNum].line_slope,
-		(*line)[LineNum].line_intercept);
-	double Angle = CountAngleForNormal(*(*line)[LineNum].line_point_1, *(*line)[LineNum].line_point_2);
-	//double Angle = CountAngleForNormal(cvPoint(NewLineZeroPoint.x,0), cvPoint(0,NewLineZeroPoint.y));
-
-	double R = NewLineZeroPoint.x*cos(Angle) + 0 * sin(Angle);
-	return R;
+    //計算(x,0) & (0,Y)
+    CvPoint NewLineZeroPoint = cvPoint((-(*line)[LineNum].line_intercept) / (*line)[LineNum].line_slope,
+                                       (*line)[LineNum].line_intercept);
+    double Angle = CountAngleForNormal(*(*line)[LineNum].line_point_1, *(*line)[LineNum].line_point_2);
+    //double Angle = CountAngleForNormal(cvPoint(NewLineZeroPoint.x,0), cvPoint(0,NewLineZeroPoint.y));
+    
+    double R = NewLineZeroPoint.x*cos(Angle) + 0 * sin(Angle);
+    return R;
 }
 
 double CountAngleForNormal(CvPoint point1, CvPoint point2)
 {
-	double NewAngle;
-	double line_slope = line_property(point1, point2).line_slope;
-	NewAngle = atan(line_slope);
-	return (M_PI_2 + NewAngle);
+    double NewAngle;
+    double line_slope = line_property(point1, point2).line_slope;
+    NewAngle = atan(line_slope);
+    return (M_PI_2 + NewAngle);
 }
 
 //確認是否為該群線段
 /*old
-bool line_group::CompareLine2Group (int LineNum, int range, double lenRange)
-{
-    if ((*AllLineData)[LineNum].line_point_1->y > (*AllLineData)[LineNum].line_point_2->y)
-    {
-        //比較點位置(line_point_1在下)
-        if(abs(GroupPoint.x - (*AllLineData)[LineNum].line_point_1->x) <= range
-           && abs(GroupPoint.y - (*AllLineData)[LineNum].line_point_1->y) <= range
-           && abs(GroupPoint_up.x - (*AllLineData)[LineNum].line_point_2->x) <= range
-           && abs(GroupPoint_up.y - (*AllLineData)[LineNum].line_point_2->y) <= range
-           )
-        {
-            if(!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope)*180/3.1415)) > 6))
-            {
-                double GroupLineDistance = countDistance(GroupPoint, GroupPoint_up);
-                double NewLineDeatance = countDistance(*(*AllLineData)[LineNum].line_point_1, *(*AllLineData)[LineNum].line_point_2);
-                if (abs(GroupLineDistance - NewLineDeatance) <= lenRange) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    else
-    {
-        //比較點位置(line_point_2在下)
-        if(abs(GroupPoint.x - (*AllLineData)[LineNum].line_point_2->x) <= range
-           && abs(GroupPoint.y - (*AllLineData)[LineNum].line_point_2->y) <= range
-           && abs(GroupPoint_up.x - (*AllLineData)[LineNum].line_point_1->x) <= range
-           && abs(GroupPoint_up.y - (*AllLineData)[LineNum].line_point_1->y) <= range
-           )
-        {
-            if(!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope)*180/3.1415)) > 6))
-            {
-                double GroupLineDistance = countDistance(GroupPoint, GroupPoint_up);
-                double NewLineDeatance = countDistance(*(*AllLineData)[LineNum].line_point_1, *(*AllLineData)[LineNum].line_point_2);
-                if (abs(GroupLineDistance - NewLineDeatance) <= lenRange) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-}
-*/
+ bool line_group::CompareLine2Group (int LineNum, int range, double lenRange)
+ {
+ if ((*AllLineData)[LineNum].line_point_1->y > (*AllLineData)[LineNum].line_point_2->y)
+ {
+ //比較點位置(line_point_1在下)
+ if(abs(GroupPoint.x - (*AllLineData)[LineNum].line_point_1->x) <= range
+ && abs(GroupPoint.y - (*AllLineData)[LineNum].line_point_1->y) <= range
+ && abs(GroupPoint_up.x - (*AllLineData)[LineNum].line_point_2->x) <= range
+ && abs(GroupPoint_up.y - (*AllLineData)[LineNum].line_point_2->y) <= range
+ )
+ {
+ if(!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope)*180/3.1415)) > 6))
+ {
+ double GroupLineDistance = countDistance(GroupPoint, GroupPoint_up);
+ double NewLineDeatance = countDistance(*(*AllLineData)[LineNum].line_point_1, *(*AllLineData)[LineNum].line_point_2);
+ if (abs(GroupLineDistance - NewLineDeatance) <= lenRange) {
+ return true;
+ }
+ }
+ }
+ return false;
+ }
+ else
+ {
+ //比較點位置(line_point_2在下)
+ if(abs(GroupPoint.x - (*AllLineData)[LineNum].line_point_2->x) <= range
+ && abs(GroupPoint.y - (*AllLineData)[LineNum].line_point_2->y) <= range
+ && abs(GroupPoint_up.x - (*AllLineData)[LineNum].line_point_1->x) <= range
+ && abs(GroupPoint_up.y - (*AllLineData)[LineNum].line_point_1->y) <= range
+ )
+ {
+ if(!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope)*180/3.1415)) > 6))
+ {
+ double GroupLineDistance = countDistance(GroupPoint, GroupPoint_up);
+ double NewLineDeatance = countDistance(*(*AllLineData)[LineNum].line_point_1, *(*AllLineData)[LineNum].line_point_2);
+ if (abs(GroupLineDistance - NewLineDeatance) <= lenRange) {
+ return true;
+ }
+ }
+ }
+ return false;
+ }
+ }
+ */
 bool line_group::CompareLine2Group(int LineNum, int range, double lenRange)
 {
-	if (!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope) * 180 / 3.1415)) > 6))
-	{
-		if (abs(group_Normal - countNormal(AllLineData, LineNum)) <= 5) {
-			return true;
-		}
-	}
-	return false;
+    if (!(abs(group_slope_angle - (atan((*AllLineData)[LineNum].line_slope) * 180 / 3.1415)) > 6))
+    {
+        if (abs(group_Normal - countNormal(AllLineData, LineNum)) <= 5) {
+            return true;
+        }
+    }
+    return false;
 }
 
 //計算長度
@@ -286,8 +286,8 @@ void draw_VPoint(IplImage* img, int x, int y, int vp_range)
 FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, CvPoint vpfnpoint, int vp_range,vector<CvPoint> *vpRecoder,IplImage* showLineGroup_line)
 {
 #define drawGroupLine //是否畫出線群的線段
-//#define NoGroup
-
+    //#define NoGroup
+    
     cout << "FTBL得到的霍夫轉換線斷數量：" << (*AllHLineSlope).size() << endl;
     
     //線段分群
@@ -305,12 +305,12 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
         (*vpRecoder).erase((*vpRecoder).begin());
     }
     /*顯示水平線Y軸資訊*/
-//    cout << (*vpRecoder).size() << endl;
-//    
-//    for (int i = 0;i<(*vpRecoder).size();i++)
-//    {
-//        cout << (*vpRecoder)[i].x<<","<<(*vpRecoder)[i].y << endl;
-//    }
+    //    cout << (*vpRecoder).size() << endl;
+    //
+    //    for (int i = 0;i<(*vpRecoder).size();i++)
+    //    {
+    //        cout << (*vpRecoder)[i].x<<","<<(*vpRecoder)[i].y << endl;
+    //    }
     
     //計算水平線紀錄最高點(y最小)
     int topVP = WhoIsTop(vpRecoder);
@@ -323,8 +323,8 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
     
     for (int AHLSNum = 0; AHLSNum < (*AllHLineSlope).size(); AHLSNum++)
     {
-		if ((*AllHLineSlope)[AHLSNum].line_slope == 0)
-			continue;
+        if ((*AllHLineSlope)[AHLSNum].line_slope == 0)
+            continue;
         //左邊
         if ((*AllHLineSlope)[AHLSNum].line_slope < 0)
         {
@@ -436,7 +436,7 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
             }
         }
         
-//#define a
+        //#define a
         
         //以角度排序
         sort(line_group_data_l.begin(), line_group_data_l.end(), sort_for_line_group_class_ANGLE);
@@ -531,7 +531,7 @@ FTBL FindTheBestLines(IplImage* Ori_pic,vector<line_property> *AllHLineSlope, Cv
     cout << "刪除高於消失點的資料後的群總數:" << line_group_data_l.size()+line_group_data_r.size() << endl;
     cout << "左群有: " << line_group_data_l.size() << "\t右群有: " << line_group_data_r.size() << endl;
     cout << "左群最大點: " << maxLeft.x << "," << maxLeft.y << "\t右群最大點: " << maxRight.x << "," << maxRight.y << endl;
-
+    
     //清除車道線斜率記錄vector
     /*vector <line_property> Nls, Nrs;
      newleftSlope.clear();

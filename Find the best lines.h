@@ -12,10 +12,10 @@
 class FTBL
 {
 public:
-	CvPoint FTBL_Point_L;
-	CvPoint FTBL_Point_R;
-	FTBL();
-	FTBL(CvPoint Point_data_L, CvPoint Point_data_R);
+    CvPoint FTBL_Point_L;
+    CvPoint FTBL_Point_R;
+    FTBL();
+    FTBL(CvPoint Point_data_L, CvPoint Point_data_R);
 };
 
 //線段分群類別
@@ -24,24 +24,24 @@ class line_group
 protected:
     vector<int> LineNumTable;
     vector<line_property> *AllLineData;
-	double group_Normal_sum;
-	double group_Normal;
+    double group_Normal_sum;
+    double group_Normal;
 public:
-	CvPoint GroupPoint;
+    CvPoint GroupPoint;
     CvPoint GroupPoint_up;
-	int GroupScore;
-	double angle;
-	double group_line_slope;
+    int GroupScore;
+    double angle;
+    double group_line_slope;
     double group_slope;
     double group_slope_angle;
     line_group(CvPoint firstPoint);
-	line_group(CvPoint firstPoint,double firstslope);
+    line_group(CvPoint firstPoint,double firstslope);
     line_group(vector<line_property> *line,int LineNum);
-	void update(CvPoint newPoint);
+    void update(CvPoint newPoint);
     void update(CvPoint newPoint,double newslope);
     void update(int LineNum);
-	double calculate_the_angle(CvPoint Vanishing_Point);
-	
+    double calculate_the_angle(CvPoint Vanishing_Point);
+    
     //確認是否為該群線段
     bool CompareLine2Group (int LineNum, int range, double lenRange);
     double countDistance (CvPoint line1,CvPoint line2);

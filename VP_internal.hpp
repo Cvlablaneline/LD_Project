@@ -1,50 +1,50 @@
 /*M///////////////////////////////////////////////////////////////////////////////////////
-//
-//  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
-//
-//  By downloading, copying, installing or using the software you agree to this license.
-//  If you do not agree to this license, do not download, install,
-//  copy or use the software.
-//
-//
-//                           License Agreement
-//                For Open Source Computer Vision Library
-//
-// Copyright (C) 2000-2008, Intel Corporation, all rights reserved.
-// Copyright (C) 2009, Willow Garage Inc., all rights reserved.
-// Third party copyrights are property of their respective owners.
-//
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//
-//   * Redistribution's of source code must retain the above copyright notice,
-//     this list of conditions and the following disclaimer.
-//
-//   * Redistribution's in binary form must reproduce the above copyright notice,
-//     this list of conditions and the following disclaimer in the documentation
-//     and/or other materials provided with the distribution.
-//
-//   * The name of the copyright holders may not be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// This software is provided by the copyright holders and contributors "as is" and
-// any express or implied warranties, including, but not limited to, the implied
-// warranties of merchantability and fitness for a particular purpose are disclaimed.
-// In no event shall the Intel Corporation or contributors be liable for any direct,
-// indirect, incidental, special, exemplary, or consequential damages
-// (including, but not limited to, procurement of substitute goods or services;
-// loss of use, data, or profits; or business interruption) however caused
-// and on any theory of liability, whether in contract, strict liability,
-// or tort (including negligence or otherwise) arising in any way out of
-// the use of this software, even if advised of the possibility of such damage.
-//
-//M*/
+ //
+ //  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
+ //
+ //  By downloading, copying, installing or using the software you agree to this license.
+ //  If you do not agree to this license, do not download, install,
+ //  copy or use the software.
+ //
+ //
+ //                           License Agreement
+ //                For Open Source Computer Vision Library
+ //
+ // Copyright (C) 2000-2008, Intel Corporation, all rights reserved.
+ // Copyright (C) 2009, Willow Garage Inc., all rights reserved.
+ // Third party copyrights are property of their respective owners.
+ //
+ // Redistribution and use in source and binary forms, with or without modification,
+ // are permitted provided that the following conditions are met:
+ //
+ //   * Redistribution's of source code must retain the above copyright notice,
+ //     this list of conditions and the following disclaimer.
+ //
+ //   * Redistribution's in binary form must reproduce the above copyright notice,
+ //     this list of conditions and the following disclaimer in the documentation
+ //     and/or other materials provided with the distribution.
+ //
+ //   * The name of the copyright holders may not be used to endorse or promote products
+ //     derived from this software without specific prior written permission.
+ //
+ // This software is provided by the copyright holders and contributors "as is" and
+ // any express or implied warranties, including, but not limited to, the implied
+ // warranties of merchantability and fitness for a particular purpose are disclaimed.
+ // In no event shall the Intel Corporation or contributors be liable for any direct,
+ // indirect, incidental, special, exemplary, or consequential damages
+ // (including, but not limited to, procurement of substitute goods or services;
+ // loss of use, data, or profits; or business interruption) however caused
+ // and on any theory of liability, whether in contract, strict liability,
+ // or tort (including negligence or otherwise) arising in any way out of
+ // the use of this software, even if advised of the possibility of such damage.
+ //
+ //M*/
 
 /* The header is for internal use and it is likely to change.
-   It contains some macro definitions that are used in cxcore, cv, cvaux
-   and, probably, other libraries. If you need some of this functionality,
-   the safe way is to copy it into your code and rename the macros.
-*/
+ It contains some macro definitions that are used in cxcore, cv, cvaux
+ and, probably, other libraries. If you need some of this functionality,
+ the safe way is to copy it into your code and rename the macros.
+ */
 #ifndef __OPENCV_CORE_INTERNAL_HPP__
 #define __OPENCV_CORE_INTERNAL_HPP__
 
@@ -198,29 +198,29 @@ CV_INLINE IppiSize ippiSize(int width, int height)
 namespace cv
 {
 #ifdef HAVE_TBB
-
+    
     typedef tbb::blocked_range<int> BlockedRange;
-
+    
     template<typename Body> static inline
     void parallel_for( const BlockedRange& range, const Body& body )
     {
         tbb::parallel_for(range, body);
     }
-
+    
     template<typename Iterator, typename Body> static inline
     void parallel_do( Iterator first, Iterator last, const Body& body )
     {
         tbb::parallel_do(first, last, body);
     }
-
+    
     typedef tbb::split Split;
-
+    
     template<typename Body> static inline
     void parallel_reduce( const BlockedRange& range, Body& body )
     {
         tbb::parallel_reduce(range, body);
     }
-
+    
     typedef tbb::concurrent_vector<Rect> ConcurrentRectVector;
     typedef tbb::concurrent_vector<double> ConcurrentDoubleVector;
 #else
@@ -232,11 +232,11 @@ namespace cv
         int begin() const { return _begin; }
         int end() const { return _end; }
         int grainsize() const { return _grainsize; }
-
+        
     protected:
         int _begin, _end, _grainsize;
     };
-
+    
     template<typename Body> static inline
     void parallel_for( const BlockedRange& range, const Body& body )
     {
@@ -244,54 +244,54 @@ namespace cv
     }
     typedef std::vector<Rect> ConcurrentRectVector;
     typedef std::vector<double> ConcurrentDoubleVector;
-
+    
     template<typename Iterator, typename Body> static inline
     void parallel_do( Iterator first, Iterator last, const Body& body )
     {
         for( ; first != last; ++first )
             body(*first);
     }
-
+    
     class Split {};
-
+    
     template<typename Body> static inline
     void parallel_reduce( const BlockedRange& range, Body& body )
     {
         body(range);
     }
 #endif
-
+    
     // Returns a static string if there is a parallel framework,
     // NULL otherwise.
     CV_EXPORTS const char* currentParallelFramework();
 } //namespace cv
 
 #define CV_INIT_ALGORITHM(classname, algname, memberinit) \
-    static ::cv::Algorithm* create##classname() \
-    { \
-        return new classname; \
-    } \
-    \
-    static ::cv::AlgorithmInfo& classname##_info() \
-    { \
-        static ::cv::AlgorithmInfo classname##_info_var(algname, create##classname); \
-        return classname##_info_var; \
-    } \
-    \
-    static ::cv::AlgorithmInfo& classname##_info_auto = classname##_info(); \
-    \
-    ::cv::AlgorithmInfo* classname::info() const \
-    { \
-        static volatile bool initialized = false; \
-        \
-        if( !initialized ) \
-        { \
-            initialized = true; \
-            classname obj; \
-            memberinit; \
-        } \
-        return &classname##_info(); \
-    }
+static ::cv::Algorithm* create##classname() \
+{ \
+return new classname; \
+} \
+\
+static ::cv::AlgorithmInfo& classname##_info() \
+{ \
+static ::cv::AlgorithmInfo classname##_info_var(algname, create##classname); \
+return classname##_info_var; \
+} \
+\
+static ::cv::AlgorithmInfo& classname##_info_auto = classname##_info(); \
+\
+::cv::AlgorithmInfo* classname::info() const \
+{ \
+static volatile bool initialized = false; \
+\
+if( !initialized ) \
+{ \
+initialized = true; \
+classname obj; \
+memberinit; \
+} \
+return &classname##_info(); \
+}
 
 #endif //__cplusplus
 
@@ -303,7 +303,7 @@ namespace cv
 
 /* maximal size of local memory storage */
 #define  CV_MAX_LOCAL_SIZE  \
-    (CV_MAX_LOCAL_MAT_SIZE*CV_MAX_LOCAL_MAT_SIZE*(int)sizeof(double))
+(CV_MAX_LOCAL_MAT_SIZE*CV_MAX_LOCAL_MAT_SIZE*(int)sizeof(double))
 
 /* default image row align (in bytes) */
 #define  CV_DEFAULT_IMAGE_ROW_ALIGN  4
@@ -312,7 +312,7 @@ namespace cv
 #define  CV_DEFAULT_MAT_ROW_ALIGN  1
 
 /* maximum size of dynamic memory buffer.
-   cvAlloc reports an error if a larger block is requested. */
+ cvAlloc reports an error if a larger block is requested. */
 #define  CV_MAX_ALLOC_SIZE    (((size_t)1 << (sizeof(size_t)*8-2)))
 
 /* the alignment of all the allocated buffers */
@@ -343,8 +343,8 @@ namespace cv
 #endif
 
 /****************************************************************************************\
-*                                  Common declarations                                   *
-\****************************************************************************************/
+ *                                  Common declarations                                   *
+ \****************************************************************************************/
 
 #ifdef __GNUC__
 #  define CV_DECL_ALIGNED(x) __attribute__ ((aligned (x)))
@@ -361,7 +361,7 @@ namespace cv
 #define CV_DBG_BREAK() { volatile int* crashMe = 0; *crashMe = 0; }
 
 /* default step, set in case of continuous data
-   to work around checks for valid step in some ipp functions */
+ to work around checks for valid step in some ipp functions */
 #define  CV_STUB_STEP     (1 << 30)
 
 #define  CV_SIZEOF_FLOAT ((int)sizeof(float))
@@ -376,7 +376,7 @@ namespace cv
 #define  CV_1F            0x3f800000
 #define  CV_TOGGLE_FLT(x) ((x)^((int)(x) < 0 ? 0x7fffffff : 0))
 #define  CV_TOGGLE_DBL(x) \
-    ((x)^((int64)(x) < 0 ? CV_BIG_INT(0x7fffffffffffffff) : 0))
+((x)^((int64)(x) < 0 ? CV_BIG_INT(0x7fffffffffffffff) : 0))
 
 #define  CV_NOP(a)      (a)
 #define  CV_ADD(a, b)   ((a) + (b))
@@ -445,237 +445,237 @@ CV_INLINE  CvSize  cvGetMatSize( const CvMat* mat )
 #define  CV_FLT_TO_FIX(x,n)  cvRound((x)*(1<<(n)))
 
 /****************************************************************************************\
-
-  Generic implementation of QuickSort algorithm.
-  ----------------------------------------------
-  Using this macro user can declare customized sort function that can be much faster
-  than built-in qsort function because of lower overhead on elements
-  comparison and exchange. The macro takes less_than (or LT) argument - a macro or function
-  that takes 2 arguments returns non-zero if the first argument should be before the second
-  one in the sorted sequence and zero otherwise.
-
-  Example:
-
-    Suppose that the task is to sort points by ascending of y coordinates and if
-    y's are equal x's should ascend.
-
-    The code is:
-    ------------------------------------------------------------------------------
-           #define cmp_pts( pt1, pt2 ) \
-               ((pt1).y < (pt2).y || ((pt1).y < (pt2).y && (pt1).x < (pt2).x))
-
-           [static] CV_IMPLEMENT_QSORT( icvSortPoints, CvPoint, cmp_pts )
-    ------------------------------------------------------------------------------
-
-    After that the function "void icvSortPoints( CvPoint* array, size_t total, int aux );"
-    is available to user.
-
-  aux is an additional parameter, which can be used when comparing elements.
-  The current implementation was derived from *BSD system qsort():
-
-    * Copyright (c) 1992, 1993
-    *  The Regents of the University of California.  All rights reserved.
-    *
-    * Redistribution and use in source and binary forms, with or without
-    * modification, are permitted provided that the following conditions
-    * are met:
-    * 1. Redistributions of source code must retain the above copyright
-    *    notice, this list of conditions and the following disclaimer.
-    * 2. Redistributions in binary form must reproduce the above copyright
-    *    notice, this list of conditions and the following disclaimer in the
-    *    documentation and/or other materials provided with the distribution.
-    * 3. All advertising materials mentioning features or use of this software
-    *    must display the following acknowledgement:
-    *  This product includes software developed by the University of
-    *  California, Berkeley and its contributors.
-    * 4. Neither the name of the University nor the names of its contributors
-    *    may be used to endorse or promote products derived from this software
-    *    without specific prior written permission.
-    *
-    * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
-    * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-    * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
-    * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-    * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
-    * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-    * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-    * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
-    * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    * SUCH DAMAGE.
-
-\****************************************************************************************/
+ 
+ Generic implementation of QuickSort algorithm.
+ ----------------------------------------------
+ Using this macro user can declare customized sort function that can be much faster
+ than built-in qsort function because of lower overhead on elements
+ comparison and exchange. The macro takes less_than (or LT) argument - a macro or function
+ that takes 2 arguments returns non-zero if the first argument should be before the second
+ one in the sorted sequence and zero otherwise.
+ 
+ Example:
+ 
+ Suppose that the task is to sort points by ascending of y coordinates and if
+ y's are equal x's should ascend.
+ 
+ The code is:
+ ------------------------------------------------------------------------------
+ #define cmp_pts( pt1, pt2 ) \
+ ((pt1).y < (pt2).y || ((pt1).y < (pt2).y && (pt1).x < (pt2).x))
+ 
+ [static] CV_IMPLEMENT_QSORT( icvSortPoints, CvPoint, cmp_pts )
+ ------------------------------------------------------------------------------
+ 
+ After that the function "void icvSortPoints( CvPoint* array, size_t total, int aux );"
+ is available to user.
+ 
+ aux is an additional parameter, which can be used when comparing elements.
+ The current implementation was derived from *BSD system qsort():
+ 
+ * Copyright (c) 1992, 1993
+ *  The Regents of the University of California.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *  This product includes software developed by the University of
+ *  California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ 
+ \****************************************************************************************/
 
 #define CV_IMPLEMENT_QSORT_EX( func_name, T, LT, user_data_type )                   \
 void func_name( T *array, size_t total, user_data_type aux )                        \
 {                                                                                   \
-    int isort_thresh = 7;                                                           \
-    T t;                                                                            \
-    int sp = 0;                                                                     \
-                                                                                    \
-    struct                                                                          \
-    {                                                                               \
-        T *lb;                                                                      \
-        T *ub;                                                                      \
-    }                                                                               \
-    stack[48];                                                                      \
-                                                                                    \
-    aux = aux;                                                                      \
-                                                                                    \
-    if( total <= 1 )                                                                \
-        return;                                                                     \
-                                                                                    \
-    stack[0].lb = array;                                                            \
-    stack[0].ub = array + (total - 1);                                              \
-                                                                                    \
-    while( sp >= 0 )                                                                \
-    {                                                                               \
-        T* left = stack[sp].lb;                                                     \
-        T* right = stack[sp--].ub;                                                  \
-                                                                                    \
-        for(;;)                                                                     \
-        {                                                                           \
-            int i, n = (int)(right - left) + 1, m;                                  \
-            T* ptr;                                                                 \
-            T* ptr2;                                                                \
-                                                                                    \
-            if( n <= isort_thresh )                                                 \
-            {                                                                       \
-            insert_sort:                                                            \
-                for( ptr = left + 1; ptr <= right; ptr++ )                          \
-                {                                                                   \
-                    for( ptr2 = ptr; ptr2 > left && LT(ptr2[0],ptr2[-1]); ptr2--)   \
-                        CV_SWAP( ptr2[0], ptr2[-1], t );                            \
-                }                                                                   \
-                break;                                                              \
-            }                                                                       \
-            else                                                                    \
-            {                                                                       \
-                T* left0;                                                           \
-                T* left1;                                                           \
-                T* right0;                                                          \
-                T* right1;                                                          \
-                T* pivot;                                                           \
-                T* a;                                                               \
-                T* b;                                                               \
-                T* c;                                                               \
-                int swap_cnt = 0;                                                   \
-                                                                                    \
-                left0 = left;                                                       \
-                right0 = right;                                                     \
-                pivot = left + (n/2);                                               \
-                                                                                    \
-                if( n > 40 )                                                        \
-                {                                                                   \
-                    int d = n / 8;                                                  \
-                    a = left, b = left + d, c = left + 2*d;                         \
-                    left = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))     \
-                                      : (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
-                                                                                    \
-                    a = pivot - d, b = pivot, c = pivot + d;                        \
-                    pivot = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))    \
-                                      : (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
-                                                                                    \
-                    a = right - 2*d, b = right - d, c = right;                      \
-                    right = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))    \
-                                      : (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
-                }                                                                   \
-                                                                                    \
-                a = left, b = pivot, c = right;                                     \
-                pivot = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))        \
-                                   : (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));       \
-                if( pivot != left0 )                                                \
-                {                                                                   \
-                    CV_SWAP( *pivot, *left0, t );                                   \
-                    pivot = left0;                                                  \
-                }                                                                   \
-                left = left1 = left0 + 1;                                           \
-                right = right1 = right0;                                            \
-                                                                                    \
-                for(;;)                                                             \
-                {                                                                   \
-                    while( left <= right && !LT(*pivot, *left) )                    \
-                    {                                                               \
-                        if( !LT(*left, *pivot) )                                    \
-                        {                                                           \
-                            if( left > left1 )                                      \
-                                CV_SWAP( *left1, *left, t );                        \
-                            swap_cnt = 1;                                           \
-                            left1++;                                                \
-                        }                                                           \
-                        left++;                                                     \
-                    }                                                               \
-                                                                                    \
-                    while( left <= right && !LT(*right, *pivot) )                   \
-                    {                                                               \
-                        if( !LT(*pivot, *right) )                                   \
-                        {                                                           \
-                            if( right < right1 )                                    \
-                                CV_SWAP( *right1, *right, t );                      \
-                            swap_cnt = 1;                                           \
-                            right1--;                                               \
-                        }                                                           \
-                        right--;                                                    \
-                    }                                                               \
-                                                                                    \
-                    if( left > right )                                              \
-                        break;                                                      \
-                    CV_SWAP( *left, *right, t );                                    \
-                    swap_cnt = 1;                                                   \
-                    left++;                                                         \
-                    right--;                                                        \
-                }                                                                   \
-                                                                                    \
-                if( swap_cnt == 0 )                                                 \
-                {                                                                   \
-                    left = left0, right = right0;                                   \
-                    goto insert_sort;                                               \
-                }                                                                   \
-                                                                                    \
-                n = MIN( (int)(left1 - left0), (int)(left - left1) );               \
-                for( i = 0; i < n; i++ )                                            \
-                    CV_SWAP( left0[i], left[i-n], t );                              \
-                                                                                    \
-                n = MIN( (int)(right0 - right1), (int)(right1 - right) );           \
-                for( i = 0; i < n; i++ )                                            \
-                    CV_SWAP( left[i], right0[i-n+1], t );                           \
-                n = (int)(left - left1);                                            \
-                m = (int)(right1 - right);                                          \
-                if( n > 1 )                                                         \
-                {                                                                   \
-                    if( m > 1 )                                                     \
-                    {                                                               \
-                        if( n > m )                                                 \
-                        {                                                           \
-                            stack[++sp].lb = left0;                                 \
-                            stack[sp].ub = left0 + n - 1;                           \
-                            left = right0 - m + 1, right = right0;                  \
-                        }                                                           \
-                        else                                                        \
-                        {                                                           \
-                            stack[++sp].lb = right0 - m + 1;                        \
-                            stack[sp].ub = right0;                                  \
-                            left = left0, right = left0 + n - 1;                    \
-                        }                                                           \
-                    }                                                               \
-                    else                                                            \
-                        left = left0, right = left0 + n - 1;                        \
-                }                                                                   \
-                else if( m > 1 )                                                    \
-                    left = right0 - m + 1, right = right0;                          \
-                else                                                                \
-                    break;                                                          \
-            }                                                                       \
-        }                                                                           \
-    }                                                                               \
+int isort_thresh = 7;                                                           \
+T t;                                                                            \
+int sp = 0;                                                                     \
+\
+struct                                                                          \
+{                                                                               \
+T *lb;                                                                      \
+T *ub;                                                                      \
+}                                                                               \
+stack[48];                                                                      \
+\
+aux = aux;                                                                      \
+\
+if( total <= 1 )                                                                \
+return;                                                                     \
+\
+stack[0].lb = array;                                                            \
+stack[0].ub = array + (total - 1);                                              \
+\
+while( sp >= 0 )                                                                \
+{                                                                               \
+T* left = stack[sp].lb;                                                     \
+T* right = stack[sp--].ub;                                                  \
+\
+for(;;)                                                                     \
+{                                                                           \
+int i, n = (int)(right - left) + 1, m;                                  \
+T* ptr;                                                                 \
+T* ptr2;                                                                \
+\
+if( n <= isort_thresh )                                                 \
+{                                                                       \
+insert_sort:                                                            \
+for( ptr = left + 1; ptr <= right; ptr++ )                          \
+{                                                                   \
+for( ptr2 = ptr; ptr2 > left && LT(ptr2[0],ptr2[-1]); ptr2--)   \
+CV_SWAP( ptr2[0], ptr2[-1], t );                            \
+}                                                                   \
+break;                                                              \
+}                                                                       \
+else                                                                    \
+{                                                                       \
+T* left0;                                                           \
+T* left1;                                                           \
+T* right0;                                                          \
+T* right1;                                                          \
+T* pivot;                                                           \
+T* a;                                                               \
+T* b;                                                               \
+T* c;                                                               \
+int swap_cnt = 0;                                                   \
+\
+left0 = left;                                                       \
+right0 = right;                                                     \
+pivot = left + (n/2);                                               \
+\
+if( n > 40 )                                                        \
+{                                                                   \
+int d = n / 8;                                                  \
+a = left, b = left + d, c = left + 2*d;                         \
+left = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))     \
+: (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
+\
+a = pivot - d, b = pivot, c = pivot + d;                        \
+pivot = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))    \
+: (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
+\
+a = right - 2*d, b = right - d, c = right;                      \
+right = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))    \
+: (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));    \
+}                                                                   \
+\
+a = left, b = pivot, c = right;                                     \
+pivot = LT(*a, *b) ? (LT(*b, *c) ? b : (LT(*a, *c) ? c : a))        \
+: (LT(*c, *b) ? b : (LT(*a, *c) ? a : c));       \
+if( pivot != left0 )                                                \
+{                                                                   \
+CV_SWAP( *pivot, *left0, t );                                   \
+pivot = left0;                                                  \
+}                                                                   \
+left = left1 = left0 + 1;                                           \
+right = right1 = right0;                                            \
+\
+for(;;)                                                             \
+{                                                                   \
+while( left <= right && !LT(*pivot, *left) )                    \
+{                                                               \
+if( !LT(*left, *pivot) )                                    \
+{                                                           \
+if( left > left1 )                                      \
+CV_SWAP( *left1, *left, t );                        \
+swap_cnt = 1;                                           \
+left1++;                                                \
+}                                                           \
+left++;                                                     \
+}                                                               \
+\
+while( left <= right && !LT(*right, *pivot) )                   \
+{                                                               \
+if( !LT(*pivot, *right) )                                   \
+{                                                           \
+if( right < right1 )                                    \
+CV_SWAP( *right1, *right, t );                      \
+swap_cnt = 1;                                           \
+right1--;                                               \
+}                                                           \
+right--;                                                    \
+}                                                               \
+\
+if( left > right )                                              \
+break;                                                      \
+CV_SWAP( *left, *right, t );                                    \
+swap_cnt = 1;                                                   \
+left++;                                                         \
+right--;                                                        \
+}                                                                   \
+\
+if( swap_cnt == 0 )                                                 \
+{                                                                   \
+left = left0, right = right0;                                   \
+goto insert_sort;                                               \
+}                                                                   \
+\
+n = MIN( (int)(left1 - left0), (int)(left - left1) );               \
+for( i = 0; i < n; i++ )                                            \
+CV_SWAP( left0[i], left[i-n], t );                              \
+\
+n = MIN( (int)(right0 - right1), (int)(right1 - right) );           \
+for( i = 0; i < n; i++ )                                            \
+CV_SWAP( left[i], right0[i-n+1], t );                           \
+n = (int)(left - left1);                                            \
+m = (int)(right1 - right);                                          \
+if( n > 1 )                                                         \
+{                                                                   \
+if( m > 1 )                                                     \
+{                                                               \
+if( n > m )                                                 \
+{                                                           \
+stack[++sp].lb = left0;                                 \
+stack[sp].ub = left0 + n - 1;                           \
+left = right0 - m + 1, right = right0;                  \
+}                                                           \
+else                                                        \
+{                                                           \
+stack[++sp].lb = right0 - m + 1;                        \
+stack[sp].ub = right0;                                  \
+left = left0, right = left0 + n - 1;                    \
+}                                                           \
+}                                                               \
+else                                                            \
+left = left0, right = left0 + n - 1;                        \
+}                                                                   \
+else if( m > 1 )                                                    \
+left = right0 - m + 1, right = right0;                          \
+else                                                                \
+break;                                                          \
+}                                                                       \
+}                                                                           \
+}                                                                               \
 }
 
 #define CV_IMPLEMENT_QSORT( func_name, T, cmp )  \
-    CV_IMPLEMENT_QSORT_EX( func_name, T, cmp, int )
+CV_IMPLEMENT_QSORT_EX( func_name, T, cmp, int )
 
 /****************************************************************************************\
-*                     Structures and macros for integration with IPP                     *
-\****************************************************************************************/
+ *                     Structures and macros for integration with IPP                     *
+ \****************************************************************************************/
 
 /* IPP-compatible return codes */
 typedef enum CvStatus
@@ -685,7 +685,7 @@ typedef enum CvStatus
     CV_UNMATCHED_ROI_ERR        = -111,
     CV_NOTFOUND_ERR             = -110,
     CV_BADCONVERGENCE_ERR       = -109,
-
+    
     CV_BADDEPTH_ERR             = -107,
     CV_BADROI_ERR               = -106,
     CV_BADHEADER_ERR            = -105,
@@ -694,18 +694,18 @@ typedef enum CvStatus
     CV_UNSUPPORTED_CHANNELS_ERR = -102,
     CV_UNSUPPORTED_DEPTH_ERR    = -101,
     CV_UNSUPPORTED_FORMAT_ERR   = -100,
-
+    
     CV_BADARG_ERR               = -49,  //ipp comp
     CV_NOTDEFINED_ERR           = -48,  //ipp comp
-
+    
     CV_BADCHANNELS_ERR          = -47,  //ipp comp
     CV_BADRANGE_ERR             = -44,  //ipp comp
     CV_BADSTEP_ERR              = -29,  //ipp comp
-
+    
     CV_BADFLAG_ERR              =  -12,
     CV_DIV_BY_ZERO_ERR          =  -11, //ipp comp
     CV_BADCOEF_ERR              =  -10,
-
+    
     CV_BADFACTOR_ERR            =  -7,
     CV_BADPOINT_ERR             =  -6,
     CV_BADSCALE_ERR             =  -4,
@@ -731,13 +731,13 @@ typedef struct CvBigFuncTable
 } CvBigFuncTable;
 
 #define CV_INIT_FUNC_TAB( tab, FUNCNAME, FLAG )         \
-    (tab).fn_2d[CV_8U] = (void*)FUNCNAME##_8u##FLAG;    \
-    (tab).fn_2d[CV_8S] = 0;                             \
-    (tab).fn_2d[CV_16U] = (void*)FUNCNAME##_16u##FLAG;  \
-    (tab).fn_2d[CV_16S] = (void*)FUNCNAME##_16s##FLAG;  \
-    (tab).fn_2d[CV_32S] = (void*)FUNCNAME##_32s##FLAG;  \
-    (tab).fn_2d[CV_32F] = (void*)FUNCNAME##_32f##FLAG;  \
-    (tab).fn_2d[CV_64F] = (void*)FUNCNAME##_64f##FLAG
+(tab).fn_2d[CV_8U] = (void*)FUNCNAME##_8u##FLAG;    \
+(tab).fn_2d[CV_8S] = 0;                             \
+(tab).fn_2d[CV_16U] = (void*)FUNCNAME##_16u##FLAG;  \
+(tab).fn_2d[CV_16S] = (void*)FUNCNAME##_16s##FLAG;  \
+(tab).fn_2d[CV_32S] = (void*)FUNCNAME##_32s##FLAG;  \
+(tab).fn_2d[CV_32F] = (void*)FUNCNAME##_32f##FLAG;  \
+(tab).fn_2d[CV_64F] = (void*)FUNCNAME##_64f##FLAG
 
 #ifdef __cplusplus
 
@@ -747,20 +747,20 @@ class CV_EXPORTS CvOpenGlFuncTab
 {
 public:
     virtual ~CvOpenGlFuncTab();
-
+    
     virtual void genBuffers(int n, unsigned int* buffers) const = 0;
     virtual void deleteBuffers(int n, const unsigned int* buffers) const = 0;
-
+    
     virtual void bufferData(unsigned int target, ptrdiff_t size, const void* data, unsigned int usage) const = 0;
     virtual void bufferSubData(unsigned int target, ptrdiff_t offset, ptrdiff_t size, const void* data) const = 0;
-
+    
     virtual void bindBuffer(unsigned int target, unsigned int buffer) const = 0;
-
+    
     virtual void* mapBuffer(unsigned int target, unsigned int access) const = 0;
     virtual void unmapBuffer(unsigned int target) const = 0;
-
+    
     virtual void generateBitmapFont(const std::string& family, int height, int weight, bool italic, bool underline, int start, int count, int base) const = 0;
-
+    
     virtual bool isGlContextInitialized() const = 0;
 };
 
@@ -771,7 +771,7 @@ CV_EXPORTS bool icvCheckGlError(const char* file, const int line, const char* fu
 // >
 
 namespace cv { namespace ogl {
-CV_EXPORTS bool checkError(const char* file, const int line, const char* func = "");
+    CV_EXPORTS bool checkError(const char* file, const int line, const char* func = "");
 }}
 
 #define CV_CheckGlError() CV_DbgAssert( (cv::ogl::checkError(__FILE__, __LINE__, CV_Func)) )
