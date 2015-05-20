@@ -34,7 +34,7 @@ using namespace cv;
 //畫出消失點位置與周圍感應區
 //設定偵測消失點的上下左右多少範圍
 #define vp_range 80
-#define DBGflag 0 //##debug 資訊開關
+#define DBGflag 1 //##debug 資訊開關
 #define XXHHflag 0//##疊圖 開關
 
 void ImageMerge(IplImage*& pImageRes);
@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
             cvReleaseImage(&pImgMar);
             cvReleaseImage(&showLineGroup_line);
             //if(i==400) waitKey(0);
-            cout << "消失點確認:"<<FileName2<< "\t"<<VanishingPoint.x * (1920/640) <<","<< VanishingPoint.y* (1080/480)<<endl;
+            cout << "消失點確認:"<<FileName2<< "\t"<<VanishingPoint.x <<","<< VanishingPoint.y<<endl;
             cvWaitKey(0);
             //_CrtDumpMemoryLeaks();		
             

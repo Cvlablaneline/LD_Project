@@ -20,9 +20,9 @@ IplImage* ClusterLine(int ax, int ay, int bx, int by, IplImage *pImgDis, int cen
 
 int RLpoint[100][2] = { 0 };
 int MaskRL[200][2] = { 0 };
-int CPround;
-int CheckXY[5][2] = { 0 };   //排序XY
-int AddressXY[5][2] = { 0 }; //基礎XY
+//int CPround; (移動到VP（不能重複）huang5/21)
+//int CheckXY[5][2] = { 0 }; (移動到VP（不能重複）huang5/21)  //排序XY
+//int AddressXY[5][2] = { 0 }; (移動到VP（不能重複）huang5/21) //基礎XY
 
 int Arrpointindex;
 
@@ -64,7 +64,7 @@ void Mask_Init(char FileName[200])
     pImgC = cvCreateImage(cvSize(640, 480), 8, 1); //空圖層 初始化
     pImgHouf = cvCreateImage(cvSize(640, 480), 8, 1);
     
-    CPround = 0; //最剛開始初始化消失點紀錄
+    //CPround = 0;(移動到VP（不能重複）huang5/21) //最剛開始初始化消失點紀錄
     // Create Windows
     cvReleaseImage(&src1); //fix leak
 }

@@ -2,7 +2,7 @@
 #define VANISHING_POINT
 #include <vector>
 using namespace std;
-
+//白點是原始點，藍點是修正點
 //DEGUB開關
 //顯示輸入灰階圖。
 //#define LOOK_CVCANNY
@@ -25,6 +25,8 @@ using namespace std;
 //顯示交點在路標的
 //#define DRAW_APPROACH_VERTICAL
 
+//使用自適應閥值控制canny
+//#define ADAPT_CANNY
 //顯示全部積分影像框分數
 //#define INTEGRAL_SCORE
 ///////////////////////////////////////////////////
@@ -56,8 +58,8 @@ public:
     line_crosspoint(double slope1, double intercept1, double slope2, double intercept2);
     ~line_crosspoint(){};
 };
-CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<line_property>* all_Slope, CvMemStorage* storage_DThrSmo);
+CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<line_property>* all_Slope,CvMemStorage* storage_DThrSmo);
 
-void Check_VPoint(int &VPx, int &VPy);
+void Check_VPoint(int &VPx,int &VPy);
 
 #endif
