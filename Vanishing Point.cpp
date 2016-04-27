@@ -49,7 +49,7 @@ CvPoint find_Vanishing_Point(IplImage* Canny, IplImage* Ori_pic, vector<line_pro
     
     //宣告vector(存線密度資料)近去或夫拿資料
     vector<int> get_num_line_point;
-    CvSeq* lines_DThrSmo = LD_cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI / 180, 50, 30, 10,&get_num_line_point);//(舊:180,50,30,10)//(不好:30 20)
+    CvSeq* lines_DThrSmo = LD_cvHoughLines2(Canny, storage_DThrSmo, CV_HOUGH_PROBABILISTIC, 1, CV_PI/180, 50, 30, 10,&get_num_line_point);//(舊:180,50,30,10)//(不好:30 20)
     //輸入,儲存,變換方法,距離精度rho,角度精度theta,臨界值(線點數?),最小長度,最大間隔(線間隔)gap,完全斜率線白點數
     
 #ifdef DRAW_LINE_DATA

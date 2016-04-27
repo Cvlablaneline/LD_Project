@@ -8,8 +8,8 @@
 #include "Vanishing Point.h"
 #include "Canny Line.h"
 #include "Find the best lines.h"
-
-
+#include "LD_LogSaveHelper.h"
+#include "Experimental_tools.hpp"
 
 
 #define _CRTDBG_MAP_ALLOC
@@ -33,8 +33,8 @@ using namespace cv;
 
 //畫出消失點位置與周圍感應區
 //設定偵測消失點的上下左右多少範圍
-#define vp_range 80
-#define DBGflag 1 //##debug 資訊開關
+#define vp_range 50
+#define DBGflag 0 //##debug 資訊開關
 #define XXHHflag 0//##疊圖 開關
 
 void ImageMerge(IplImage*& pImageRes);
@@ -61,9 +61,23 @@ int main(int argc, char *argv[])
                                            NULL);
     
     for (int i = FristPic; i < 3000; i += 1){
-        
+        stringstream sstmp;
+        int n = 5-((int)log10(i)+1);
+        for (int j=0; j < n; j++)
+        {
+            sstmp << 0;
+        }
+        sstmp << i;
+
         //====for os x
-        sprintf(FileName2, "/Users/chienfu/Desktop/車道線偵測/高速公路1/Video- (%d).jpg",i);
+        sprintf(FileName2, "/Users/chienfu/車道線偵測/高速公路1/Video- (%d).jpg",i);
+//        sprintf(FileName2, "/Users/chienfu/車道線偵測/高速公路2/Video-%d.jpg",i);
+        //sprintf(FileName2, "/Users/chienfu/車道線偵測/夜間2/Video-%d.jpg",i);
+//        sprintf(FileName2, "/Users/chienfu/車道線偵測/夜間1/Video-%d.jpg",i);
+//        sprintf(FileName2, "/Users/chienfu/車道線偵測/街道1/Video-%d.jpg",i);
+//        sprintf(FileName2, "/Users/chienfu/車道線偵測/行車記錄/1/video-%s.jpg", sstmp.str().c_str());
+//        sprintf(FileName2, "/Users/chienfu/車道線偵測/機車/雨天1/Video-%d.jpg",i);
+        
         
         //Mask 初始化 (在第一張 只做一次)
         if (i == FristPic)
@@ -93,6 +107,7 @@ int main(int argc, char *argv[])
             
             
             IplImage *pImgColor = cvCreateImage(cvSize(src2->width* (640.0 / src2->width), src2->height* (480.0 / src2->height)), src3->depth, src3->nChannels);
+            
             //顯示線群圖
             IplImage *showLineGroup_line = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
             
@@ -100,7 +115,7 @@ int main(int argc, char *argv[])
             //改變大小
             cvResize(src2, pImgB, CV_INTER_LINEAR);
             cvResize(src3, pImgColor, CV_INTER_LINEAR);
-            cvResize(src3, showLineGroup_line, CV_INTER_LINEAR);
+            cvResize(pImgColor, showLineGroup_line, CV_INTER_LINEAR);
             
             //cvReleaseImage(&src1);
             cvReleaseImage(&src2);
@@ -116,11 +131,26 @@ int main(int argc, char *argv[])
             //疊圖(input1,input2, *output,inputcolor,開關(1/on))
             {pImgC = xxhh(pImgA, pImgB, pImgC, pImgColor, XXHHflag, pKernel); }
             
-            
             //============canny===================
             //pImgCanny = canny(pImgGrayC, pImgBuffer);
-            cvCopy(pImgGrayC, pImgCanny);
             
+            //將canny邊框改為黑色(pImgGrayC)
+            CvPoint CannySquareline[4];
+            CannySquareline[0].x = 0;
+            CannySquareline[0].y = 0;
+            CannySquareline[1].x = pImgGrayC->width;
+            CannySquareline[1].y = 0;
+            CannySquareline[2].x = 0;
+            CannySquareline[2].y = pImgGrayC->height;
+            CannySquareline[3].x = pImgGrayC->width;
+            CannySquareline[3].y = pImgGrayC->height;
+            cvLine(pImgGrayC, CannySquareline[0], CannySquareline[1], CV_RGB(0, 0, 0), 5);
+            cvLine(pImgGrayC, CannySquareline[1], CannySquareline[3], CV_RGB(0, 0, 0), 5);
+            cvLine(pImgGrayC, CannySquareline[0], CannySquareline[2], CV_RGB(0, 0, 0), 5);
+            cvLine(pImgGrayC, CannySquareline[2], CannySquareline[3], CV_RGB(0, 0, 0), 5);
+            
+            cvCopy(pImgGrayC, pImgCanny);
+            cvShowImage("Mask's pImgGrayC2", pImgGrayC);
             
             //===========對比線(點)===============
             //pImgC = drawline(pImgC, oldXX, oldYY); //drawline (輸入圖片,消失點X,消失點Y)//劃出對比點(取得)
@@ -156,13 +186,14 @@ int main(int argc, char *argv[])
             
             
             //==============================
-            //draw the vanishing point range
-            if (VanishingPoint.x != 0.0 || VanishingPoint.y != 0.0)
-                draw_VPoint(pImgColor, VanishingPoint.x, VanishingPoint.y, vp_range);
             
             static vector<CvPoint> vpRecoder;
-            //Find the best lines (Original picture,Full Canny,Vanishing point(CvPoint),Vanishing point range(vp_range)）
-            FTBL ftblData = FindTheBestLines(pImgColor, &AllVPHoughLineSlopeRecorder, VanishingPoint, vp_range, &vpRecoder, showLineGroup_line);
+            static deque<FTBLRecoder> FTBLRecoder_L,FTBLRecoder_R;
+            //Find the best lines
+            GroupPointLogs GPLS(pImgColor);
+            //pImgColor
+            FTBL ftblData = FindTheBestLines(pImgColor, &AllVPHoughLineSlopeRecorder, VanishingPoint, vp_range, &vpRecoder, showLineGroup_line,i,&GPLS,&FTBLRecoder_L,&FTBLRecoder_R);
+            
             //清除車道線斜率記錄vector
             vector <line_property> Nhl;
             AllVPHoughLineSlopeRecorder.clear();
@@ -172,15 +203,15 @@ int main(int argc, char *argv[])
             //release storage_DThrSmo
             cvReleaseMemStorage(&storage_DThrSmo);
             
-            //車道偏移
-            if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == true){
-                CvFont font;
-                // PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
-                cvInitFont(&font, CV_FONT_HERSHEY_TRIPLEX, 4.0f, 1.0f, 0, 3, CV_AA);
-                cvPutText(pImgColor, "Warning!", Point(640 / 4, 480 / 2), &font, CV_RGB(255, 0, 0));
-            }
-            else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
-            }
+//            //車道偏移
+//            if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == true){
+//                CvFont font;
+//                // PlaySound(TEXT("C:\\Users\\user\\Desktop\\AudioJoiner140604213842.wav"),NULL,SND_FILENAME | SND_SYNC );
+//                cvInitFont(&font, CV_FONT_HERSHEY_TRIPLEX, 4.0f, 1.0f, 0, 3, CV_AA);
+//                cvPutText(pImgColor, "Warning!", Point(640 / 4, 480 / 2), &font, CV_RGB(255, 0, 0));
+//            }
+//            else if (Lane_Offset(VanishingPoint, ftblData.FTBL_Point_L.x, ftblData.FTBL_Point_R.x) == false){
+//            }
             
             //=========DBG開關=======
             if (DBGflag == 1){
@@ -202,17 +233,20 @@ int main(int argc, char *argv[])
             };
             
             
-            //sprintf(maskout, "C:\\Users\\user\\Desktop\\NewPicout\\MovieDemo\\out_noxxhh\\output-%d.jpg",i);
-            //cvSaveImage(maskout,pImgMar);
+//            sprintf(maskout, "/Users/chienfu/Desktop/夜1/output-%d.jpg",i);
+//            cvSaveImage(maskout,pImgColor);
             
             // Create Windows
             cvShowImage("LineGroup", showLineGroup_line);
             cvShowImage("pImgColor", pImgColor);
             
-            //cvShowImage("pImgCanny", pImgCanny);
-            
+            cvShowImage("pImgCanny", pImgCanny);
+            if (ftblData.FTBL_stopPic == true)
+            {
+                cout << "圖片編號" << i <<endl;
+//                cvWaitKey();
+            }
             //cvReleaseImage(&pImgDCanny);
-            
             
             
             cvReleaseImage(&pImgColor);
@@ -220,7 +254,7 @@ int main(int argc, char *argv[])
             cvReleaseImage(&showLineGroup_line);
             //if(i==400) waitKey(0);
             cout << "消失點確認:"<<FileName2<< "\t"<<VanishingPoint.x <<","<< VanishingPoint.y<<endl;
-            cvWaitKey(0);
+            cvWaitKey(1);
             //_CrtDumpMemoryLeaks();		
             
         }

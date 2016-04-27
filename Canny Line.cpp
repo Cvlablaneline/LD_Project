@@ -221,7 +221,7 @@ IplImage* xxhh(IplImage *img1, IplImage *img2, IplImage *imgout, IplImage *pImgC
     if (XXHHflag == 1)
         cvOr(pImgDCanny, pImgDCanny2, pImgDCannyS);
     else
-        cvCopy(pImgDCanny, pImgDCannyS);
+        cvCopy(pImgDCanny2, pImgDCannyS);
     
     // Create Windows
     
@@ -341,7 +341,6 @@ IplImage* xxhh(IplImage *img1, IplImage *img2, IplImage *imgout, IplImage *pImgC
         }
         //if(count > pImg3C->width/2.5 ) cvLine(pImg3C,cvPoint(0,h),cvPoint(pImg3C->width,h),CV_RGB(0,0,0)); //(pImg3C->width/5)
     }
-    
     
     
     
